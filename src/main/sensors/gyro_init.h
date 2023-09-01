@@ -22,7 +22,7 @@
 
 #include "hw.h"
 #include "sensors.h"
-#include "driver/accgyro/accgyro.h"
+#include "drivers/accgyro/accgyro.h"
 #include "sensors/gyro.h"
 
 void gyroSetTargetLooptime(uint8_t pidDenom);

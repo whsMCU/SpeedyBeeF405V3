@@ -25,8 +25,8 @@
 #include "cli.h"
 #include "axis.h"
 #include "gyro_init.h"
-#include "driver/accgyro/accgyro.h"
-#include "driver/sensor.h"
+#include "drivers/accgyro/accgyro.h"
+#include "drivers/sensor.h"
 #include "sensors/gyro.h"
 
 #ifdef USE_ACCGYRO_BMI270

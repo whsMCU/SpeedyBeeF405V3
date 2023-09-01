@@ -21,7 +21,7 @@
 #pragma once
 
 #include "common/axis.h"
-//#include "common/filter.h"
+#include "common/filter.h"
 #include "common/time.h"
 #include "common/utils.h"
 
@@ -132,7 +132,6 @@ typedef struct gyro_s {
 
 extern gyro_t gyro;
 extern uint8_t activePidLoopDenom;
-extern gyroConfig_t gyroConfig;
 
 enum {
     GYRO_OVERFLOW_CHECK_NONE = 0,
@@ -199,6 +198,7 @@ typedef struct gyroConfig_s {
     uint8_t simplified_gyro_filter_multiplier;
 } gyroConfig_t;
 
+extern gyroConfig_t gyroConfig;
 
 void gyroConfig_init(void);
 void gyroUpdate(void);

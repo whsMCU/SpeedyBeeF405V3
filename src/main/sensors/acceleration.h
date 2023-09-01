@@ -79,11 +79,12 @@ typedef struct accelerometerConfig_s {
     rollAndPitchTrims_t accelerometerTrims;
 } accelerometerConfig_t;
 
-PG_DECLARE(accelerometerConfig_t, accelerometerConfig);
+extern accelerometerConfig_t accelerometerConfig;
 
 bool accInit(uint16_t accSampleRateHz);
 bool accIsCalibrationComplete(void);
 bool accHasBeenCalibrated(void);
+void accelerometerConfig_init(void);
 void accStartCalibration(void);
 void resetRollAndPitchTrims(rollAndPitchTrims_t *rollAndPitchTrims);
 void accUpdate(timeUs_t currentTimeUs, rollAndPitchTrims_t *rollAndPitchTrims);

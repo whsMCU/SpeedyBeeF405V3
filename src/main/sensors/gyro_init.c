@@ -26,7 +26,7 @@
 
 #include "common/axis.h"
 #include "common/maths.h"
-//#include "common/filter.h"
+#include "common/filter.h"
 
 #include "config/config.h"
 
@@ -208,7 +208,7 @@ static void dynLpfFilterInit()
 
 void gyroInitFilters(void)
 {
-    uint16_t gyro_lpf1_init_hz = gyroConfig()->gyro_lpf1_static_hz;
+    uint16_t gyro_lpf1_init_hz = gyroConfig.gyro_lpf1_static_hz;
 
 #ifdef USE_DYN_LPF
     if (gyroConfig()->gyro_lpf1_dyn_min_hz > 0) {
@@ -218,20 +218,20 @@ void gyroInitFilters(void)
 
     gyroInitLowpassFilterLpf(
       FILTER_LPF1,
-			gyroConfig()->gyro_lpf1_type,
+			gyroConfig.gyro_lpf1_type,
       gyro_lpf1_init_hz,
       gyro.targetLooptime
     );
 
     gyro.downsampleFilterEnabled = gyroInitLowpassFilterLpf(
       FILTER_LPF2,
-			gyroConfig()->gyro_lpf2_type,
-			gyroConfig()->gyro_lpf2_static_hz,
+			gyroConfig.gyro_lpf2_type,
+			gyroConfig.gyro_lpf2_static_hz,
       gyro.sampleLooptime
     );
 
-    gyroInitFilterNotch1(gyroConfig()->gyro_soft_notch_hz_1, gyroConfig()->gyro_soft_notch_cutoff_1);
-    gyroInitFilterNotch2(gyroConfig()->gyro_soft_notch_hz_2, gyroConfig()->gyro_soft_notch_cutoff_2);
+    gyroInitFilterNotch1(gyroConfig.gyro_soft_notch_hz_1, gyroConfig.gyro_soft_notch_cutoff_1);
+    gyroInitFilterNotch2(gyroConfig.gyro_soft_notch_hz_2, gyroConfig.gyro_soft_notch_cutoff_2);
 #ifdef USE_DYN_LPF
     dynLpfFilterInit();
 #endif
@@ -260,11 +260,11 @@ static void gyroInitSensorFilters(gyroSensor_t *gyroSensor)
 
  void gyroInitSensor(gyroSensor_t *gyroSensor)
  {
-     gyroSensor->gyroDev.gyro_high_fsr = gyroConfig()->gyro_high_fsr;
+     gyroSensor->gyroDev.gyro_high_fsr = gyroConfig.gyro_high_fsr;
      //gyroSensor->gyroDev.gyroAlign = config->alignment;
      //buildRotationMatrixFromAlignment(&config->customAlignment, &gyroSensor->gyroDev.rotationMatrix);
      //gyroSensor->gyroDev.mpuIntExtiTag = config->extiTag;
-     gyroSensor->gyroDev.hardware_lpf = gyroConfig()->gyro_hardware_lpf;
+     gyroSensor->gyroDev.hardware_lpf = gyroConfig.gyro_hardware_lpf;
 
      // The targetLooptime gets set later based on the active sensor's gyroSampleRateHz and pid_process_denom
      gyroSensor->gyroDev.gyroSampleRateHz = gyroSetSampleRate(&gyroSensor->gyroDev);
@@ -403,10 +403,10 @@ bool gyroInit(void)
     gyro.gyroHasOverflowProtection = true;
 
     gyroDetectionFlags = GYRO_NONE_MASK;
-    uint8_t gyrosToScan = gyroConfig()->gyrosDetected;
+    uint8_t gyrosToScan = gyroConfig.gyrosDetected;
 
-    gyro.gyroToUse = gyroConfig()->gyro_to_use;
-    gyro.gyroDebugAxis = gyroConfig()->gyro_filter_debug_axis;
+    gyro.gyroToUse = gyroConfig.gyro_to_use;
+    gyro.gyroDebugAxis = gyroConfig.gyro_filter_debug_axis;
 
     if ((!gyrosToScan || (gyrosToScan & GYRO_1_MASK)) && gyroDetectSensor(&gyro.gyroSensor1)) {
         gyroDetectionFlags |= GYRO_1_MASK;
@@ -414,7 +414,7 @@ bool gyroInit(void)
 
     bool eepromWriteRequired = false;
     if (!gyrosToScan) {
-        gyroConfigMutable()->gyrosDetected = gyroDetectionFlags;
+        gyroConfig.gyrosDetected = gyroDetectionFlags;
         eepromWriteRequired = true;
     }
 

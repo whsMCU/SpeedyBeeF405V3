@@ -25,7 +25,7 @@
 
 
 #include "common/axis.h"
-//#include "common/filter.h"
+#include "common/filter.h"
 #include "common/utils.h"
 
 //#include "config/config_reset.h"
@@ -38,31 +38,29 @@
 #include "fc/runtime_config.h"
 
 
-
-//#include "sensors/boardalignment.h"
 #include "sensors/gyro.h"
 #include "sensors/gyro_init.h"
-#include "sensors/sensors.h"
-
-#include "acceleration_init.h"
+#include "sensors/acceleration_init.h"
+#include "sensors/acceleration.h"
 
 #define CALIBRATING_ACC_CYCLES              400
 
 accelerationRuntime_t accelerationRuntime;
+accelerometerConfig_t accelerometerConfig;
 
 static void setConfigCalibrationCompleted(void)
 {
-	accelerometerConfigMutable()->accZero.values.calibrationCompleted = 1;
+	accelerometerConfig.accZero.values.calibrationCompleted = 1;
 }
 
 bool accHasBeenCalibrated(void)
 {
-    return accelerometerConfig()->accZero.values.calibrationCompleted;
+    return accelerometerConfig.accZero.values.calibrationCompleted;
 }
 
 void accResetRollAndPitchTrims(void)
 {
-    resetRollAndPitchTrims(&accelerometerConfigMutable()->accelerometerTrims);
+    resetRollAndPitchTrims(&accelerometerConfig.accelerometerTrims);
 }
 
 static void resetFlightDynamicsTrims(flightDynamicsTrims_t *accZero)
@@ -73,18 +71,16 @@ static void resetFlightDynamicsTrims(flightDynamicsTrims_t *accZero)
     accZero->values.calibrationCompleted = 0;
 }
 
-void pgResetFn_accelerometerConfig(accelerometerConfig_t *instance)
+void accelerometerConfig_init(void)
 {
-    RESET_CONFIG_2(accelerometerConfig_t, instance,
-        .acc_lpf_hz = 10,
-        .acc_hardware = ACC_DEFAULT,
-        .acc_high_fsr = false,
-    );
-    resetRollAndPitchTrims(&instance->accelerometerTrims);
-    resetFlightDynamicsTrims(&instance->accZero);
-}
 
-PG_REGISTER_WITH_RESET_FN(accelerometerConfig_t, accelerometerConfig, PG_ACCELEROMETER_CONFIG, 2);
+    accelerometerConfig.acc_lpf_hz = 10,
+    accelerometerConfig.acc_hardware = ACC_DEFAULT,
+	accelerometerConfig.acc_high_fsr = false,
+
+    resetRollAndPitchTrims(&accelerometerConfig.accelerometerTrims);
+    resetFlightDynamicsTrims(&accelerometerConfig.accZero);
+}
 
 extern uint16_t InflightcalibratingA;
 extern bool AccInflightCalibrationMeasurementDone;
@@ -302,7 +298,7 @@ void accInitFilters(void)
 {
     // Only set the lowpass cutoff if the ACC sample rate is detected otherwise
     // the filter initialization is not defined (sample rate = 0)
-    accelerationRuntime.accLpfCutHz = (acc.sampleRateHz) ? accelerometerConfig()->acc_lpf_hz : 0;
+    accelerationRuntime.accLpfCutHz = (acc.sampleRateHz) ? accelerometerConfig.acc_lpf_hz : 0;
     if (accelerationRuntime.accLpfCutHz) {
         const uint32_t accSampleTimeUs = 1e6 / acc.sampleRateHz;
         for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
@@ -317,7 +313,7 @@ bool accInit(uint16_t accSampleRateHz)
     // copy over the common gyro mpu settings
     acc.dev.gyro = gyroActiveDev();
     //acc.dev.mpuDetectionResult = *gyroMpuDetectionResult();
-    acc.dev.acc_high_fsr = accelerometerConfig()->acc_high_fsr;
+    acc.dev.acc_high_fsr = accelerometerConfig.acc_high_fsr;
 
     // Copy alignment from active gyro, as all production boards use acc-gyro-combi chip.
     // Exceptions are STM32F3DISCOVERY and STM32F411DISCOVERY, and (may be) handled in future enhancement.
@@ -339,6 +335,7 @@ bool accInit(uint16_t accSampleRateHz)
     //     return false;
     // }
     bmi270SpiAccDetect(&acc.dev);
+    accelerometerConfig_init();
     acc.dev.acc_1G = 256; // set default
     acc.dev.initFn(&acc.dev); // driver initialisation
     acc.dev.acc_1G_rec = 1.0f / acc.dev.acc_1G;
@@ -462,6 +459,6 @@ void setAccelerationTrims(flightDynamicsTrims_t *accelerationTrimsToUse)
 
  void applyAccelerometerTrimsDelta(rollAndPitchTrims_t *rollAndPitchTrimsDelta)
  {
-     accelerometerConfigMutable()->accelerometerTrims.values.roll += rollAndPitchTrimsDelta->values.roll;
-     accelerometerConfigMutable()->accelerometerTrims.values.pitch += rollAndPitchTrimsDelta->values.pitch;
+     accelerometerConfig.accelerometerTrims.values.roll += rollAndPitchTrimsDelta->values.roll;
+     accelerometerConfig.accelerometerTrims.values.pitch += rollAndPitchTrimsDelta->values.pitch;
  }

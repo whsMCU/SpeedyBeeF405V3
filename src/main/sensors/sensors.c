@@ -6,13 +6,14 @@
  */
 
 //#include "driver/accgyro/bmi270.h"
-//#include "filter.h"
-//#include "gyro_init.h"
-//#include "gyro.h"
+#include "filter.h"
+#include "gyro_init.h"
+#include "gyro.h"
 #include "scheduler/scheduler.h"
 #include "common/time.h"
-//#include "accgyro/accgyro.h"
+#include "drivers/accgyro/accgyro.h"
 #include "sensors/sensors.h"
+#include "sensors/acceleration.h"
 
 
 static bool is_init = false;
