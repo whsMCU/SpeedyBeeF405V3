@@ -367,25 +367,6 @@ static bool gyroDetectSensor(gyroSensor_t *gyroSensor)
 	 return gyroHardware != GYRO_NONE;
 }
 
-// static void gyroPreInitSensor(const gyroDeviceConfig_t *config)
-// {
-// #if defined(USE_GYRO_MPU6050) || defined(USE_GYRO_MPU3050) || defined(USE_GYRO_MPU6500) || defined(USE_GYRO_SPI_MPU6500) || defined(USE_GYRO_SPI_MPU6000) \
-//  || defined(USE_ACC_MPU6050) || defined(USE_GYRO_SPI_MPU9250) || defined(USE_GYRO_SPI_ICM20601) || defined(USE_GYRO_SPI_ICM20649) \
-//  || defined(USE_GYRO_SPI_ICM20689) || defined(USE_ACCGYRO_BMI160) || defined(USE_ACCGYRO_BMI270) || defined(USE_ACCGRYO_LSM6DSO)
-//     mpuPreInit(config);
-// #else
-//     UNUSED(config);
-// #endif
-// }
-
-// void gyroPreInit(void)
-// {
-//     gyroPreInitSensor(gyroDeviceConfig(0));
-// #ifdef USE_MULTI_GYRO
-//     gyroPreInitSensor(gyroDeviceConfig(1));
-// #endif
-// }
-
 bool gyroInit(void)
 {
 #ifdef USE_GYRO_OVERFLOW_CHECK

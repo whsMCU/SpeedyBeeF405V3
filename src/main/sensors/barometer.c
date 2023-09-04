@@ -23,22 +23,16 @@
 #include <math.h>
 
 #include "common/maths.h"
-
-//#include "pg/pg.h"
-//#include "pg/pg_ids.h"
+#include "common/maths.h"
 
 #include "fc/runtime_config.h"
 
 #include "sensors/barometer.h"
-
-#include "sensors.h"
+#include "sensors/sensors.h"
 
 #include "drivers/barometer/barometer.h"
-#include "barometer.h"
-#include "barometer_dps310.h"
-#include "maths.h"
-#include "cli.h"
-#include "i2c.h"
+#include "drivers/barometer/barometer_dps310.h"
+
 #include "scheduler/scheduler.h"
 
 #ifdef USE_BARO_DPS310

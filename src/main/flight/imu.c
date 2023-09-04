@@ -37,8 +37,6 @@
 //#include "flight/mixer.h"
 //#include "pid.h"
 
-//#include "io/gps.h"
-
 #include "scheduler/scheduler.h"
 
 #include "sensors/acceleration.h"

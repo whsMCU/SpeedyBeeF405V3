@@ -76,7 +76,7 @@ void accelerometerConfig_init(void)
 
     accelerometerConfig.acc_lpf_hz = 10,
     accelerometerConfig.acc_hardware = ACC_DEFAULT,
-	accelerometerConfig.acc_high_fsr = false,
+	  accelerometerConfig.acc_high_fsr = false,
 
     //resetRollAndPitchTrims(&accelerometerConfig.accelerometerTrims);
     resetFlightDynamicsTrims(&accelerometerConfig.accZero);
@@ -390,7 +390,7 @@ void performAcclerationCalibration(rollAndPitchTrims_t *rollAndPitchTrims)
         accelerationRuntime.accelerationTrims->raw[Y] = (a[Y] + (CALIBRATING_ACC_CYCLES / 2)) / CALIBRATING_ACC_CYCLES;
         accelerationRuntime.accelerationTrims->raw[Z] = (a[Z] + (CALIBRATING_ACC_CYCLES / 2)) / CALIBRATING_ACC_CYCLES - acc.dev.acc_1G;
 
-        resetRollAndPitchTrims(rollAndPitchTrims);
+        //resetRollAndPitchTrims(rollAndPitchTrims);
         setConfigCalibrationCompleted();
 
         //saveConfigAndNotify();

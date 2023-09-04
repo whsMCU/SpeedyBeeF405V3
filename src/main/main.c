@@ -171,6 +171,7 @@ void fcInit(void)
 	compassInit();
 	adcInternalInit();
 	gyroSetTargetLooptime(1);
+	gyroInitFilters();
 
 	tasksInit();
 }

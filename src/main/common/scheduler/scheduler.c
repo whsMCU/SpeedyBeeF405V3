@@ -24,16 +24,17 @@
 #include <stdint.h>
 #include <string.h>
 
-//#include "driver/accgyro/accgyro.h"
+#include "drivers/accgyro/accgyro.h"
 
-#include "tasks.h"
-#include "maths.h"
+
+#include "common/maths.h"
 //#include "rx/rx.h"
-#include "core.h"
-//#include "sensors/gyro_init.h"
-//#include "sensors/gyro.h"
+#include "fc/core.h"
+#include "sensors/gyro_init.h"
+#include "sensors/gyro.h"
 
-#include "scheduler.h"
+#include "scheduler/scheduler.h"
+#include "scheduler/tasks.h"
 
 // DEBUG_SCHEDULER, timings for:
 // 0 - Average time spent executing check function
@@ -483,9 +484,9 @@ void scheduler(void)
             currentTimeUs = micros();
             taskExecutionTimeUs += schedulerExecuteTask(gyroTask, currentTimeUs);
 
-//            if (gyroFilterReady()) {
-//                taskExecutionTimeUs += schedulerExecuteTask(getTask(TASK_FILTER), currentTimeUs);
-//            }
+            if (gyroFilterReady()) {
+                taskExecutionTimeUs += schedulerExecuteTask(getTask(TASK_FILTER), currentTimeUs);
+            }
 //            if (pidLoopReady()) {
 //                taskExecutionTimeUs += schedulerExecuteTask(getTask(TASK_PID), currentTimeUs);
 //            }
@@ -524,51 +525,51 @@ void scheduler(void)
 #endif
             lastTargetCycles = nextTargetCycles;
 
-//            gyroDev_t *gyro = gyroActiveDev();
-//
-//            // Bring the scheduler into lock with the gyro
-//            if (gyro->gyroModeSPI != GYRO_EXTI_NO_INT) {
-//                // Track the actual gyro rate over given number of cycle times and set the expected timebase
-//                static uint32_t terminalGyroRateCount = 0;
-//                static int32_t sampleRateStartCycles;
-//
-//                if ((terminalGyroRateCount == 0)) {
-//                    terminalGyroRateCount = gyro->detectedEXTI + GYRO_RATE_COUNT;
-//                    sampleRateStartCycles = nowCycles;
-//                }
-//
-//                if (gyro->detectedEXTI >= terminalGyroRateCount) {
-//                    // Calculate the number of clock cycles on average between gyro interrupts
-//                    uint32_t sampleCycles = nowCycles - sampleRateStartCycles;
-//                    desiredPeriodCycles = sampleCycles / GYRO_RATE_COUNT;
-//                    sampleRateStartCycles = nowCycles;
-//                    terminalGyroRateCount += GYRO_RATE_COUNT;
-//                }
-//
-//                // Track the actual gyro rate over given number of cycle times and remove skew
-//                static uint32_t terminalGyroLockCount = 0;
-//                static int32_t accGyroSkew = 0;
-//
-//                int32_t gyroSkew = cmpTimeCycles(nextTargetCycles, gyro->gyroSyncEXTI) % desiredPeriodCycles;
-//                if (gyroSkew > (desiredPeriodCycles / 2)) {
-//                    gyroSkew -= desiredPeriodCycles;
-//                }
-//
-//                accGyroSkew += gyroSkew;
-//
-//                if ((terminalGyroLockCount == 0)) {
-//                    terminalGyroLockCount = gyro->detectedEXTI + GYRO_LOCK_COUNT;
-//                }
-//
-//                if (gyro->detectedEXTI >= terminalGyroLockCount) {
-//                    terminalGyroLockCount += GYRO_LOCK_COUNT;
-//
-//                    // Move the desired start time of the gyroTask
-//                    lastTargetCycles -= (accGyroSkew/GYRO_LOCK_COUNT);
-//                    //DEBUG_SET(DEBUG_SCHEDULER_DETERMINISM, 3, clockCyclesTo10thMicros(accGyroSkew/GYRO_LOCK_COUNT));
-//                    accGyroSkew = 0;
-//                }
-//            }
+            gyroDev_t *gyro = gyroActiveDev();
+
+            // Bring the scheduler into lock with the gyro
+            if (gyro->gyroModeSPI != GYRO_EXTI_NO_INT) {
+                // Track the actual gyro rate over given number of cycle times and set the expected timebase
+                static uint32_t terminalGyroRateCount = 0;
+                static int32_t sampleRateStartCycles;
+
+                if ((terminalGyroRateCount == 0)) {
+                    terminalGyroRateCount = gyro->detectedEXTI + GYRO_RATE_COUNT;
+                    sampleRateStartCycles = nowCycles;
+                }
+
+                if (gyro->detectedEXTI >= terminalGyroRateCount) {
+                    // Calculate the number of clock cycles on average between gyro interrupts
+                    uint32_t sampleCycles = nowCycles - sampleRateStartCycles;
+                    desiredPeriodCycles = sampleCycles / GYRO_RATE_COUNT;
+                    sampleRateStartCycles = nowCycles;
+                    terminalGyroRateCount += GYRO_RATE_COUNT;
+                }
+
+                // Track the actual gyro rate over given number of cycle times and remove skew
+                static uint32_t terminalGyroLockCount = 0;
+                static int32_t accGyroSkew = 0;
+
+                int32_t gyroSkew = cmpTimeCycles(nextTargetCycles, gyro->gyroSyncEXTI) % desiredPeriodCycles;
+                if (gyroSkew > (desiredPeriodCycles / 2)) {
+                    gyroSkew -= desiredPeriodCycles;
+                }
+
+                accGyroSkew += gyroSkew;
+
+                if ((terminalGyroLockCount == 0)) {
+                    terminalGyroLockCount = gyro->detectedEXTI + GYRO_LOCK_COUNT;
+                }
+
+                if (gyro->detectedEXTI >= terminalGyroLockCount) {
+                    terminalGyroLockCount += GYRO_LOCK_COUNT;
+
+                    // Move the desired start time of the gyroTask
+                    lastTargetCycles -= (accGyroSkew/GYRO_LOCK_COUNT);
+                    //DEBUG_SET(DEBUG_SCHEDULER_DETERMINISM, 3, clockCyclesTo10thMicros(accGyroSkew/GYRO_LOCK_COUNT));
+                    accGyroSkew = 0;
+                }
+            }
        }
     }
 

@@ -22,12 +22,12 @@
 #include <stdint.h>
 
 #include "common/axis.h"
-//#include "common/filter.h"
+#include "common/filter.h"
 #include "common/utils.h"
 
-#include "acceleration_init.h"
+#include "sensors/acceleration_init.h"
 
-#include "acceleration.h"
+#include "sensors/acceleration.h"
 
 acc_t acc;                       // acc access functions
 

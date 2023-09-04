@@ -34,6 +34,7 @@
 #include "sensors/barometer.h"
 #include "sensors/compass.h"
 #include "sensors/gyro.h"
+#include "sensors/acceleration_init.h"
 
 #include "scheduler/tasks.h"
 
@@ -113,7 +114,7 @@ static void taskBatteryAlerts(uint32_t currentTimeUs)
 
 static void taskUpdateAccelerometer(timeUs_t currentTimeUs)
 {
-    //accUpdate(currentTimeUs, &accelerometerConfigMutable()->accelerometerTrims);
+    accUpdate(currentTimeUs, &accelerometerConfig.accelerometerTrims);
 }
 
 typedef enum {
@@ -285,13 +286,14 @@ task_attribute_t task_attributes[TASK_COUNT] = {
 #endif
 
     [TASK_GYRO] = DEFINE_TASK("GYRO", NULL, NULL, taskGyroSample, TASK_GYROPID_DESIRED_PERIOD, TASK_PRIORITY_REALTIME),
-    //[TASK_FILTER] = DEFINE_TASK("FILTER", NULL, NULL, taskFiltering, TASK_GYROPID_DESIRED_PERIOD, TASK_PRIORITY_REALTIME),
+    [TASK_FILTER] = DEFINE_TASK("FILTER", NULL, NULL, taskFiltering, TASK_GYROPID_DESIRED_PERIOD, TASK_PRIORITY_REALTIME),
     //[TASK_PID] = DEFINE_TASK("PID", NULL, NULL, taskMainPidLoop, TASK_GYROPID_DESIRED_PERIOD, TASK_PRIORITY_REALTIME),
 
+#ifdef USE_ACC
     [TASK_ACCEL] = DEFINE_TASK("ACC", NULL, NULL, taskUpdateAccelerometer, TASK_PERIOD_HZ(1000), TASK_PRIORITY_MEDIUM),
-    //[TASK_ATTITUDE] = DEFINE_TASK("ATTITUDE", NULL, NULL, imuUpdateAttitude, TASK_PERIOD_HZ(100), TASK_PRIORITY_MEDIUM),
-
-    //[TASK_RX] = DEFINE_TASK("RX", NULL, rxUpdateCheck, taskUpdateRxMain, TASK_PERIOD_HZ(33), TASK_PRIORITY_HIGH), // If event-based scheduling doesn't work, fallback to periodic scheduling
+    [TASK_ATTITUDE] = DEFINE_TASK("ATTITUDE", NULL, NULL, imuUpdateAttitude, TASK_PERIOD_HZ(100), TASK_PRIORITY_MEDIUM),
+#endif
+    [TASK_RX] = DEFINE_TASK("RX", NULL, rxUpdateCheck, taskUpdateRxMain, TASK_PERIOD_HZ(33), TASK_PRIORITY_HIGH), // If event-based scheduling doesn't work, fallback to periodic scheduling
     //[TASK_DISPATCH] = DEFINE_TASK("DISPATCH", NULL, NULL, dispatchProcess, TASK_PERIOD_HZ(1000), TASK_PRIORITY_HIGH),
     [TASK_LED] = DEFINE_TASK("LED", NULL, NULL, ledUpdate, TASK_PERIOD_HZ(100), TASK_PRIORITY_LOW),
     [TASK_DEBUG] = DEFINE_TASK("DEBUG", NULL, NULL, debugPrint, TASK_PERIOD_HZ(10), TASK_PRIORITY_LOW),
@@ -375,17 +377,18 @@ void tasksInit(void)
 #endif
 
     rescheduleTask(TASK_GYRO, gyro.sampleLooptime);
-    //rescheduleTask(TASK_FILTER, gyro.targetLooptime);
+    rescheduleTask(TASK_FILTER, gyro.targetLooptime);
     //rescheduleTask(TASK_PID, gyro.targetLooptime);
     setTaskEnabled(TASK_GYRO, true);
-    //setTaskEnabled(TASK_FILTER, true);
+    setTaskEnabled(TASK_FILTER, true);
     //setTaskEnabled(TASK_PID, true);
     schedulerEnableGyro();
 
+#if defined(USE_ACC)
     setTaskEnabled(TASK_ACCEL, true);
-    rescheduleTask(TASK_ACCEL, TASK_PERIOD_HZ(800));
-    //setTaskEnabled(TASK_ATTITUDE, true);
-
+    rescheduleTask(TASK_ACCEL, TASK_PERIOD_HZ(acc.sampleRateHz));
+    setTaskEnabled(TASK_ATTITUDE, true);
+#endif
 
 #ifdef USE_RANGEFINDER
     if (sensors(SENSOR_RANGEFINDER)) {
@@ -393,7 +396,7 @@ void tasksInit(void)
     }
 #endif
 
-    //setTaskEnabled(TASK_RX, true);
+    setTaskEnabled(TASK_RX, true);
 
     //setTaskEnabled(TASK_DISPATCH, dispatchIsEnabled());
 

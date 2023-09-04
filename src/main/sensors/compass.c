@@ -26,19 +26,17 @@
 
 #if defined(USE_MAG)
 #include "common/axis.h"
+#include "common/time.h"
 
 //#include "config/config.h"
 #include "runtime_config.h"
 #include "scheduler/scheduler.h"
 #include "sensors/gyro.h"
 #include "sensors/gyro_init.h"
-#include "sensors.h"
-#include "time.h"
-//#include "pg/pg.h"
-//#include "pg/pg_ids.h"
-#include "cli.h"
-#include "compass.h"
-#include "compass_qmc5883l.h"
+#include "sensors/compass.h"
+#include "sensors/sensors.h"
+
+#include "compass/compass_qmc5883l.h"
 
 #ifdef _USE_HW_CLI
 static void cliQmc5883l(cli_args_t *args);
