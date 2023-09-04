@@ -27,8 +27,16 @@
 //#include "config/feature.h"
 
 #include "fc/core.h"
+
+#include "flight/imu.h"
+
 #include "sensors/adcinternal.h"
+#include "sensors/barometer.h"
+#include "sensors/compass.h"
+#include "sensors/gyro.h"
+
 #include "scheduler/tasks.h"
+
 
 
 // taskUpdateRxMain() has occasional peaks in execution time so normal moving average duration estimation doesn't work
@@ -87,7 +95,7 @@ static void taskHandleSerial(uint32_t currentTimeUs)
     }
 #endif
     cliMain();
-    SerialCom();
+    //SerialCom();
     // bool evaluateMspData = ARMING_FLAG(ARMED) ? MSP_SKIP_NON_MSP_DATA : MSP_EVALUATE_NON_MSP_DATA;
     // mspSerialProcess(evaluateMspData, mspFcProcessCommand, mspFcProcessReply);
 }
@@ -151,7 +159,7 @@ static void taskUpdateRxMain(uint32_t currentTimeUs)
 
     case RX_STATE_UPDATE:
         // updateRcCommands sets rcCommand, which is needed by updateAltHoldState and updateSonarAltHoldState
-        updateRcCommands();
+        //updateRcCommands();
         //updateArmingStatus();
 
 #ifdef USE_USB_CDC_HID
@@ -226,7 +234,7 @@ void taskUpdateRangefinder(uint32_t currentTimeUs)
 
 static void taskCalculateAltitude(uint32_t currentTimeUs)
 {
-    calculateEstimatedAltitude(currentTimeUs);
+    //calculateEstimatedAltitude(currentTimeUs);
 }
 
 #ifdef USE_TELEMETRY

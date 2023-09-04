@@ -69,5 +69,8 @@
 
 #define ROUND(x, dig)  ( floor((x) * pow((float)(10), dig) + 0.5f) / pow((float)(10), dig) )
 
+#define CONVERT_PARAMETER_TO_FLOAT(param) (0.001f * param)
+#define CONVERT_PARAMETER_TO_PERCENT(param) (0.01f * param)
+
 
 #endif /* SRC_HW_HW_DEF_H_ */

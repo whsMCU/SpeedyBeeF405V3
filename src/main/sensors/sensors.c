@@ -11,7 +11,10 @@
 #include "gyro.h"
 #include "scheduler/scheduler.h"
 #include "common/time.h"
+
 #include "drivers/accgyro/accgyro.h"
+#include "drivers/accgyro/bmi270.h"
+
 #include "sensors/sensors.h"
 #include "sensors/acceleration.h"
 

@@ -27,7 +27,11 @@
 #include "common/maths.h"
 #include "common/utils.h"
 #include "common/time.h"
+
 #include "fc/runtime_config.h"
+#include "scheduler/tasks.h"
+
+#include "sensors/gyro.h"
 
 
 #if defined(USE_DYN_NOTCH_FILTER)
@@ -41,9 +45,8 @@
 
 //#include "gps.h"
 
-
 #include "core.h"
-#include "hw.h"
+
 
 
 enum {
@@ -85,7 +88,8 @@ static int tryingToArm = ARMING_DELAYED_DISARMED;
 // #ifdef USE_MAG
 //         || (sensors(SENSOR_MAG) && !compassIsCalibrationComplete())
 // #endif
-         ;
+//         ;
+	 return 0;
  }
 
  void resetArmingDisabled(void)
@@ -1106,25 +1110,25 @@ uint8_t calculateThrottlePercentAbs(void)
 //     processRcCommand();
 //}
 
-//void taskGyroSample(timeUs_t currentTimeUs)
-//{
-//    UNUSED(currentTimeUs);
-//    gyroUpdate();
-//    if (pidUpdateCounter % activePidLoopDenom == 0) {
-//        pidUpdateCounter = 0;
-//    }
-//    pidUpdateCounter++;
-//}
-//
-//bool gyroFilterReady(void)
-//{
-//    if (pidUpdateCounter % activePidLoopDenom == 0) {
-//        return true;
-//    } else {
-//        return false;
-//    }
-//}
-//
+void taskGyroSample(timeUs_t currentTimeUs)
+{
+    UNUSED(currentTimeUs);
+    gyroUpdate();
+    if (pidUpdateCounter % activePidLoopDenom == 0) {
+        pidUpdateCounter = 0;
+    }
+    pidUpdateCounter++;
+}
+
+bool gyroFilterReady(void)
+{
+    if (pidUpdateCounter % activePidLoopDenom == 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 //bool pidLoopReady(void)
 //{
 //    if ((pidUpdateCounter % activePidLoopDenom) == (activePidLoopDenom / 2)) {
@@ -1133,10 +1137,10 @@ uint8_t calculateThrottlePercentAbs(void)
 //    return false;
 //}
 
-//void taskFiltering(timeUs_t currentTimeUs)
-//{
-//    gyroFiltering(currentTimeUs);
-//}
+void taskFiltering(timeUs_t currentTimeUs)
+{
+    gyroFiltering(currentTimeUs);
+}
 
 // Function for loop trigger
 void taskMainPidLoop(timeUs_t currentTimeUs)
@@ -1153,10 +1157,10 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     // 3 - subTaskPidSubprocesses()
     //DEBUG_SET(DEBUG_PIDLOOP, 0, micros() - currentTimeUs);
 
-    subTaskRcCommand(currentTimeUs);
-    subTaskPidController(currentTimeUs);
-    subTaskMotorUpdate(currentTimeUs);
-    subTaskPidSubprocesses(currentTimeUs);
+    //subTaskRcCommand(currentTimeUs);
+    //subTaskPidController(currentTimeUs);
+    //subTaskMotorUpdate(currentTimeUs);
+    //subTaskPidSubprocesses(currentTimeUs);
 
     //DEBUG_SET(DEBUG_CYCLETIME, 0, getTaskDeltaTimeUs(TASK_SELF));
     //DEBUG_SET(DEBUG_CYCLETIME, 1, getAverageSystemLoadPercent());

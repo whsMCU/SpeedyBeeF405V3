@@ -29,12 +29,12 @@
 #include "common/utils.h"
 
 //#include "config/config_reset.h"
-#include "config/feature.h"
+//#include "config/feature.h"
 
 #include "drivers/accgyro/bmi270.h"
 
 
-#include "config/config.h"
+//#include "config/config.h"
 #include "fc/runtime_config.h"
 
 
@@ -78,7 +78,7 @@ void accelerometerConfig_init(void)
     accelerometerConfig.acc_hardware = ACC_DEFAULT,
 	accelerometerConfig.acc_high_fsr = false,
 
-    resetRollAndPitchTrims(&accelerometerConfig.accelerometerTrims);
+    //resetRollAndPitchTrims(&accelerometerConfig.accelerometerTrims);
     resetFlightDynamicsTrims(&accelerometerConfig.accZero);
 }
 
@@ -393,7 +393,7 @@ void performAcclerationCalibration(rollAndPitchTrims_t *rollAndPitchTrims)
         resetRollAndPitchTrims(rollAndPitchTrims);
         setConfigCalibrationCompleted();
 
-        saveConfigAndNotify();
+        //saveConfigAndNotify();
     }
 
     accelerationRuntime.calibratingA--;

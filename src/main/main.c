@@ -21,6 +21,13 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "scheduler/tasks.h"
+#include "sensors/sensors.h"
+#include "sensors/barometer.h"
+#include "sensors/compass.h"
+#include "sensors/gyro_init.h"
+
+#include "sensors/adcinternal.h"
 
 /* USER CODE END Includes */
 
@@ -111,7 +118,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	cliMain();
+	  scheduler();
 	//SerialCom();
     /* USER CODE BEGIN 3 */
   }
@@ -157,7 +164,15 @@ void hwInit(void)
 
 void fcInit(void)
 {
+	tasksInitData();
 	cliOpen(_DEF_USB, 57600);
+	Sensor_Init();
+	Baro_Init();
+	compassInit();
+	adcInternalInit();
+	gyroSetTargetLooptime(1);
+
+	tasksInit();
 }
 
 /**

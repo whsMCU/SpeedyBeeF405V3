@@ -29,10 +29,10 @@
 #include "common/maths.h"
 #include "common/filter.h"
 
-#include "config/feature.h"
+//#include "config/feature.h"
 
-#include "config/config.h"
-#include "runtime_config.h"
+//#include "config/config.h"
+#include "fc/runtime_config.h"
 
 #ifdef USE_DYN_NOTCH_FILTER
 #include "dyn_notch_filter.h"
@@ -429,69 +429,96 @@ void gyroUpdate(void)
     }
 }
 
-#define GYRO_FILTER_FUNCTION_NAME filterGyro
-#define GYRO_FILTER_DEBUG_SET(mode, index, value) do { UNUSED(mode); UNUSED(index); UNUSED(value); } while (0)
-#define GYRO_FILTER_AXIS_DEBUG_SET(axis, mode, index, value) do { UNUSED(axis); UNUSED(mode); UNUSED(index); UNUSED(value); } while (0)
-#include "gyro_filter_impl.c"
-#undef GYRO_FILTER_FUNCTION_NAME
-#undef GYRO_FILTER_DEBUG_SET
-#undef GYRO_FILTER_AXIS_DEBUG_SET
+//#define GYRO_FILTER_FUNCTION_NAME filterGyro
+//#define GYRO_FILTER_DEBUG_SET(mode, index, value) do { UNUSED(mode); UNUSED(index); UNUSED(value); } while (0)
+//#define GYRO_FILTER_AXIS_DEBUG_SET(axis, mode, index, value) do { UNUSED(axis); UNUSED(mode); UNUSED(index); UNUSED(value); } while (0)
+//#include "gyro_filter_impl.c"
+//#undef GYRO_FILTER_FUNCTION_NAME
+//#undef GYRO_FILTER_DEBUG_SET
+//#undef GYRO_FILTER_AXIS_DEBUG_SET
 
-// #define GYRO_FILTER_FUNCTION_NAME filterGyroDebug
-// #define GYRO_FILTER_DEBUG_SET DEBUG_SET
-// #define GYRO_FILTER_AXIS_DEBUG_SET(axis, mode, index, value) if (axis == (int)gyro.gyroDebugAxis) DEBUG_SET(mode, index, value)
-// #include "gyro_filter_impl.c"
-// #undef GYRO_FILTER_FUNCTION_NAME
-// #undef GYRO_FILTER_DEBUG_SET
-// #undef GYRO_FILTER_AXIS_DEBUG_SET
+static void filterGyro(void)
+{
+    for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+        // DEBUG_GYRO_RAW records the raw value read from the sensor (not zero offset, not scaled)
+        //GYRO_FILTER_DEBUG_SET(DEBUG_GYRO_RAW, axis, gyro.rawSensorDev->gyroADCRaw[axis]);
+
+        // DEBUG_GYRO_SCALED records the unfiltered, scaled gyro output
+        // If downsampling than the last value in the sample group will be output
+        //GYRO_FILTER_DEBUG_SET(DEBUG_GYRO_SCALED, axis, lrintf(gyro.gyroADC[axis]));
+
+        // DEBUG_GYRO_SAMPLE(0) Record the pre-downsample value for the selected debug axis (same as DEBUG_GYRO_SCALED)
+        //GYRO_FILTER_AXIS_DEBUG_SET(axis, DEBUG_GYRO_SAMPLE, 0, lrintf(gyro.gyroADC[axis]));
+
+        // downsample the individual gyro samples
+        float gyroADCf = 0;
+        if (gyro.downsampleFilterEnabled) {
+            // using gyro lowpass 2 filter for downsampling
+            gyroADCf = gyro.sampleSum[axis];
+        } else {
+            // using simple average for downsampling
+            if (gyro.sampleCount) {
+                gyroADCf = gyro.sampleSum[axis] / gyro.sampleCount;
+            }
+            gyro.sampleSum[axis] = 0;
+        }
+
+        // DEBUG_GYRO_SAMPLE(1) Record the post-downsample value for the selected debug axis
+        //GYRO_FILTER_AXIS_DEBUG_SET(axis, DEBUG_GYRO_SAMPLE, 1, lrintf(gyroADCf));
+
+#ifdef USE_RPM_FILTER
+        gyroADCf = rpmFilterGyro(axis, gyroADCf);
+#endif
+
+        // DEBUG_GYRO_SAMPLE(2) Record the post-RPM Filter value for the selected debug axis
+        //GYRO_FILTER_AXIS_DEBUG_SET(axis, DEBUG_GYRO_SAMPLE, 2, lrintf(gyroADCf));
+
+        // apply static notch filters and software lowpass filters
+        gyroADCf = gyro.notchFilter1ApplyFn((filter_t *)&gyro.notchFilter1[axis], gyroADCf);
+        gyroADCf = gyro.notchFilter2ApplyFn((filter_t *)&gyro.notchFilter2[axis], gyroADCf);
+        gyroADCf = gyro.lowpassFilterApplyFn((filter_t *)&gyro.lowpassFilter[axis], gyroADCf);
+
+        // DEBUG_GYRO_SAMPLE(3) Record the post-static notch and lowpass filter value for the selected debug axis
+        //GYRO_FILTER_AXIS_DEBUG_SET(axis, DEBUG_GYRO_SAMPLE, 3, lrintf(gyroADCf));
+
+#ifdef USE_DYN_NOTCH_FILTER
+        if (isDynNotchActive()) {
+            if (axis == gyro.gyroDebugAxis) {
+                //GYRO_FILTER_DEBUG_SET(DEBUG_FFT, 0, lrintf(gyroADCf));
+                //GYRO_FILTER_DEBUG_SET(DEBUG_FFT_FREQ, 3, lrintf(gyroADCf));
+                //GYRO_FILTER_DEBUG_SET(DEBUG_DYN_LPF, 0, lrintf(gyroADCf));
+            }
+
+            dynNotchPush(axis, gyroADCf);
+            gyroADCf = dynNotchFilter(axis, gyroADCf);
+
+            if (axis == gyro.gyroDebugAxis) {
+                //GYRO_FILTER_DEBUG_SET(DEBUG_FFT, 1, lrintf(gyroADCf));
+                //GYRO_FILTER_DEBUG_SET(DEBUG_DYN_LPF, 3, lrintf(gyroADCf));
+            }
+        }
+#endif
+
+        // DEBUG_GYRO_FILTERED records the scaled, filtered, after all software filtering has been applied.
+        //GYRO_FILTER_DEBUG_SET(DEBUG_GYRO_FILTERED, axis, lrintf(gyroADCf));
+
+        gyro.gyroADCf[axis] = gyroADCf;
+    }
+    gyro.sampleCount = 0;
+}
+
 
 void gyroFiltering(uint32_t currentTimeUs)
 {
-    //if (gyro.gyroDebugMode == DEBUG_NONE) {
-        filterGyro();
-    //} else {
-    //    filterGyroDebug();
-    //}
+
+    filterGyro();
+
 
 #ifdef USE_DYN_NOTCH_FILTER
     if (isDynNotchActive()) {
         dynNotchUpdate();
     }
 #endif
-
-//     if (gyro.useDualGyroDebugging) {
-//         switch (gyro.gyroToUse) {
-//         case GYRO_CONFIG_USE_GYRO_1:
-//             DEBUG_SET(DEBUG_DUAL_GYRO_RAW, 0, gyro.gyroSensor1.gyroDev.gyroADCRaw[X]);
-//             DEBUG_SET(DEBUG_DUAL_GYRO_RAW, 1, gyro.gyroSensor1.gyroDev.gyroADCRaw[Y]);
-//             DEBUG_SET(DEBUG_DUAL_GYRO_SCALED, 0, lrintf(gyro.gyroSensor1.gyroDev.gyroADC[X] * gyro.gyroSensor1.gyroDev.scale));
-//             DEBUG_SET(DEBUG_DUAL_GYRO_SCALED, 1, lrintf(gyro.gyroSensor1.gyroDev.gyroADC[Y] * gyro.gyroSensor1.gyroDev.scale));
-//             break;
-
-// #ifdef USE_MULTI_GYRO
-//         case GYRO_CONFIG_USE_GYRO_2:
-//             DEBUG_SET(DEBUG_DUAL_GYRO_RAW, 2, gyro.gyroSensor2.gyroDev.gyroADCRaw[X]);
-//             DEBUG_SET(DEBUG_DUAL_GYRO_RAW, 3, gyro.gyroSensor2.gyroDev.gyroADCRaw[Y]);
-//             DEBUG_SET(DEBUG_DUAL_GYRO_SCALED, 2, lrintf(gyro.gyroSensor2.gyroDev.gyroADC[X] * gyro.gyroSensor2.gyroDev.scale));
-//             DEBUG_SET(DEBUG_DUAL_GYRO_SCALED, 3, lrintf(gyro.gyroSensor2.gyroDev.gyroADC[Y] * gyro.gyroSensor2.gyroDev.scale));
-//             break;
-
-//     case GYRO_CONFIG_USE_GYRO_BOTH:
-//             DEBUG_SET(DEBUG_DUAL_GYRO_RAW, 0, gyro.gyroSensor1.gyroDev.gyroADCRaw[X]);
-//             DEBUG_SET(DEBUG_DUAL_GYRO_RAW, 1, gyro.gyroSensor1.gyroDev.gyroADCRaw[Y]);
-//             DEBUG_SET(DEBUG_DUAL_GYRO_RAW, 2, gyro.gyroSensor2.gyroDev.gyroADCRaw[X]);
-//             DEBUG_SET(DEBUG_DUAL_GYRO_RAW, 3, gyro.gyroSensor2.gyroDev.gyroADCRaw[Y]);
-//             DEBUG_SET(DEBUG_DUAL_GYRO_SCALED, 0, lrintf(gyro.gyroSensor1.gyroDev.gyroADC[X] * gyro.gyroSensor1.gyroDev.scale));
-//             DEBUG_SET(DEBUG_DUAL_GYRO_SCALED, 1, lrintf(gyro.gyroSensor1.gyroDev.gyroADC[Y] * gyro.gyroSensor1.gyroDev.scale));
-//             DEBUG_SET(DEBUG_DUAL_GYRO_SCALED, 2, lrintf(gyro.gyroSensor2.gyroDev.gyroADC[X] * gyro.gyroSensor2.gyroDev.scale));
-//             DEBUG_SET(DEBUG_DUAL_GYRO_SCALED, 3, lrintf(gyro.gyroSensor2.gyroDev.gyroADC[Y] * gyro.gyroSensor2.gyroDev.scale));
-//             DEBUG_SET(DEBUG_DUAL_GYRO_DIFF, 0, lrintf((gyro.gyroSensor1.gyroDev.gyroADC[X] * gyro.gyroSensor1.gyroDev.scale) - (gyro.gyroSensor2.gyroDev.gyroADC[X] * gyro.gyroSensor2.gyroDev.scale)));
-//             DEBUG_SET(DEBUG_DUAL_GYRO_DIFF, 1, lrintf((gyro.gyroSensor1.gyroDev.gyroADC[Y] * gyro.gyroSensor1.gyroDev.scale) - (gyro.gyroSensor2.gyroDev.gyroADC[Y] * gyro.gyroSensor2.gyroDev.scale)));
-//             DEBUG_SET(DEBUG_DUAL_GYRO_DIFF, 2, lrintf((gyro.gyroSensor1.gyroDev.gyroADC[Z] * gyro.gyroSensor1.gyroDev.scale) - (gyro.gyroSensor2.gyroDev.gyroADC[Z] * gyro.gyroSensor2.gyroDev.scale)));
-//             break;
-// #endif
-//         }
-//     }
 
 #ifdef USE_GYRO_OVERFLOW_CHECK
     if (gyroConfig()->checkOverflow && !gyro.gyroHasOverflowProtection) {

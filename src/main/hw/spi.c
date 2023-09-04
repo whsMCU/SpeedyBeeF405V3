@@ -7,6 +7,7 @@
 
 
 #include "spi.h"
+#include "drivers/accgyro/bmi270.h"
 
 
 typedef struct
