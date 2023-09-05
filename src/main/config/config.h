@@ -53,6 +53,8 @@ typedef struct systemConfig_s {
     uint8_t enableStickArming; // boolean that determines whether stick arming can be used
 } systemConfig_t;
 
+extern systemConfig_t systemConfig;
+
 struct pidProfile_s;
 extern struct pidProfile_s *currentPidProfile;
 

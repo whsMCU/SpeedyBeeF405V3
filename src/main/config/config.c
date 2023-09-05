@@ -38,9 +38,9 @@
 //#include "drivers/motor.h"
 //#include "drivers/system.h"
 
-//#include "controlrate_profile.h"
+#include "fc/controlrate_profile.h"
 #include "fc/core.h"
-//#include "rc.h"
+#include "fc/rc.h"
 //#include "fc/rc_adjustments.h"
 #include "fc/rc_controls.h"
 #include "fc/runtime_config.h"
@@ -55,7 +55,7 @@
 //#include "flight/servos.h"
 //#include "flight/position.h"
 
-//#include "msp/msp_box.h"
+#include "msp/msp_box.h"
 
 //#include "osd/osd.h"
 
@@ -64,7 +64,7 @@
 #include "scheduler/scheduler.h"
 
 #include "sensors/acceleration.h"
-//#include "sensors/battery.h"
+#include "sensors/battery.h"
 #include "sensors/compass.h"
 #include "sensors/gyro.h"
 
@@ -76,7 +76,7 @@ static bool rebootRequired = false;  // set if a config change requires a reboot
 
 static bool eepromWriteInProgress = false;
 
-pidProfile_t *currentPidProfile;
+//pidProfile_t *currentPidProfile;
 
 #ifndef RX_SPI_DEFAULT_PROTOCOL
 #define RX_SPI_DEFAULT_PROTOCOL 0
@@ -95,8 +95,8 @@ pilotConfig_t pilotConfig;
 static void pilotConfig_Init(void);
 void pilotConfig_Init(void)
 {
-	pilotConfig.name[MAX_NAME_LENGTH + 1] = { 0 };
-	pilotConfig.displayName[MAX_NAME_LENGTH + 1] = { 0 };
+	pilotConfig.name[MAX_NAME_LENGTH + 1] = 0;
+	pilotConfig.displayName[MAX_NAME_LENGTH + 1] = 0;
 }
 
 systemConfig_t systemConfig;
@@ -110,7 +110,7 @@ void systemConfig_Init(void)
 	systemConfig.rateProfile6PosSwitch = false;
 	systemConfig.cpu_overclock = DEFAULT_CPU_OVERCLOCK;
 	systemConfig.powerOnArmingGraceTime = 5;
-	systemConfig.boardIdentifier = TARGET_BOARD_IDENTIFIER;
+	systemConfig.boardIdentifier[sizeof(TARGET_BOARD_IDENTIFIER) + 1] = 0;
 	systemConfig.hseMhz = SYSTEM_HSE_VALUE;  // Only used for F4 and G4 targets
 	systemConfig.configurationState = CONFIGURATION_STATE_DEFAULTS_BARE;
 	systemConfig.enableStickArming = false;
@@ -128,7 +128,7 @@ uint8_t getCurrentPidProfileIndex(void)
 
 static void loadPidProfile(void)
 {
-    currentPidProfile = pidProfilesMutable(systemConfig.pidProfileIndex);
+    //currentPidProfile = pidProfilesMutable(systemConfig.pidProfileIndex);
 }
 
 uint8_t getCurrentControlRateProfileIndex(void)
@@ -143,7 +143,7 @@ uint8_t getCurrentControlRateProfileIndex(void)
 
 void resetConfig(void)
 {
-    pgResetAll();
+    //pgResetAll();
 
 #if defined(USE_TARGET_CONFIG)
     targetConfiguration();
@@ -171,7 +171,7 @@ static void activateConfig(void)
     accInitFilters();
 #endif
 
-    imuConfigure(throttleCorrectionConfig()->throttle_correction_angle, throttleCorrectionConfig()->throttle_correction_value);
+    imuConfigure(throttleCorrectionConfig.throttle_correction_angle, throttleCorrectionConfig.throttle_correction_value);
 
 #if defined(USE_LED_STRIP_STATUS_MODE)
     reevaluateLedConfig();
@@ -189,14 +189,14 @@ static void adjustFilterLimit(uint16_t *parm, uint16_t resetValue)
 
 static void validateAndFixRatesSettings(void)
 {
-    for (unsigned profileIndex = 0; profileIndex < CONTROL_RATE_PROFILE_COUNT; profileIndex++) {
-        const ratesType_e ratesType = controlRateProfilesMutable(profileIndex)->rates_type;
-        for (unsigned axis = FD_ROLL; axis <= FD_YAW; axis++) {
-            controlRateProfilesMutable(profileIndex)->rcRates[axis] = constrain(controlRateProfilesMutable(profileIndex)->rcRates[axis], 0, ratesSettingLimits[ratesType].rc_rate_limit);
-            controlRateProfilesMutable(profileIndex)->rates[axis] = constrain(controlRateProfilesMutable(profileIndex)->rates[axis], 0, ratesSettingLimits[ratesType].srate_limit);
-            controlRateProfilesMutable(profileIndex)->rcExpo[axis] = constrain(controlRateProfilesMutable(profileIndex)->rcExpo[axis], 0, ratesSettingLimits[ratesType].expo_limit);
-        }
-    }
+//    for (unsigned profileIndex = 0; profileIndex < CONTROL_RATE_PROFILE_COUNT; profileIndex++) {
+//        const ratesType_e ratesType = controlRateProfilesMutable(profileIndex)->rates_type;
+//        for (unsigned axis = FD_ROLL; axis <= FD_YAW; axis++) {
+//            controlRateProfilesMutable(profileIndex)->rcRates[axis] = constrain(controlRateProfilesMutable(profileIndex)->rcRates[axis], 0, ratesSettingLimits[ratesType].rc_rate_limit);
+//            controlRateProfilesMutable(profileIndex)->rates[axis] = constrain(controlRateProfilesMutable(profileIndex)->rates[axis], 0, ratesSettingLimits[ratesType].srate_limit);
+//            controlRateProfilesMutable(profileIndex)->rcExpo[axis] = constrain(controlRateProfilesMutable(profileIndex)->rcExpo[axis], 0, ratesSettingLimits[ratesType].expo_limit);
+//        }
+//    }
 }
 
 static void validateAndFixPositionConfig(void)
@@ -214,16 +214,16 @@ static void validateAndFixConfig(void)
     // This check will be gone when motor/servo mixers are loaded dynamically
     // by configurator as a part of configuration procedure.
 
-    mixerMode_e mixerMode = mixerConfigMutable()->mixerMode;
+//    mixerMode_e mixerMode = mixerConfigMutable()->mixerMode;
 
-    if (!(mixerMode == MIXER_CUSTOM || mixerMode == MIXER_CUSTOM_AIRPLANE || mixerMode == MIXER_CUSTOM_TRI)) {
-        if (mixers[mixerMode].motorCount && mixers[mixerMode].motor == NULL)
-            mixerConfigMutable()->mixerMode = MIXER_CUSTOM;
+//    if (!(mixerMode == MIXER_CUSTOM || mixerMode == MIXER_CUSTOM_AIRPLANE || mixerMode == MIXER_CUSTOM_TRI)) {
+//        if (mixers[mixerMode].motorCount && mixers[mixerMode].motor == NULL)
+//            mixerConfigMutable()->mixerMode = MIXER_CUSTOM;
 #ifdef USE_SERVOS
         if (mixers[mixerMode].useServo && servoMixers[mixerMode].servoRuleCount == 0)
             mixerConfigMutable()->mixerMode = MIXER_CUSTOM_AIRPLANE;
 #endif
-    }
+//    }
 #endif
 
 //    if (!isSerialConfigValid(serialConfig())) {
@@ -244,18 +244,18 @@ static void validateAndFixConfig(void)
         featureDisableImmediate(FEATURE_GPS);
     }
 
-    for (unsigned i = 0; i < PID_PROFILE_COUNT; i++) {
+//    for (unsigned i = 0; i < PID_PROFILE_COUNT; i++) {
         // Fix filter settings to handle cases where an older configurator was used that
         // allowed higher cutoff limits from previous firmware versions.
-        adjustFilterLimit(&pidProfilesMutable(i)->dterm_lpf1_static_hz, LPF_MAX_HZ);
-        adjustFilterLimit(&pidProfilesMutable(i)->dterm_lpf2_static_hz, LPF_MAX_HZ);
-        adjustFilterLimit(&pidProfilesMutable(i)->dterm_notch_hz, LPF_MAX_HZ);
-        adjustFilterLimit(&pidProfilesMutable(i)->dterm_notch_cutoff, 0);
+//        adjustFilterLimit(&pidProfilesMutable(i)->dterm_lpf1_static_hz, LPF_MAX_HZ);
+//        adjustFilterLimit(&pidProfilesMutable(i)->dterm_lpf2_static_hz, LPF_MAX_HZ);
+//        adjustFilterLimit(&pidProfilesMutable(i)->dterm_notch_hz, LPF_MAX_HZ);
+//        adjustFilterLimit(&pidProfilesMutable(i)->dterm_notch_cutoff, 0);
 
         // Prevent invalid notch cutoff
-        if (pidProfilesMutable(i)->dterm_notch_cutoff >= pidProfilesMutable(i)->dterm_notch_hz) {
-            pidProfilesMutable(i)->dterm_notch_hz = 0;
-        }
+//        if (pidProfilesMutable(i)->dterm_notch_cutoff >= pidProfilesMutable(i)->dterm_notch_hz) {
+//            pidProfilesMutable(i)->dterm_notch_hz = 0;
+//        }
 
 #ifdef USE_DYN_LPF
         //Prevent invalid dynamic lowpass
@@ -264,27 +264,27 @@ static void validateAndFixConfig(void)
         }
 #endif
 
-        if (pidProfilesMutable(i)->motor_output_limit > 100 || pidProfilesMutable(i)->motor_output_limit == 0) {
-            pidProfilesMutable(i)->motor_output_limit = 100;
-        }
+//        if (pidProfilesMutable(i)->motor_output_limit > 100 || pidProfilesMutable(i)->motor_output_limit == 0) {
+//            pidProfilesMutable(i)->motor_output_limit = 100;
+//        }
 
-        if (pidProfilesMutable(i)->auto_profile_cell_count > MAX_AUTO_DETECT_CELL_COUNT || pidProfilesMutable(i)->auto_profile_cell_count < AUTO_PROFILE_CELL_COUNT_CHANGE) {
-            pidProfilesMutable(i)->auto_profile_cell_count = AUTO_PROFILE_CELL_COUNT_STAY;
-        }
+//        if (pidProfilesMutable(i)->auto_profile_cell_count > MAX_AUTO_DETECT_CELL_COUNT || pidProfilesMutable(i)->auto_profile_cell_count < AUTO_PROFILE_CELL_COUNT_CHANGE) {
+//            pidProfilesMutable(i)->auto_profile_cell_count = AUTO_PROFILE_CELL_COUNT_STAY;
+//        }
 
         // If the d_min value for any axis is >= the D gain then reset d_min to 0 for consistent Configurator behavior
-        for (unsigned axis = 0; axis <= FD_YAW; axis++) {
-            if (pidProfilesMutable(i)->d_min[axis] > pidProfilesMutable(i)->pid[axis].D) {
-                pidProfilesMutable(i)->d_min[axis] = 0;
-            }
-        }
+//        for (unsigned axis = 0; axis <= FD_YAW; axis++) {
+//            if (pidProfilesMutable(i)->d_min[axis] > pidProfilesMutable(i)->pid[axis].D) {
+//                pidProfilesMutable(i)->d_min[axis] = 0;
+//            }
+//        }
 
 #if defined(USE_BATTERY_VOLTAGE_SAG_COMPENSATION)
         if (batteryConfig()->voltageMeterSource != VOLTAGE_METER_ADC) {
             pidProfilesMutable(i)->vbat_sag_compensation = 0;
         }
 #endif
-    }
+//    }
 
 //    if (motorConfig()->dev.motorPwmProtocol == PWM_TYPE_BRUSHED) {
 //        featureDisableImmediate(FEATURE_3D);
@@ -309,10 +309,10 @@ static void validateAndFixConfig(void)
 #endif
 
 #ifdef USE_ACC
-    if (accelerometerConfig()->accZero.values.roll != 0 ||
-        accelerometerConfig()->accZero.values.pitch != 0 ||
-        accelerometerConfig()->accZero.values.yaw != 0) {
-        accelerometerConfigMutable()->accZero.values.calibrationCompleted = 1;
+    if (accelerometerConfig.accZero.values.roll != 0 ||
+        accelerometerConfig.accZero.values.pitch != 0 ||
+        accelerometerConfig.accZero.values.yaw != 0) {
+        accelerometerConfig.accZero.values.calibrationCompleted = 1;
     }
 #endif // USE_ACC
 
@@ -344,20 +344,20 @@ static void validateAndFixConfig(void)
 
 #if defined(USE_ADC)
     if (featureIsConfigured(FEATURE_RSSI_ADC)) {
-        rxConfigMutable()->rssi_channel = 0;
-        rxConfigMutable()->rssi_src_frame_errors = false;
+        rxConfig.rssi_channel = 0;
+        rxConfig.rssi_src_frame_errors = false;
     } else
 #endif
-    if (rxConfigMutable()->rssi_channel
+    if (rxConfig.rssi_channel
 #if defined(USE_PWM) || defined(USE_PPM)
         || featureIsConfigured(FEATURE_RX_PPM) || featureIsConfigured(FEATURE_RX_PARALLEL_PWM)
 #endif
         ) {
-        rxConfigMutable()->rssi_src_frame_errors = false;
+        rxConfig.rssi_src_frame_errors = false;
     }
 
     if (
-        featureIsConfigured(FEATURE_3D) || !featureIsConfigured(FEATURE_GPS) || mixerModeIsFixedWing(mixerConfig()->mixerMode)
+        featureIsConfigured(FEATURE_3D) || !featureIsConfigured(FEATURE_GPS)// || mixerModeIsFixedWing(mixerConfig()->mixerMode)
 #if !defined(USE_GPS) || !defined(USE_GPS_RESCUE)
         || true
 #endif
@@ -381,7 +381,7 @@ static void validateAndFixConfig(void)
 #endif
 
     for (int i = 0; i < MAX_MODE_ACTIVATION_CONDITION_COUNT; i++) {
-        const modeActivationCondition_t *mac = modeActivationConditions(i);
+        const modeActivationCondition_t *mac = &modeActivationConditions[i];
 
         if (mac->linkedTo) {
             if (mac->modeId == BOXARM || isModeActivationConditionLinked(mac->linkedTo)) {
@@ -398,11 +398,11 @@ static void validateAndFixConfig(void)
 #endif
 
 #ifdef USE_ADC
-    adcConfigMutable()->vbat.enabled = (batteryConfig()->voltageMeterSource == VOLTAGE_METER_ADC);
-    adcConfigMutable()->current.enabled = (batteryConfig()->currentMeterSource == CURRENT_METER_ADC);
+    adcConfig.vbat.enabled = (batteryConfig.voltageMeterSource == VOLTAGE_METER_ADC);
+    adcConfig.current.enabled = (batteryConfig.currentMeterSource == CURRENT_METER_ADC);
 
     // The FrSky D SPI RX sends RSSI_ADC_PIN (if configured) as A2
-    adcConfigMutable()->rssi.enabled = featureIsEnabled(FEATURE_RSSI_ADC);
+    adcConfig.rssi.enabled = featureIsEnabled(FEATURE_RSSI_ADC);
 #ifdef USE_RX_SPI
     adcConfigMutable()->rssi.enabled |= (featureIsEnabled(FEATURE_RX_SPI) && rxSpiConfig()->rx_spi_protocol == RX_SPI_FRSKY_D);
 #endif
@@ -569,10 +569,10 @@ static void validateAndFixConfig(void)
 
     // validate that the minimum battery cell voltage is less than the maximum cell voltage
     // reset to defaults if not
-    if (batteryConfig()->vbatmincellvoltage >=  batteryConfig()->vbatmaxcellvoltage) {
-        batteryConfigMutable()->vbatmincellvoltage = VBAT_CELL_VOLTAGE_DEFAULT_MIN;
-        batteryConfigMutable()->vbatmaxcellvoltage = VBAT_CELL_VOLTAGE_DEFAULT_MAX;
-    }
+//    if (batteryConfig()->vbatmincellvoltage >=  batteryConfig()->vbatmaxcellvoltage) {
+//        batteryConfigMutable()->vbatmincellvoltage = VBAT_CELL_VOLTAGE_DEFAULT_MIN;
+//        batteryConfigMutable()->vbatmaxcellvoltage = VBAT_CELL_VOLTAGE_DEFAULT_MAX;
+//    }
 
 #ifdef USE_MSP_DISPLAYPORT
     // validate that displayport_msp_serial is referencing a valid UART that actually has MSP enabled
@@ -600,19 +600,19 @@ void validateAndFixGyroConfig(void)
 {
     // Fix gyro filter settings to handle cases where an older configurator was used that
     // allowed higher cutoff limits from previous firmware versions.
-    adjustFilterLimit(&gyroConfigMutable()->gyro_lpf1_static_hz, LPF_MAX_HZ);
-    adjustFilterLimit(&gyroConfigMutable()->gyro_lpf2_static_hz, LPF_MAX_HZ);
-    adjustFilterLimit(&gyroConfigMutable()->gyro_soft_notch_hz_1, LPF_MAX_HZ);
-    adjustFilterLimit(&gyroConfigMutable()->gyro_soft_notch_cutoff_1, 0);
-    adjustFilterLimit(&gyroConfigMutable()->gyro_soft_notch_hz_2, LPF_MAX_HZ);
-    adjustFilterLimit(&gyroConfigMutable()->gyro_soft_notch_cutoff_2, 0);
+    adjustFilterLimit(&gyroConfig.gyro_lpf1_static_hz, LPF_MAX_HZ);
+    adjustFilterLimit(&gyroConfig.gyro_lpf2_static_hz, LPF_MAX_HZ);
+    adjustFilterLimit(&gyroConfig.gyro_soft_notch_hz_1, LPF_MAX_HZ);
+    adjustFilterLimit(&gyroConfig.gyro_soft_notch_cutoff_1, 0);
+    adjustFilterLimit(&gyroConfig.gyro_soft_notch_hz_2, LPF_MAX_HZ);
+    adjustFilterLimit(&gyroConfig.gyro_soft_notch_cutoff_2, 0);
 
     // Prevent invalid notch cutoff
-    if (gyroConfig()->gyro_soft_notch_cutoff_1 >= gyroConfig()->gyro_soft_notch_hz_1) {
-        gyroConfigMutable()->gyro_soft_notch_hz_1 = 0;
+    if (gyroConfig.gyro_soft_notch_cutoff_1 >= gyroConfig.gyro_soft_notch_hz_1) {
+        gyroConfig.gyro_soft_notch_hz_1 = 0;
     }
-    if (gyroConfig()->gyro_soft_notch_cutoff_2 >= gyroConfig()->gyro_soft_notch_hz_2) {
-        gyroConfigMutable()->gyro_soft_notch_hz_2 = 0;
+    if (gyroConfig.gyro_soft_notch_cutoff_2 >= gyroConfig.gyro_soft_notch_hz_2) {
+        gyroConfig.gyro_soft_notch_hz_2 = 0;
     }
 #ifdef USE_DYN_LPF
     //Prevent invalid dynamic lowpass filter
@@ -701,14 +701,14 @@ void validateAndFixGyroConfig(void)
     }
 #endif // USE_BLACKBOX
 
-    if (systemConfig()->activeRateProfile >= CONTROL_RATE_PROFILE_COUNT) {
-        systemConfigMutable()->activeRateProfile = 0;
-    }
+//    if (systemConfig.activeRateProfile >= CONTROL_RATE_PROFILE_COUNT) {
+//        systemConfig.activeRateProfile = 0;
+//    }
     loadControlRateProfile();
 
-    if (systemConfig()->pidProfileIndex >= PID_PROFILE_COUNT) {
-        systemConfigMutable()->pidProfileIndex = 0;
-    }
+//    if (systemConfig.pidProfileIndex >= PID_PROFILE_COUNT) {
+//        systemConfig.pidProfileIndex = 0;
+//    }
     loadPidProfile();
 }
 
@@ -717,9 +717,10 @@ bool readEEPROM(void)
     suspendRxSignal();
 
     // Sanity check, read flash
-    bool success = loadEEPROM();
+    bool success = true;// = loadEEPROM();
 
     featureInit();
+    throttleCorrectionConfig_Init();
 
     validateAndFixConfig();
 
@@ -736,7 +737,7 @@ void writeUnmodifiedConfigToEEPROM(void)
 
     suspendRxSignal();
     eepromWriteInProgress = true;
-    writeConfigToEEPROM();
+    //writeConfigToEEPROM();
     eepromWriteInProgress = false;
     resumeRxSignal();
     configIsDirty = false;
@@ -747,7 +748,7 @@ void writeEEPROM(void)
 #ifdef USE_RX_SPI
     rxSpiStop(); // some rx spi protocols use hardware timer, which needs to be stopped before writing to eeprom
 #endif
-    systemConfigMutable()->configurationState = CONFIGURATION_STATE_CONFIGURED;
+    systemConfig.configurationState = CONFIGURATION_STATE_CONFIGURED;
 
     writeUnmodifiedConfigToEEPROM();
 }
@@ -774,10 +775,10 @@ bool resetEEPROM(bool useCustomDefaults)
 
 void ensureEEPROMStructureIsValid(void)
 {
-    if (isEEPROMStructureValid()) {
-        return;
-    }
-    resetEEPROM(false);
+//    if (isEEPROMStructureValid()) {
+//        return;
+//    }
+//    resetEEPROM(false);
 }
 
 void saveConfigAndNotify(void)
@@ -830,21 +831,21 @@ void changePidProfile(uint8_t pidProfileIndex)
     // The config switch will cause a big enough delay in the current task to upset the scheduler
     schedulerIgnoreTaskExecTime();
 
-    if (pidProfileIndex < PID_PROFILE_COUNT) {
-        systemConfigMutable()->pidProfileIndex = pidProfileIndex;
-        loadPidProfile();
-
-        pidInit(currentPidProfile);
-        //initEscEndpoints();
-        //mixerInitProfile();
-    }
+//    if (pidProfileIndex < PID_PROFILE_COUNT) {
+//        systemConfig.pidProfileIndex = pidProfileIndex;
+//        loadPidProfile();
+//
+//        //pidInit(currentPidProfile);
+//        //initEscEndpoints();
+//        //mixerInitProfile();
+//    }
 
     //beeperConfirmationBeeps(pidProfileIndex + 1);
 }
 
 bool isSystemConfigured(void)
 {
-    return systemConfig()->configurationState == CONFIGURATION_STATE_CONFIGURED;
+    return systemConfig.configurationState == CONFIGURATION_STATE_CONFIGURED;
 }
 
 void setRebootRequired(void)

@@ -26,7 +26,6 @@
 #include "sensors/sensors.h"
 #include "drivers/sensor.h"
 #include "drivers/accgyro/accgyro.h"
-//#include "pg/pg.h"
 #include "common/time.h"
 
 // Type of magnetometer used/detected

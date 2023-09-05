@@ -22,11 +22,15 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "scheduler/tasks.h"
+
+#include "config/config.h"
+
+#include "flight/imu.h"
+
 #include "sensors/sensors.h"
 #include "sensors/barometer.h"
 #include "sensors/compass.h"
 #include "sensors/gyro_init.h"
-
 #include "sensors/adcinternal.h"
 
 /* USER CODE END Includes */
@@ -166,13 +170,18 @@ void fcInit(void)
 {
 	tasksInitData();
 	cliOpen(_DEF_USB, 57600);
+
+	readEEPROM();
+
 	Sensor_Init();
 	Baro_Init();
 	compassInit();
 	adcInternalInit();
 	gyroSetTargetLooptime(1);
 	gyroInitFilters();
-
+	imuInit();
+	//rxInit();
+	//batteryInit(); // always needs doing, regardless of features.
 	tasksInit();
 }
 

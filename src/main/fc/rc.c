@@ -22,19 +22,17 @@
 #include <stdint.h>
 #include <math.h>
 
-//#include "build/debug.h"
-
 #include "common/axis.h"
 #include "common/utils.h"
 
 #include "config/config.h"
 #include "config/feature.h"
 
-//#include "fc/controlrate_profile.h"
+#include "fc/controlrate_profile.h"
 #include "fc/core.h"
 #include "fc/rc.h"
 #include "fc/rc_controls.h"
-//#include "fc/rc_modes.h"
+#include "fc/rc_modes.h"
 #include "fc/runtime_config.h"
 
 //#include "flight/failsafe.h"
@@ -153,7 +151,7 @@ static int16_t rcLookupThrottle(int32_t tmp)
 }
 
 #define SETPOINT_RATE_LIMIT 1998
-STATIC_ASSERT(CONTROL_RATE_CONFIG_RATE_LIMIT_MAX <= SETPOINT_RATE_LIMIT, CONTROL_RATE_CONFIG_RATE_LIMIT_MAX_too_large);
+//STATIC_ASSERT(CONTROL_RATE_CONFIG_RATE_LIMIT_MAX <= SETPOINT_RATE_LIMIT, CONTROL_RATE_CONFIG_RATE_LIMIT_MAX_too_large);
 
 #define RC_RATE_INCREMENTAL 14.54f
 
@@ -247,10 +245,10 @@ static void scaleRawSetpointToFpvCamAngle(void)
     static float cosFactor = 1.0;
     static float sinFactor = 0.0;
 
-    if (lastFpvCamAngleDegrees != rxConfig()->fpvCamAngleDegrees) {
-        lastFpvCamAngleDegrees = rxConfig()->fpvCamAngleDegrees;
-        cosFactor = cos_approx(rxConfig()->fpvCamAngleDegrees * RAD);
-        sinFactor = sin_approx(rxConfig()->fpvCamAngleDegrees * RAD);
+    if (lastFpvCamAngleDegrees != rxConfig.fpvCamAngleDegrees) {
+        lastFpvCamAngleDegrees = rxConfig.fpvCamAngleDegrees;
+        cosFactor = cos_approx(rxConfig.fpvCamAngleDegrees * RAD);
+        sinFactor = sin_approx(rxConfig.fpvCamAngleDegrees * RAD);
     }
 
     float roll = rawSetpoint[ROLL];
@@ -269,7 +267,7 @@ static void checkForThrottleErrorResetState(uint16_t rxRefreshRate)
 
     const int rxRefreshRateMs = rxRefreshRate / 1000;
     const int indexMax = constrain(THROTTLE_DELTA_MS / rxRefreshRateMs, 1, THROTTLE_BUFFER_MAX);
-    const int16_t throttleVelocityThreshold = (featureIsEnabled(FEATURE_3D)) ? currentPidProfile->itermThrottleThreshold / 2 : currentPidProfile->itermThrottleThreshold;
+    //const int16_t throttleVelocityThreshold = (featureIsEnabled(FEATURE_3D)) ? currentPidProfile->itermThrottleThreshold / 2 : currentPidProfile->itermThrottleThreshold;
 
     rcCommandThrottlePrevious[index++] = rcCommand[THROTTLE];
     if (index >= indexMax) {
@@ -278,13 +276,13 @@ static void checkForThrottleErrorResetState(uint16_t rxRefreshRate)
 
     const int16_t rcCommandSpeed = rcCommand[THROTTLE] - rcCommandThrottlePrevious[index];
 
-    if (currentPidProfile->antiGravityMode == ANTI_GRAVITY_STEP) {
-        if (ABS(rcCommandSpeed) > throttleVelocityThreshold) {
-            pidSetItermAccelerator(CONVERT_PARAMETER_TO_FLOAT(currentPidProfile->itermAcceleratorGain));
-        } else {
-            pidSetItermAccelerator(0.0f);
-        }
-    }
+//    if (currentPidProfile->antiGravityMode == ANTI_GRAVITY_STEP) {
+//        if (ABS(rcCommandSpeed) > throttleVelocityThreshold) {
+//            pidSetItermAccelerator(CONVERT_PARAMETER_TO_FLOAT(currentPidProfile->itermAcceleratorGain));
+//        } else {
+//            pidSetItermAccelerator(0.0f);
+//        }
+//    }
 }
 
 void updateRcRefreshRate(uint32_t currentTimeUs)
@@ -566,9 +564,9 @@ void processRcCommand(void)
         newRxDataForFF = true;
     }
 
-    if (isRxDataNew && pidAntiGravityEnabled()) {
-        checkForThrottleErrorResetState(currentRxRefreshRate);
-    }
+//    if (isRxDataNew && pidAntiGravityEnabled()) {
+//        checkForThrottleErrorResetState(currentRxRefreshRate);
+//    }
 
     if (isRxDataNew) {
         for (int axis = FD_ROLL; axis <= FD_YAW; axis++) {
@@ -611,7 +609,7 @@ void processRcCommand(void)
             //DEBUG_SET(DEBUG_ANGLERATE, axis, angleRate);
         }
         // adjust raw setpoint steps to camera angle (mixing Roll and Yaw)
-        if (rxConfig()->fpvCamAngleDegrees && IS_RC_MODE_ACTIVE(BOXFPVANGLEMIX) && !FLIGHT_MODE(HEADFREE_MODE)) {
+        if (rxConfig.fpvCamAngleDegrees && IS_RC_MODE_ACTIVE(BOXFPVANGLEMIX) && !FLIGHT_MODE(HEADFREE_MODE)) {
             scaleRawSetpointToFpvCamAngle();
         }
     }
@@ -630,23 +628,23 @@ void updateRcCommands(void)
     for (int axis = 0; axis < 3; axis++) {
         // non coupled PID reduction scaler used in PID controller 1 and PID controller 2.
 
-        float tmp = MIN(ABS(rcData[axis] - rxConfig()->midrc), 500);
+        float tmp = MIN(ABS(rcData[axis] - rxConfig.midrc), 500);
         if (axis == ROLL || axis == PITCH) {
-            if (tmp > rcControlsConfig()->deadband) {
-                tmp -= rcControlsConfig()->deadband;
+            if (tmp > rcControlsConfig.deadband) {
+                tmp -= rcControlsConfig.deadband;
             } else {
                 tmp = 0;
             }
             rcCommand[axis] = tmp;
         } else {
-            if (tmp > rcControlsConfig()->yaw_deadband) {
-                tmp -= rcControlsConfig()->yaw_deadband;
+            if (tmp > rcControlsConfig.yaw_deadband) {
+                tmp -= rcControlsConfig.yaw_deadband;
             } else {
                 tmp = 0;
             }
-            rcCommand[axis] = tmp * -GET_DIRECTION(rcControlsConfig()->yaw_control_reversed);
+            rcCommand[axis] = tmp * -GET_DIRECTION(rcControlsConfig.yaw_control_reversed);
         }
-        if (rcData[axis] < rxConfig()->midrc) {
+        if (rcData[axis] < rxConfig.midrc) {
             rcCommand[axis] = -rcCommand[axis];
         }
     }
@@ -657,31 +655,31 @@ void updateRcCommands(void)
          tmp = (uint32_t)(tmp - PWM_RANGE_MIN);
      } else
     {
-        tmp = constrain(rcData[THROTTLE], rxConfig()->mincheck, PWM_RANGE_MAX);
-        tmp = (uint32_t)(tmp - rxConfig()->mincheck) * PWM_RANGE_MIN / (PWM_RANGE_MAX - rxConfig()->mincheck);
+        tmp = constrain(rcData[THROTTLE], rxConfig.mincheck, PWM_RANGE_MAX);
+        tmp = (uint32_t)(tmp - rxConfig.mincheck) * PWM_RANGE_MIN / (PWM_RANGE_MAX - rxConfig.mincheck);
     }
 
-     if (getLowVoltageCutoff()->enabled) {
-         tmp = tmp * getLowVoltageCutoff()->percentage / 100;
-     }
+//     if (getLowVoltageCutoff()->enabled) {
+//         tmp = tmp * getLowVoltageCutoff()->percentage / 100;
+//     }
 
     rcCommand[THROTTLE] = rcLookupThrottle(tmp);
 
      if (featureIsEnabled(FEATURE_3D) && true) {//!failsafeIsActive()
-         if (!flight3DConfig()->switched_mode3d) {
+         if (!flight3DConfig.switched_mode3d) {
              if (IS_RC_MODE_ACTIVE(BOX3D)) {
                  fix12_t throttleScaler = qConstruct(rcCommand[THROTTLE] - 1000, 1000);
-                 rcCommand[THROTTLE] = rxConfig()->midrc + qMultiply(throttleScaler, PWM_RANGE_MAX - rxConfig()->midrc);
+                 rcCommand[THROTTLE] = rxConfig.midrc + qMultiply(throttleScaler, PWM_RANGE_MAX - rxConfig.midrc);
              }
          } else {
              if (IS_RC_MODE_ACTIVE(BOX3D)) {
                  reverseMotors = true;
                  fix12_t throttleScaler = qConstruct(rcCommand[THROTTLE] - 1000, 1000);
-                 rcCommand[THROTTLE] = rxConfig()->midrc + qMultiply(throttleScaler, PWM_RANGE_MIN - rxConfig()->midrc);
+                 rcCommand[THROTTLE] = rxConfig.midrc + qMultiply(throttleScaler, PWM_RANGE_MIN - rxConfig.midrc);
              } else {
                  reverseMotors = false;
                  fix12_t throttleScaler = qConstruct(rcCommand[THROTTLE] - 1000, 1000);
-                 rcCommand[THROTTLE] = rxConfig()->midrc + qMultiply(throttleScaler, PWM_RANGE_MAX - rxConfig()->midrc);
+                 rcCommand[THROTTLE] = rxConfig.midrc + qMultiply(throttleScaler, PWM_RANGE_MAX - rxConfig.midrc);
              }
          }
      }
@@ -717,8 +715,8 @@ bool isMotorsReversed(void)
 
 void initRcProcessing(void)
 {
-    rcCommandDivider = 500.0f - rcControlsConfig()->deadband;
-    rcCommandYawDivider = 500.0f - rcControlsConfig()->yaw_deadband;
+    rcCommandDivider = 500.0f - rcControlsConfig.deadband;
+    rcCommandYawDivider = 500.0f - rcControlsConfig.yaw_deadband;
 
     for (int i = 0; i < THROTTLE_LOOKUP_LENGTH; i++) {
         const int16_t tmp = 10 * i - currentControlRateProfile->thrMid8;

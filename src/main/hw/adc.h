@@ -44,6 +44,28 @@ typedef enum ADCDevice {
     ADCDEV_COUNT
 } ADCDevice;
 
+typedef struct adcChannelConfig_t {
+    bool enabled;
+    //ioTag_t ioTag;
+#if defined(STM32H7)
+    int8_t device; // ADCDevice
+#endif
+} adcChannelConfig_t;
+
+typedef struct adcConfig_s {
+    adcChannelConfig_t vbat;
+    adcChannelConfig_t rssi;
+    adcChannelConfig_t current;
+    adcChannelConfig_t external1;
+
+    uint16_t vrefIntCalibration;
+    uint16_t tempSensorCalibration1;
+    uint16_t tempSensorCalibration2;
+
+} adcConfig_t;
+
+extern adcConfig_t adcConfig;
+
 #define ADC_CFG_TO_DEV(x) ((x) - 1)
 #define ADC_DEV_TO_CFG(x) ((x) + 1)
 

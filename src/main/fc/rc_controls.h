@@ -117,6 +117,7 @@ typedef struct rcControlsConfig_s {
     bool yaw_control_reversed;            // invert control direction of yaw
 } rcControlsConfig_t;
 
+extern rcControlsConfig_t rcControlsConfig;
 
 typedef struct flight3DConfig_s {
     uint16_t deadband3d_low;                // min 3d value
@@ -128,12 +129,14 @@ typedef struct flight3DConfig_s {
     uint8_t switched_mode3d;                // enable '3D Switched Mode'
 } flight3DConfig_t;
 
+extern flight3DConfig_t flight3DConfig;
 
 typedef struct armingConfig_s {
     uint8_t gyro_cal_on_first_arm;          // allow disarm/arm on throttle down + roll left/right
     uint8_t auto_disarm_delay;              // allow automatically disarming multicopters after auto_disarm_delay seconds of zero throttle. Disabled when 0
 } armingConfig_t;
 
+extern armingConfig_t armingConfig;
 
 bool areUsingSticksToArm(void);
 

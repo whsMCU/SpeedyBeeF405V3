@@ -24,7 +24,7 @@
 
 #include "common/utils.h"
 
-//#include "config/feature.h"
+#include "config/feature.h"
 
 #include "fc/core.h"
 
@@ -35,6 +35,8 @@
 #include "sensors/compass.h"
 #include "sensors/gyro.h"
 #include "sensors/acceleration_init.h"
+
+#include "rx/rx.h"
 
 #include "scheduler/tasks.h"
 

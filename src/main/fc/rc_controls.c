@@ -31,23 +31,17 @@
 #include "common/axis.h"
 #include "common/maths.h"
 
-//#include "config/feature.h"
+#include "config/feature.h"
+#include "config/config.h"
 
 //#include "drivers/camera_control.h"
 
-//#include "config/config.h"
 #include "fc/core.h"
-//#include "rc.h"
+#include "rc.h"
 #include "fc/runtime_config.h"
 
 //#include "pid.h"
 //#include "flight/failsafe.h"
-
-//#include "io/beeper.h"
-//#include "io/usb_cdc_hid.h"
-//#include "io/dashboard.h"
-//#include "io/gps.h"
-//#include "io/vtx_control.h"
 
 #include "rx/rx.h"
 
@@ -60,7 +54,7 @@
 #include "sensors/gyro.h"
 
 #include "rc_controls.h"
-//#include "rc_modes.h"
+#include "rc_modes.h"
 
 // true if arming is done via the sticks (as opposed to a switch)
 static bool isUsingSticksToArm = true;
@@ -69,31 +63,37 @@ float rcCommand[4];           // interval [1000;2000] for THROTTLE and [-500;+50
 
 rcControlsConfig_t rcControlsConfig;
 
-PG_RESET_TEMPLATE(rcControlsConfig_t, rcControlsConfig,
-    .deadband = 0,
-    .yaw_deadband = 0,
-    .alt_hold_deadband = 40,
-    .alt_hold_fast_change = 1,
-    .yaw_control_reversed = false,
-);
+static void rcControlsConfig_Init(void);
+void rcControlsConfig_Init(void)
+{
+	rcControlsConfig.deadband = 0;
+	rcControlsConfig.yaw_deadband = 0;
+	rcControlsConfig.alt_hold_deadband = 40;
+	rcControlsConfig.alt_hold_fast_change = 1;
+	rcControlsConfig.yaw_control_reversed = false;
+}
 
 armingConfig_t armingConfig;
-
-PG_RESET_TEMPLATE(armingConfig_t, armingConfig,
-    .gyro_cal_on_first_arm = 0,  // TODO - Cleanup retarded arm support
-    .auto_disarm_delay = 5
-);
+static void armingConfig_Init(void);
+void armingConfig_Init(void)
+{
+	armingConfig.gyro_cal_on_first_arm = 0;  // TODO - Cleanup retarded arm support
+	armingConfig.auto_disarm_delay = 5;
+}
 
 flight3DConfig_t flight3DConfig;
-PG_RESET_TEMPLATE(flight3DConfig_t, flight3DConfig,
-    .deadband3d_low = 1406,
-    .deadband3d_high = 1514,
-    .neutral3d = 1460,
-    .deadband3d_throttle = 50,
-    .limit3d_low = 1000,
-    .limit3d_high = 2000,
-    .switched_mode3d = false
-);
+static void flight3DConfig_Init(void);
+void flight3DConfig_Init(void)
+{
+	flight3DConfig.deadband3d_low = 1406;
+	flight3DConfig.deadband3d_high = 1514;
+	flight3DConfig.neutral3d = 1460;
+	flight3DConfig.deadband3d_throttle = 50;
+	flight3DConfig.limit3d_low = 1000;
+	flight3DConfig.limit3d_high = 2000;
+	flight3DConfig.switched_mode3d = false;
+}
+
 
 bool isUsingSticksForArming(void)
 {
@@ -108,15 +108,15 @@ bool areSticksInApModePosition(uint16_t ap_mode)
 throttleStatus_e calculateThrottleStatus(void)
 {
     if (featureIsEnabled(FEATURE_3D)) {
-        if (IS_RC_MODE_ACTIVE(BOX3D) || flight3DConfig()->switched_mode3d) {
-            if (rcData[THROTTLE] < rxConfig()->mincheck) {
+        if (IS_RC_MODE_ACTIVE(BOX3D) || flight3DConfig.switched_mode3d) {
+            if (rcData[THROTTLE] < rxConfig.mincheck) {
                 return THROTTLE_LOW;
             }
-        } else if ((rcData[THROTTLE] > (rxConfig()->midrc - flight3DConfig()->deadband3d_throttle) && rcData[THROTTLE] < (rxConfig()->midrc + flight3DConfig()->deadband3d_throttle))) {
+        } else if ((rcData[THROTTLE] > (rxConfig.midrc - flight3DConfig.deadband3d_throttle) && rcData[THROTTLE] < (rxConfig.midrc + flight3DConfig.deadband3d_throttle))) {
             return THROTTLE_LOW;
         }
     } else
-		if (rcData[THROTTLE] < rxConfig()->mincheck) {
+		if (rcData[THROTTLE] < rxConfig.mincheck) {
         return THROTTLE_LOW;
     }
 
@@ -146,10 +146,10 @@ void processRcStickPositions()
     uint8_t stTmp = 0;
     for (int i = 0; i < 4; i++) {
         stTmp >>= 2;
-        if (rcData[i] > rxConfig()->mincheck) {
+        if (rcData[i] > rxConfig.mincheck) {
             stTmp |= 0x80;  // check for MIN
         }
-        if (rcData[i] < rxConfig()->maxcheck) {
+        if (rcData[i] < rxConfig.maxcheck) {
             stTmp |= 0x40;  // check for MAX
         }
     }
@@ -411,6 +411,9 @@ int32_t getRcStickDeflection(int32_t axis, uint16_t midrc) {
 
 void rcControlsInit(void)
 {
+	rcControlsConfig_Init();
+	armingConfig_Init();
+	flight3DConfig_Init();
     analyzeModeActivationConditions();
-    isUsingSticksToArm = !isModeActivationConditionPresent(BOXARM) && systemConfig()->enableStickArming;
+    isUsingSticksToArm = !isModeActivationConditionPresent(BOXARM) && systemConfig.enableStickArming;
 }

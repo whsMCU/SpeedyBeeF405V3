@@ -30,22 +30,18 @@
 #include "common/axis.h"
 #include "common/filter.h"
 
-//#include "config/config.h"
+#include "config/config.h"
 //#include "config/config_reset.h"
-//#include "config/feature.h"
+#include "config/feature.h"
 
 #include "fc/rc_controls.h"
-//#include "fc/rc_modes.h"
+#include "fc/rc_modes.h"
 #include "fc/runtime_config.h"
 
 #include "rx/rx.h"
 #include "rx/crsf.h"
 //#include "sbus.h"
 #include "scheduler/tasks.h"
-
-
-
-
 
 const char rcChannelLetters[] = "AERT12345678abcdefgh";
 
@@ -256,9 +252,8 @@ void rxInit(void)
 
     // Initialize ARM switch to OFF position when arming via switch is defined
     // TODO - move to rc_mode.c
-     #define MAX_MODE_ACTIVATION_CONDITION_COUNT 20
      for (int i = 0; i < MAX_MODE_ACTIVATION_CONDITION_COUNT; i++) {
-         const modeActivationCondition_t *modeActivationCondition = modeActivationConditions(i);
+         const modeActivationCondition_t *modeActivationCondition = &modeActivationConditions[i];
          if (modeActivationCondition->modeId == BOXARM && IS_RANGE_USABLE(&modeActivationCondition->range)) {
              // ARM switch is defined, determine an OFF value
              uint16_t value;
@@ -323,7 +318,7 @@ void rxInit(void)
         rssiSource = RSSI_SOURCE_ADC;
     } else
 #endif
-     if (rxConfig()->rssi_channel > 0) {
+     if (rxConfig.rssi_channel > 0) {
          rssiSource = RSSI_SOURCE_RX_CHANNEL;
      }
 
@@ -540,7 +535,7 @@ static uint16_t calculateChannelMovingAverage(uint8_t chan, uint16_t sample)
 
 static uint16_t getRxfailValue(uint8_t channel)
 {
-    const rxFailsafeChannelConfig_t *channelFailsafeConfig = rxFailsafeChannelConfigs(channel);
+    const rxFailsafeChannelConfig_t *channelFailsafeConfig = &rxFailsafeChannelConfigs[channel];
     const bool failsafeAuxSwitch = IS_RC_MODE_ACTIVE(BOXFAILSAFE);
 
     switch (channelFailsafeConfig->mode) {
@@ -605,7 +600,7 @@ static void readRxChannelsApplyRanges(void)
 
         // apply the rx calibration
         if (channel < NON_AUX_CHANNEL_COUNT) {
-            sample = applyRxChannelRangeConfiguraton(sample, rxChannelRangeConfigs(channel));
+            sample = applyRxChannelRangeConfiguraton(sample, &rxChannelRangeConfigs[channel]);
         }
 
         rcRaw[channel] = sample;
