@@ -138,6 +138,10 @@ typedef struct armingConfig_s {
 
 extern armingConfig_t armingConfig;
 
+void rcControlsConfig_Init(void);
+void armingConfig_Init(void);
+void flight3DConfig_Init(void);
+
 bool areUsingSticksToArm(void);
 
 bool areSticksInApModePosition(uint16_t ap_mode);

@@ -25,13 +25,23 @@
 
 #include "config/config.h"
 
+#include "fc/rc_modes.h"
+#include "fc/rc_controls.h"
+
 #include "flight/imu.h"
+#include "flight/position.h"
 
 #include "sensors/sensors.h"
 #include "sensors/barometer.h"
 #include "sensors/compass.h"
 #include "sensors/gyro_init.h"
 #include "sensors/adcinternal.h"
+#include "sensors/battery.h"
+
+#include "drivers/gps/gps.h"
+
+#include "rx/rx.h"
+
 
 /* USER CODE END Includes */
 
@@ -180,9 +190,20 @@ void fcInit(void)
 	gyroSetTargetLooptime(1);
 	gyroInitFilters();
 	imuInit();
-	//rxInit();
-	//batteryInit(); // always needs doing, regardless of features.
+	positionConfig_Init();
+	rcControlsConfig_Init();
+	armingConfig_Init();
+	flight3DConfig_Init();
+	rxInit();
+	batteryInit(); // always needs doing, regardless of features.
+	gpsInit();
 	tasksInit();
+	MSP_SET_MODE_RANGE(0, 0, 0, 1700, 2100);
+	MSP_SET_MODE_RANGE(1, 1, 0, 1700, 2100);
+	MSP_SET_MODE_RANGE(2, 6, 1, 1700, 2100);
+	MSP_SET_MODE_RANGE(3, 27, 4, 1700, 2100);
+	MSP_SET_MODE_RANGE(4, 7, 5, 1700, 2100);
+	MSP_SET_MODE_RANGE(5, 26, 0, 1700, 2100);
 }
 
 /**

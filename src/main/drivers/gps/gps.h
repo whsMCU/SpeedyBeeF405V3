@@ -20,8 +20,8 @@
 
 #pragma once
 
-#include "def.h"
-#include "axis.h"
+#include "hw.h"
+#include "common/axis.h"
 
 #define GPS_DEGREES_DIVIDER 10000000L
 #define GPS_X 1

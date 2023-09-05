@@ -24,27 +24,22 @@
 #include <string.h>
 #include <math.h>
 
-#include "axis.h"
-//#include "gps_conversion.h"
-#include "maths.h"
-#include "utils.h"
-#include "uart.h"
+#include "common/axis.h"
+#include "gps_conversion.h"
+#include "common/maths.h"
+#include "common/utils.h"
+#include "common/time.h"
 
+#include "drivers/gps/gps.h"
 
-#include "time.h"
-
-#include "gps.h"
-//#include "io/serial.h"
-
-
-//#include "imu.h"
-//#include "pid.h"
+//#include "fc/pid.h"
+#include "flight/imu.h"
 //#include "flight/gps_rescue.h"
-#include "runtime_config.h"
+#include "fc/runtime_config.h"
 
 #include "scheduler/scheduler.h"
 
-#include "sensors.h"
+#include "sensors/sensors.h"
 
 #define USE_GPS_UBLOX
 

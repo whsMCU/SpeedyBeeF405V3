@@ -31,6 +31,7 @@
 #include "common/time.h"
 
 #include "fc/runtime_config.h"
+#include "fc/core.h"
 
 //#include "flight/gps_rescue.h"
 #include "flight/imu.h"
@@ -168,6 +169,7 @@ void imuInit(void)
 
     imuComputeRotationMatrix();
     imuConfig_Init();
+    imuConfigure(throttleCorrectionConfig.throttle_correction_angle, throttleCorrectionConfig.throttle_correction_value);
 }
 
 #if defined(USE_ACC)

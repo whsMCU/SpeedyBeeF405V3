@@ -25,16 +25,30 @@
 #include "common/utils.h"
 
 #include "config/feature.h"
+#include "config/config.h"
 
 #include "fc/core.h"
+#include "fc/rc.h"
+#include "fc/rc_controls.h"
+#include "fc/runtime_config.h"
 
 #include "flight/imu.h"
+#include "flight/position.h"
 
+#include "drivers/accgyro/accgyro.h"
+#include "drivers/compass/compass.h"
+#include "drivers/sensor.h"
+#include "drivers/gps/gps.h"
+
+#include "sensors/acceleration_init.h"
+#include "sensors/acceleration.h"
 #include "sensors/adcinternal.h"
 #include "sensors/barometer.h"
+#include "sensors/battery.h"
 #include "sensors/compass.h"
 #include "sensors/gyro.h"
-#include "sensors/acceleration_init.h"
+#include "sensors/sensors.h"
+
 
 #include "rx/rx.h"
 
@@ -162,8 +176,8 @@ static void taskUpdateRxMain(uint32_t currentTimeUs)
 
     case RX_STATE_UPDATE:
         // updateRcCommands sets rcCommand, which is needed by updateAltHoldState and updateSonarAltHoldState
-        //updateRcCommands();
-        //updateArmingStatus();
+        updateRcCommands();
+        updateArmingStatus();
 
 #ifdef USE_USB_CDC_HID
         if (!ARMING_FLAG(ARMED)) {
@@ -237,7 +251,7 @@ void taskUpdateRangefinder(uint32_t currentTimeUs)
 
 static void taskCalculateAltitude(uint32_t currentTimeUs)
 {
-    //calculateEstimatedAltitude(currentTimeUs);
+    calculateEstimatedAltitude(currentTimeUs);
 }
 
 #ifdef USE_TELEMETRY
@@ -280,8 +294,8 @@ task_attribute_t task_attributes[TASK_COUNT] = {
     [TASK_MAIN] = DEFINE_TASK("SYSTEM", "UPDATE", NULL, taskMain, TASK_PERIOD_HZ(1000), TASK_PRIORITY_MEDIUM_HIGH),
     [TASK_SERIAL] = DEFINE_TASK("SERIAL", NULL, NULL, taskHandleSerial, TASK_PERIOD_HZ(100), TASK_PRIORITY_LOW), // 100 Hz should be enough to flush up to 115 bytes @ 115200 baud
     //[TASK_BATTERY_ALERTS] = DEFINE_TASK("BATTERY_ALERTS", NULL, NULL, taskBatteryAlerts, TASK_PERIOD_HZ(5), TASK_PRIORITY_MEDIUM),
-    //[TASK_BATTERY_VOLTAGE] = DEFINE_TASK("BATTERY_VOLTAGE", NULL, NULL, batteryUpdateVoltage, TASK_PERIOD_HZ(SLOW_VOLTAGE_TASK_FREQ_HZ), TASK_PRIORITY_MEDIUM), // Freq may be updated in tasksInit
-    //[TASK_BATTERY_CURRENT] = DEFINE_TASK("BATTERY_CURRENT", NULL, NULL, batteryUpdateCurrentMeter, TASK_PERIOD_HZ(50), TASK_PRIORITY_MEDIUM),
+    [TASK_BATTERY_VOLTAGE] = DEFINE_TASK("BATTERY_VOLTAGE", NULL, NULL, batteryUpdateVoltage, TASK_PERIOD_HZ(SLOW_VOLTAGE_TASK_FREQ_HZ), TASK_PRIORITY_MEDIUM), // Freq may be updated in tasksInit
+    [TASK_BATTERY_CURRENT] = DEFINE_TASK("BATTERY_CURRENT", NULL, NULL, batteryUpdateCurrentMeter, TASK_PERIOD_HZ(50), TASK_PRIORITY_MEDIUM),
 
 #ifdef USE_STACK_CHECK
     [TASK_STACK_CHECK] = DEFINE_TASK("STACKCHECK", NULL, NULL, taskStackCheck, TASK_PERIOD_HZ(10), TASK_PRIORITY_LOWEST),
@@ -304,13 +318,13 @@ task_attribute_t task_attributes[TASK_COUNT] = {
     [TASK_BEEPER] = DEFINE_TASK("BEEPER", NULL, NULL, beeperUpdate, TASK_PERIOD_HZ(100), TASK_PRIORITY_LOW),
 #endif
 
-    //[TASK_GPS] = DEFINE_TASK("GPS", NULL, NULL, gpsUpdate, TASK_PERIOD_HZ(TASK_GPS_RATE), TASK_PRIORITY_MEDIUM), // Required to prevent buffer overruns if running at 115200 baud (115 bytes / period < 256 bytes buffer)
+    [TASK_GPS] = DEFINE_TASK("GPS", NULL, NULL, gpsUpdate, TASK_PERIOD_HZ(TASK_GPS_RATE), TASK_PRIORITY_MEDIUM), // Required to prevent buffer overruns if running at 115200 baud (115 bytes / period < 256 bytes buffer)
 
-   // [TASK_COMPASS] = DEFINE_TASK("COMPASS", NULL, NULL, taskUpdateMag, TASK_PERIOD_HZ(10), TASK_PRIORITY_LOW),
+    [TASK_COMPASS] = DEFINE_TASK("COMPASS", NULL, NULL, taskUpdateMag, TASK_PERIOD_HZ(10), TASK_PRIORITY_LOW),
 
-    //[TASK_BARO] = DEFINE_TASK("BARO", NULL, NULL, taskUpdateBaro, TASK_PERIOD_HZ(20), TASK_PRIORITY_LOW),
+    [TASK_BARO] = DEFINE_TASK("BARO", NULL, NULL, taskUpdateBaro, TASK_PERIOD_HZ(20), TASK_PRIORITY_LOW),
 
-    //[TASK_ALTITUDE] = DEFINE_TASK("ALTITUDE", NULL, NULL, taskCalculateAltitude, TASK_PERIOD_HZ(40), TASK_PRIORITY_LOW),
+    [TASK_ALTITUDE] = DEFINE_TASK("ALTITUDE", NULL, NULL, taskCalculateAltitude, TASK_PERIOD_HZ(40), TASK_PRIORITY_LOW),
 
 #ifdef USE_OSD
    // [TASK_OSD] = DEFINE_TASK("OSD", NULL, osdUpdateCheck, osdUpdate, TASK_PERIOD_HZ(OSD_FRAMERATE_DEFAULT_HZ), TASK_PRIORITY_LOW),
@@ -356,11 +370,11 @@ void tasksInit(void)
     setTaskEnabled(TASK_LED, true);
     setTaskEnabled(TASK_DEBUG, true);
     rescheduleTask(TASK_SERIAL, TASK_PERIOD_HZ(100));
-    //batteryConfigMutable()->voltageMeterSource = VOLTAGE_METER_ADC;
-    //batteryConfigMutable()->currentMeterSource = CURRENT_METER_ADC;
+    batteryConfig.voltageMeterSource = VOLTAGE_METER_ADC;
+    batteryConfig.currentMeterSource = CURRENT_METER_ADC;
 
-//const bool useBatteryVoltage = batteryConfig()->voltageMeterSource != VOLTAGE_METER_NONE;
-    //setTaskEnabled(TASK_BATTERY_VOLTAGE, useBatteryVoltage);
+		const bool useBatteryVoltage = batteryConfig.voltageMeterSource != VOLTAGE_METER_NONE;
+    setTaskEnabled(TASK_BATTERY_VOLTAGE, useBatteryVoltage);
 
 #if defined(USE_BATTERY_VOLTAGE_SAG_COMPENSATION)
     // If vbat motor output compensation is used, use fast vbat samplingTime
@@ -369,8 +383,8 @@ void tasksInit(void)
     }
 #endif
 
-    //const bool useBatteryCurrent = batteryConfig()->currentMeterSource != CURRENT_METER_NONE;
-    //setTaskEnabled(TASK_BATTERY_CURRENT, useBatteryCurrent);
+    const bool useBatteryCurrent = batteryConfig.currentMeterSource != CURRENT_METER_NONE;
+    setTaskEnabled(TASK_BATTERY_CURRENT, useBatteryCurrent);
     //const bool useBatteryAlerts = batteryConfig()->useVBatAlerts || batteryConfig()->useConsumptionAlerts || featureIsEnabled(FEATURE_OSD);
     //setTaskEnabled(TASK_BATTERY_ALERTS, (useBatteryVoltage || useBatteryCurrent) && useBatteryAlerts);
 
@@ -406,13 +420,13 @@ void tasksInit(void)
     setTaskEnabled(TASK_BEEPER, true);
 #endif
 
-    //setTaskEnabled(TASK_GPS, true);
+    setTaskEnabled(TASK_GPS, true);
 
-    //setTaskEnabled(TASK_COMPASS, true);
+    setTaskEnabled(TASK_COMPASS, true);
 
-    //setTaskEnabled(TASK_BARO, true);
+    setTaskEnabled(TASK_BARO, true);
 
-    //setTaskEnabled(TASK_ALTITUDE, true);
+    setTaskEnabled(TASK_ALTITUDE, true);
 
 
 #ifdef USE_DASHBOARD

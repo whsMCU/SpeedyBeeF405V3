@@ -48,6 +48,12 @@
 accelerationRuntime_t accelerationRuntime;
 accelerometerConfig_t accelerometerConfig;
 
+void resetRollAndPitchTrims(rollAndPitchTrims_t *rollAndPitchTrims)
+{
+	rollAndPitchTrims->values.roll = 0;
+	rollAndPitchTrims->values.pitch = 0;
+}
+
 static void setConfigCalibrationCompleted(void)
 {
 	accelerometerConfig.accZero.values.calibrationCompleted = 1;
@@ -78,7 +84,7 @@ void accelerometerConfig_init(void)
     accelerometerConfig.acc_hardware = ACC_DEFAULT,
 	  accelerometerConfig.acc_high_fsr = false,
 
-    //resetRollAndPitchTrims(&accelerometerConfig.accelerometerTrims);
+    resetRollAndPitchTrims(&accelerometerConfig.accelerometerTrims);
     resetFlightDynamicsTrims(&accelerometerConfig.accZero);
 }
 

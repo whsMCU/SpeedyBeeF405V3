@@ -28,7 +28,7 @@
 
 
 #include "common/maths.h"
-//#include "rx/rx.h"
+#include "rx/rx.h"
 #include "fc/core.h"
 #include "sensors/gyro_init.h"
 #include "sensors/gyro.h"
@@ -494,7 +494,7 @@ void scheduler(void)
             // Check for incoming RX data. Don't do this in the checker as that is called repeatedly within
             // a given gyro loop, and ELRS takes a long time to process this and so can only be safely processed
             // before the checkers
-            //rxFrameCheck(currentTimeUs, cmpTimeUs(currentTimeUs, getTask(TASK_RX)->lastExecutedAtUs));
+            rxFrameCheck(currentTimeUs, cmpTimeUs(currentTimeUs, getTask(TASK_RX)->lastExecutedAtUs));
 
             // Check for failsafe conditions without reliance on the RX task being well behaved
             // if (cmp32(millis(), lastFailsafeCheckMs) > PERIOD_RXDATA_FAILURE) {
@@ -662,9 +662,9 @@ void scheduler(void)
                     }
                 }
 #endif  // USE_LATE_TASK_STATISTICS
-//                if ((currentTask - tasks) == TASK_RX) {
-//                    skippedRxAttempts = 0;
-//                }
+                if ((currentTask - tasks) == TASK_RX) {
+                    skippedRxAttempts = 0;
+                }
 #ifdef USE_OSD
                 else if ((currentTask - tasks) == TASK_OSD) {
                     skippedOSDAttempts = 0;

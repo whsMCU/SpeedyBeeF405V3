@@ -43,7 +43,7 @@
 
 #include "rx/rx.h"
 
-//#include "sensors/battery.h"
+#include "sensors/battery.h"
 #include "sensors/gyro.h"
 
 
@@ -659,9 +659,9 @@ void updateRcCommands(void)
         tmp = (uint32_t)(tmp - rxConfig.mincheck) * PWM_RANGE_MIN / (PWM_RANGE_MAX - rxConfig.mincheck);
     }
 
-//     if (getLowVoltageCutoff()->enabled) {
-//         tmp = tmp * getLowVoltageCutoff()->percentage / 100;
-//     }
+     if (getLowVoltageCutoff()->enabled) {
+         tmp = tmp * getLowVoltageCutoff()->percentage / 100;
+     }
 
     rcCommand[THROTTLE] = rcLookupThrottle(tmp);
 

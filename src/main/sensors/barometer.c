@@ -23,7 +23,6 @@
 #include <math.h>
 
 #include "common/maths.h"
-#include "common/maths.h"
 
 #include "fc/runtime_config.h"
 

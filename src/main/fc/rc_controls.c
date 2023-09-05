@@ -24,23 +24,17 @@
 
 #include <math.h>
 
-//#include "blackbox/blackbox.h"
-
-//#include "build/build_config.h"
-
 #include "common/axis.h"
 #include "common/maths.h"
 
 #include "config/feature.h"
 #include "config/config.h"
 
-//#include "drivers/camera_control.h"
-
 #include "fc/core.h"
 #include "rc.h"
 #include "fc/runtime_config.h"
 
-//#include "pid.h"
+//#include "fc/pid.h"
 //#include "flight/failsafe.h"
 
 #include "rx/rx.h"
@@ -49,7 +43,7 @@
 
 #include "sensors/acceleration.h"
 #include "sensors/barometer.h"
-//#include "sensors/battery.h"
+#include "sensors/battery.h"
 #include "sensors/compass.h"
 #include "sensors/gyro.h"
 
@@ -62,8 +56,6 @@ static bool isUsingSticksToArm = true;
 float rcCommand[4];           // interval [1000;2000] for THROTTLE and [-500;+500] for ROLL/PITCH/YAW
 
 rcControlsConfig_t rcControlsConfig;
-
-static void rcControlsConfig_Init(void);
 void rcControlsConfig_Init(void)
 {
 	rcControlsConfig.deadband = 0;
@@ -74,7 +66,6 @@ void rcControlsConfig_Init(void)
 }
 
 armingConfig_t armingConfig;
-static void armingConfig_Init(void);
 void armingConfig_Init(void)
 {
 	armingConfig.gyro_cal_on_first_arm = 0;  // TODO - Cleanup retarded arm support
@@ -82,7 +73,6 @@ void armingConfig_Init(void)
 }
 
 flight3DConfig_t flight3DConfig;
-static void flight3DConfig_Init(void);
 void flight3DConfig_Init(void)
 {
 	flight3DConfig.deadband3d_low = 1406;
@@ -411,9 +401,6 @@ int32_t getRcStickDeflection(int32_t axis, uint16_t midrc) {
 
 void rcControlsInit(void)
 {
-	rcControlsConfig_Init();
-	armingConfig_Init();
-	flight3DConfig_Init();
     analyzeModeActivationConditions();
     isUsingSticksToArm = !isModeActivationConditionPresent(BOXARM) && systemConfig.enableStickArming;
 }
