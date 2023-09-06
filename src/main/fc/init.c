@@ -98,11 +98,28 @@ uint8_t systemState = SYSTEM_STATE_INITIALISING;
 
 void init(void)
 {
+	/////////////// LED //////////////////
+		ledOn(ST1);
+		for (int i = 0; i < 10; i++)
+		{
+			ledToggle(ST1);
+			#if defined(USE_BEEPER)
+				HAL_Delay(25);
+				BEEP_ON;
+				HAL_Delay(25);
+				BEEP_OFF;
+			#else
+				HAL_Delay(50);
+			#endif
+		}
+		ledOff(ST1);
+	////////////////////////////////////////
+
     // Initialize task data as soon as possible. Has to be done before tasksInit(),
     // and any init code that may try to modify task behaviour before tasksInit().
 	tasksInitData();
 
-   	cliOpen(_DEF_USB, 57600);
+  cliOpen(_DEF_USB, 57600);
 
 	readEEPROM();
 
@@ -126,23 +143,6 @@ void init(void)
 	gyroInitFilters();
 	pidInit(currentPidProfile);
 	mixerInitProfile();
-
-/////////////// LED //////////////////
-	ledOn(ST1);
-	for (int i = 0; i < 10; i++)
-	{
-		ledToggle(ST1);
-		#if defined(USE_BEEPER)
-			HAL_Delay(25);
-			BEEP_ON;
-			HAL_Delay(25);
-			BEEP_OFF;
-		#else
-			HAL_Delay(50);
-		#endif
-	}
-	ledOff(ST1);
-////////////////////////////////////////
 
 	imuInit();
     //failsafeInit();

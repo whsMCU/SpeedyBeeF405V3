@@ -29,14 +29,12 @@
 #include "common/utils.h"
 
 //#include "config/config_reset.h"
-//#include "config/feature.h"
+#include "config/feature.h"
+#include "config/config.h"
 
 #include "drivers/accgyro/bmi270.h"
 
-
-//#include "config/config.h"
 #include "fc/runtime_config.h"
-
 
 #include "sensors/gyro.h"
 #include "sensors/gyro_init.h"

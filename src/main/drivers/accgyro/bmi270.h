@@ -2,9 +2,9 @@
 #define SRC_COMMON_HW_INCLUDE_BMI270_H_
 
 #include "hw.h"
-#include "sensors.h"
-#include "acceleration.h"
-#include "gyro.h"
+#include "sensors/sensors.h"
+#include "sensors/acceleration.h"
+#include "sensors/gyro.h"
 
 //typedef struct gyroDev_s gyroDev_t;
 

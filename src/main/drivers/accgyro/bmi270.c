@@ -18,16 +18,16 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <drivers/accgyro/bmi270.h>
-#include "gpio.h"
-#include "spi.h"
-#include "led.h"
-#include "cli.h"
-#include "axis.h"
-#include "gyro_init.h"
-#include "drivers/accgyro/accgyro.h"
-#include "drivers/sensor.h"
+
+#include "common/axis.h"
+
+#include "sensors/gyro_init.h"
 #include "sensors/gyro.h"
+
+#include "drivers/accgyro/accgyro.h"
+#include "drivers/accgyro/bmi270.h"
+#include "drivers/sensor.h"
+
 
 #ifdef USE_ACCGYRO_BMI270
 

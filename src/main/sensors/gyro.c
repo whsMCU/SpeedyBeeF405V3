@@ -30,8 +30,8 @@
 #include "common/filter.h"
 
 #include "config/feature.h"
-
 #include "config/config.h"
+
 #include "fc/runtime_config.h"
 
 #include "flight/pid.h"
@@ -227,7 +227,7 @@ void performGyroCalibration(gyroSensor_t *gyroSensor, uint8_t gyroMovementCalibr
             // please take care with exotic boardalignment !!
             gyroSensor->gyroDev.gyroZero[axis] = gyroSensor->calibration.sum[axis] / gyroCalculateCalibratingCycles();
             if (axis == Z) {
-              gyroSensor->gyroDev.gyroZero[axis] -= (gyroConfig.gyro_offset_yaw / 100);//(float)gyroConfig()->gyro_offset_yaw
+              gyroSensor->gyroDev.gyroZero[axis] -= ((float)gyroConfig.gyro_offset_yaw / 100);
             }
         }
     }
@@ -431,14 +431,6 @@ void gyroUpdate(void)
         gyro.sampleCount++;
     }
 }
-
-//#define GYRO_FILTER_FUNCTION_NAME filterGyro
-//#define GYRO_FILTER_DEBUG_SET(mode, index, value) do { UNUSED(mode); UNUSED(index); UNUSED(value); } while (0)
-//#define GYRO_FILTER_AXIS_DEBUG_SET(axis, mode, index, value) do { UNUSED(axis); UNUSED(mode); UNUSED(index); UNUSED(value); } while (0)
-//#include "gyro_filter_impl.c"
-//#undef GYRO_FILTER_FUNCTION_NAME
-//#undef GYRO_FILTER_DEBUG_SET
-//#undef GYRO_FILTER_AXIS_DEBUG_SET
 
 static void filterGyro(void)
 {
