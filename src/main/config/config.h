@@ -39,6 +39,8 @@ typedef struct pilotConfig_s {
     char displayName[MAX_NAME_LENGTH + 1];
 } pilotConfig_t;
 
+extern pilotConfig_t pilotConfig;
+
 typedef struct systemConfig_s {
     uint8_t pidProfileIndex;
     uint8_t activeRateProfile;

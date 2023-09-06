@@ -26,7 +26,6 @@
 
 #include "drivers/accgyro/accgyro.h"
 
-
 #include "common/maths.h"
 #include "rx/rx.h"
 #include "fc/core.h"
@@ -425,9 +424,7 @@ void scheduler(void)
 {
     static uint32_t checkCycles = 0;
     static uint32_t scheduleCount = 0;
-// #if !defined(UNIT_TEST)
-//     const uint32_t schedulerStartTimeUs = micros();
-// #endif
+
     uint32_t currentTimeUs;
     uint32_t nowCycles;
     uint32_t taskExecutionTimeUs = 0;
@@ -487,9 +484,9 @@ void scheduler(void)
             if (gyroFilterReady()) {
                 taskExecutionTimeUs += schedulerExecuteTask(getTask(TASK_FILTER), currentTimeUs);
             }
-//            if (pidLoopReady()) {
-//                taskExecutionTimeUs += schedulerExecuteTask(getTask(TASK_PID), currentTimeUs);
-//            }
+            if (pidLoopReady()) {
+                taskExecutionTimeUs += schedulerExecuteTask(getTask(TASK_PID), currentTimeUs);
+            }
 
             // Check for incoming RX data. Don't do this in the checker as that is called repeatedly within
             // a given gyro loop, and ELRS takes a long time to process this and so can only be safely processed

@@ -37,9 +37,9 @@
 
 //#include "flight/failsafe.h"
 #include "flight/imu.h"
-//#include "flight/feedforward.h"
+#include "flight/feedforward.h"
 //#include "flight/gps_rescue.h"
-//#include "flight/pid_init.h"
+#include "flight/pid_init.h"
 
 #include "rx/rx.h"
 
@@ -83,7 +83,7 @@ enum {
 #define RC_SMOOTHING_RX_RATE_CHANGE_PERCENT     20    // Look for samples varying this much from the current detected frame rate to initiate retraining
 #define RC_SMOOTHING_FEEDFORWARD_INITIAL_HZ     100 // The value to use for "auto" when interpolated feedforward is enabled
 
-static FAST_DATA_ZERO_INIT rcSmoothingFilter_t rcSmoothingData;
+static rcSmoothingFilter_t rcSmoothingData;
 static float rcDeflectionSmoothed[3];
 #endif // USE_RC_SMOOTHING_FILTER
 
@@ -418,22 +418,22 @@ bool rcSmoothingAutoCalculate(void)
 
 static void processRcSmoothingFilter(void)
 {
-    static FAST_DATA_ZERO_INIT float rxDataToSmooth[4];
-    static FAST_DATA_ZERO_INIT bool initialized;
-    static FAST_DATA_ZERO_INIT timeMs_t validRxFrameTimeMs;
-    static FAST_DATA_ZERO_INIT bool calculateCutoffs;
+    static float rxDataToSmooth[4];
+    static bool initialized;
+    static timeMs_t validRxFrameTimeMs;
+    static bool calculateCutoffs;
 
     // first call initialization
     if (!initialized) {
         initialized = true;
         rcSmoothingData.filterInitialized = false;
         rcSmoothingData.averageFrameTimeUs = 0;
-        rcSmoothingData.autoSmoothnessFactorSetpoint = rxConfig()->rc_smoothing_auto_factor_rpy;
-        rcSmoothingData.autoSmoothnessFactorThrottle = rxConfig()->rc_smoothing_auto_factor_throttle;
-        rcSmoothingData.debugAxis = rxConfig()->rc_smoothing_debug_axis;
-        rcSmoothingData.setpointCutoffSetting = rxConfig()->rc_smoothing_setpoint_cutoff;
-        rcSmoothingData.throttleCutoffSetting = rxConfig()->rc_smoothing_throttle_cutoff;
-        rcSmoothingData.ffCutoffSetting = rxConfig()->rc_smoothing_feedforward_cutoff;
+        rcSmoothingData.autoSmoothnessFactorSetpoint = rxConfig.rc_smoothing_auto_factor_rpy;
+        rcSmoothingData.autoSmoothnessFactorThrottle = rxConfig.rc_smoothing_auto_factor_throttle;
+        rcSmoothingData.debugAxis = rxConfig.rc_smoothing_debug_axis;
+        rcSmoothingData.setpointCutoffSetting = rxConfig.rc_smoothing_setpoint_cutoff;
+        rcSmoothingData.throttleCutoffSetting = rxConfig.rc_smoothing_throttle_cutoff;
+        rcSmoothingData.ffCutoffSetting = rxConfig.rc_smoothing_feedforward_cutoff;
         rcSmoothingResetAccumulation(&rcSmoothingData);
         rcSmoothingData.setpointCutoffFrequency = rcSmoothingData.setpointCutoffSetting;
         rcSmoothingData.throttleCutoffFrequency = rcSmoothingData.throttleCutoffSetting;
@@ -446,7 +446,7 @@ static void processRcSmoothingFilter(void)
             rcSmoothingData.feedforwardCutoffFrequency = rcSmoothingData.ffCutoffSetting;
         }
 
-        if (rxConfig()->rc_smoothing_mode) {
+        if (rxConfig.rc_smoothing_mode) {
             calculateCutoffs = rcSmoothingAutoCalculate();
 
             // if we don't need to calculate cutoffs dynamically then the filters can be initialized now
@@ -496,7 +496,7 @@ static void processRcSmoothingFilter(void)
                         if (accumulateSample) {
                             if (rcSmoothingAccumulateSample(&rcSmoothingData, currentRxRefreshRate)) {
                                 // the required number of samples were collected so set the filter cutoffs, but only if smoothing is active
-                                if (rxConfig()->rc_smoothing_mode) {
+                                if (rxConfig.rc_smoothing_mode) {
                                     rcSmoothingSetFilterCutoffs(&rcSmoothingData);
                                     rcSmoothingData.filterInitialized = true;
                                 }

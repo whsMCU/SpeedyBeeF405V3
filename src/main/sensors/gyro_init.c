@@ -28,7 +28,7 @@
 #include "common/maths.h"
 #include "common/filter.h"
 
-//#include "config/config.h"
+#include "config/config.h"
 
 #include "fc/runtime_config.h"
 
@@ -179,8 +179,8 @@ static bool gyroInitLowpassFilterLpf(int slot, int type, uint16_t lpfHz, uint32_
 #ifdef USE_DYN_LPF
 static void dynLpfFilterInit()
 {
-    if (gyroConfig()->gyro_lpf1_dyn_min_hz > 0) {
-        switch (gyroConfig()->gyro_lpf1_type) {
+    if (gyroConfig.gyro_lpf1_dyn_min_hz > 0) {
+        switch (gyroConfig.gyro_lpf1_type) {
         case FILTER_PT1:
             gyro.dynLpfFilter = DYN_LPF_PT1;
             break;
@@ -200,9 +200,9 @@ static void dynLpfFilterInit()
     } else {
         gyro.dynLpfFilter = DYN_LPF_NONE;
     }
-    gyro.dynLpfMin = gyroConfig()->gyro_lpf1_dyn_min_hz;
-    gyro.dynLpfMax = gyroConfig()->gyro_lpf1_dyn_max_hz;
-    gyro.dynLpfCurveExpo = gyroConfig()->gyro_lpf1_dyn_expo;
+    gyro.dynLpfMin = gyroConfig.gyro_lpf1_dyn_min_hz;
+    gyro.dynLpfMax = gyroConfig.gyro_lpf1_dyn_max_hz;
+    gyro.dynLpfCurveExpo = gyroConfig.gyro_lpf1_dyn_expo;
 }
 #endif
 
@@ -211,8 +211,8 @@ void gyroInitFilters(void)
     uint16_t gyro_lpf1_init_hz = gyroConfig.gyro_lpf1_static_hz;
 
 #ifdef USE_DYN_LPF
-    if (gyroConfig()->gyro_lpf1_dyn_min_hz > 0) {
-        gyro_lpf1_init_hz = gyroConfig()->gyro_lpf1_dyn_min_hz;
+    if (gyroConfig.gyro_lpf1_dyn_min_hz > 0) {
+        gyro_lpf1_init_hz = gyroConfig.gyro_lpf1_dyn_min_hz;
     }
 #endif
 
@@ -236,7 +236,7 @@ void gyroInitFilters(void)
     dynLpfFilterInit();
 #endif
 #ifdef USE_DYN_NOTCH_FILTER
-    dynNotchInit(dynNotchConfig(), gyro.targetLooptime);
+    dynNotchInit(&dynNotchConfig, gyro.targetLooptime);
 #endif
 }
 
@@ -370,9 +370,9 @@ static bool gyroDetectSensor(gyroSensor_t *gyroSensor)
 bool gyroInit(void)
 {
 #ifdef USE_GYRO_OVERFLOW_CHECK
-    if (gyroConfig()->checkOverflow == GYRO_OVERFLOW_CHECK_YAW) {
+    if (gyroConfig.checkOverflow == GYRO_OVERFLOW_CHECK_YAW) {
         gyro.overflowAxisMask = GYRO_OVERFLOW_Z;
-    } else if (gyroConfig()->checkOverflow == GYRO_OVERFLOW_CHECK_ALL_AXES) {
+    } else if (gyroConfig.checkOverflow == GYRO_OVERFLOW_CHECK_ALL_AXES) {
         gyro.overflowAxisMask = GYRO_OVERFLOW_X | GYRO_OVERFLOW_Y | GYRO_OVERFLOW_Z;
     } else {
         gyro.overflowAxisMask = 0;

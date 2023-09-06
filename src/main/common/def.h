@@ -51,30 +51,29 @@
 #define MAX_SUPPORTED_MOTORS 8
 
 
-//#define USE_GYRO_OVERFLOW_CHECK
-//#define USE_YAW_SPIN_RECOVERY
+#define USE_GYRO_OVERFLOW_CHECK
+#define USE_YAW_SPIN_RECOVERY
 #define USE_ACC
 #define USE_BARO
 #define USE_MAG
-//#define USE_DYN_LPF
-//#define USE_D_MIN
+#define USE_DYN_LPF
+#define USE_D_MIN
 #define USE_LATE_TASK_STATISTICS
-//#define USE_DYN_NOTCH_FILTER
-//#define USE_FAST_DATA
-//#define USE_SERIAL_RX
+#define USE_DYN_NOTCH_FILTER
+#define USE_SERIAL_RX
 #define USE_ADC
-//#define CONFIG_IN_FLASH
+#define CONFIG_IN_FLASH
 //#define USE_TELEMETRY
-//#define USE_MSP_OVER_TELEMETRY
+#define USE_MSP_OVER_TELEMETRY
 //#define USE_TELEMETRY_CRSF
 //#define USE_CRSF_V3
 //#define USE_CRSF_LINK_STATISTICS
 //#define USE_DYN_IDLE
 //#define USE_GYRO_DLPF_EXPERIMENTAL
 #define USE_ADC_INTERNAL
-//#define USE_RC_SMOOTHING_FILTER
-//#define USE_FEEDFORWARD
-//#define USE_OSD
+#define USE_RC_SMOOTHING_FILTER
+#define USE_FEEDFORWARD
+#define USE_OSD
 
 
 #endif /* SRC_COMMON_DEF_H_ */

@@ -38,7 +38,8 @@
 #include "fc/rc_controls.h"
 #include "fc/rc_modes.h"
 #include "fc/runtime_config.h"
-//#include "fc/stats.h"
+#include "fc/stats.h"
+#include "fc/core.h"
 
 #include "scheduler/tasks.h"
 
@@ -50,11 +51,11 @@
 #endif
 
 #include "flight/imu.h"
-//#include "flight/mixer.h"
-//#include "flight/pid.h"
-//#include "flight/position.h"
+#include "flight/mixer.h"
+#include "flight/pid.h"
+#include "flight/position.h"
 
-//#include "gps.h"
+#include "drivers/gps/gps.h"
 
 #include "sensors/acceleration.h"
 #include "sensors/barometer.h"
@@ -64,11 +65,9 @@
 #include "sensors/sensors.h"
 #include "sensors/gyro.h"
 
-//#include "telemetry/telemetry.h"
+#include "osd/osd.h"
 
-#include "fc/core.h"
-
-
+#include "telemetry/telemetry.h"
 
 enum {
     ALIGN_GYRO = 0,
@@ -1159,13 +1158,13 @@ bool gyroFilterReady(void)
     }
 }
 
-//bool pidLoopReady(void)
-//{
-//    if ((pidUpdateCounter % activePidLoopDenom) == (activePidLoopDenom / 2)) {
-//        return true;
-//    }
-//    return false;
-//}
+bool pidLoopReady(void)
+{
+    if ((pidUpdateCounter % activePidLoopDenom) == (activePidLoopDenom / 2)) {
+        return true;
+    }
+    return false;
+}
 
 void taskFiltering(timeUs_t currentTimeUs)
 {

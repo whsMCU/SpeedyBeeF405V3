@@ -20,8 +20,6 @@
 
 #pragma once
 
-#include "common/time.h"
-
 #include "fc/rc_controls.h"
 
 #ifdef USE_RC_SMOOTHING_FILTER

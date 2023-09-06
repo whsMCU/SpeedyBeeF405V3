@@ -668,7 +668,7 @@ bool crsfRxInit(rxRuntimeState_t *rxRuntimeState)
 
  bool crsfRxUseNegotiatedBaud(void)
  {
-     return rxConfig()->crsf_use_negotiated_baud;
+     return rxConfig.crsf_use_negotiated_baud;
  }
 #endif
 

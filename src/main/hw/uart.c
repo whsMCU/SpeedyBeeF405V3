@@ -10,7 +10,7 @@
 #include "ring_buffer.h"
 #include "usbd_cdc_if.h"
 #include "rx/rx.h"
-//#include "rx/crsf.h"
+#include "rx/crsf.h"
 
 
 static bool is_open[UART_MAX_CH];

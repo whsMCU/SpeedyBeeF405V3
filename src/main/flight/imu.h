@@ -59,6 +59,8 @@ typedef struct imuConfig_s {
     uint8_t small_angle;
 } imuConfig_t;
 
+extern imuConfig_t imuConfig;
+
 typedef struct imuRuntimeConfig_s {
     float dcm_ki;
     float dcm_kp;

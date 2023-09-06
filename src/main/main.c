@@ -25,10 +25,12 @@
 
 #include "config/config.h"
 
+#include "fc/init.h"
 #include "fc/rc_modes.h"
 #include "fc/rc_controls.h"
 
 #include "flight/imu.h"
+#include "flight/pid_init.h"
 #include "flight/position.h"
 
 #include "sensors/sensors.h"
@@ -75,7 +77,6 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 void hwInit(void);
-void fcInit(void);
 /* USER CODE END 0 */
 
 /**
@@ -103,7 +104,7 @@ int main(void)
 
   /* USER CODE BEGIN SysInit */
   hwInit();
-  fcInit();
+  init();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -133,7 +134,6 @@ int main(void)
   {
     /* USER CODE END WHILE */
 	  scheduler();
-	//SerialCom();
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -159,51 +159,6 @@ void hwInit(void)
   {
     fatfsInit();
   }
-
-	ledOn(ST1);
-	for (int i = 0; i < 10; i++)
-	{
-		ledToggle(ST1);
-		#if defined(USE_BEEPER)
-			HAL_Delay(25);
-			BEEP_ON;
-			HAL_Delay(25);
-			BEEP_OFF;
-		#else
-			HAL_Delay(50);
-		#endif
-	}
-	ledOff(ST1);
-}
-
-void fcInit(void)
-{
-	tasksInitData();
-	cliOpen(_DEF_USB, 57600);
-
-	readEEPROM();
-
-	Sensor_Init();
-	Baro_Init();
-	compassInit();
-	adcInternalInit();
-	gyroSetTargetLooptime(1);
-	gyroInitFilters();
-	imuInit();
-	positionConfig_Init();
-	rcControlsConfig_Init();
-	armingConfig_Init();
-	flight3DConfig_Init();
-	rxInit();
-	batteryInit(); // always needs doing, regardless of features.
-	gpsInit();
-	tasksInit();
-	MSP_SET_MODE_RANGE(0, 0, 0, 1700, 2100);
-	MSP_SET_MODE_RANGE(1, 1, 0, 1700, 2100);
-	MSP_SET_MODE_RANGE(2, 6, 1, 1700, 2100);
-	MSP_SET_MODE_RANGE(3, 27, 4, 1700, 2100);
-	MSP_SET_MODE_RANGE(4, 7, 5, 1700, 2100);
-	MSP_SET_MODE_RANGE(5, 26, 0, 1700, 2100);
 }
 
 /**

@@ -105,7 +105,7 @@ typedef enum {
     TASK_MAIN,
     TASK_GYRO,
     TASK_FILTER,
-    //TASK_PID,
+    TASK_PID,
     TASK_ACCEL,
     TASK_ATTITUDE,
     TASK_RX,
@@ -133,7 +133,7 @@ typedef enum {
     TASK_STACK_CHECK,
 #endif
 #ifdef USE_OSD
-    //TASK_OSD,
+    TASK_OSD,
 #endif
 #ifdef USE_ADC_INTERNAL
     TASK_ADC_INTERNAL,

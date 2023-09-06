@@ -23,11 +23,6 @@
 #include <string.h>
 #include <math.h>
 
-
-//#include "blackbox/blackbox.h"
-
-//#include "build/debug.h"
-
 //#include "common/sensor_alignment.h"
 
 //#include "config/config_eeprom.h"
@@ -41,23 +36,23 @@
 #include "fc/controlrate_profile.h"
 #include "fc/core.h"
 #include "fc/rc.h"
-//#include "fc/rc_adjustments.h"
+#include "fc/rc_adjustments.h"
 #include "fc/rc_controls.h"
 #include "fc/runtime_config.h"
 
 //#include "flight/failsafe.h"
 #include "sensors/sensors.h"
 #include "flight/imu.h"
-//#include "flight/mixer.h"
-//#include "pid.h"
-//#include "pid_init.h"
+#include "flight/mixer.h"
+#include "flight/pid.h"
+#include "flight/pid_init.h"
 //#include "flight/rpm_filter.h"
 //#include "flight/servos.h"
 //#include "flight/position.h"
 
 #include "msp/msp_box.h"
 
-//#include "osd/osd.h"
+#include "osd/osd.h"
 
 #include "rx/rx.h"
 
@@ -76,7 +71,7 @@ static bool rebootRequired = false;  // set if a config change requires a reboot
 
 static bool eepromWriteInProgress = false;
 
-//pidProfile_t *currentPidProfile;
+pidProfile_t *currentPidProfile;
 
 #ifndef RX_SPI_DEFAULT_PROTOCOL
 #define RX_SPI_DEFAULT_PROTOCOL 0
@@ -128,7 +123,7 @@ uint8_t getCurrentPidProfileIndex(void)
 
 static void loadPidProfile(void)
 {
-    //currentPidProfile = pidProfilesMutable(systemConfig.pidProfileIndex);
+    currentPidProfile = &pidProfiles[systemConfig.pidProfileIndex];
 }
 
 uint8_t getCurrentControlRateProfileIndex(void)
@@ -161,7 +156,7 @@ static void activateConfig(void)
 
     //activeAdjustmentRangeReset();
 
-    //pidInit(currentPidProfile);
+    pidInit(currentPidProfile);
 
     rcControlsInit();
 
@@ -259,9 +254,9 @@ static void validateAndFixConfig(void)
 
 #ifdef USE_DYN_LPF
         //Prevent invalid dynamic lowpass
-        if (pidProfilesMutable(i)->dterm_lpf1_dyn_min_hz > pidProfilesMutable(i)->dterm_lpf1_dyn_max_hz) {
-            pidProfilesMutable(i)->dterm_lpf1_dyn_min_hz = 0;
-        }
+//        if (pidProfilesMutable(i)->dterm_lpf1_dyn_min_hz > pidProfilesMutable(i)->dterm_lpf1_dyn_max_hz) {
+//            pidProfilesMutable(i)->dterm_lpf1_dyn_min_hz = 0;
+//        }
 #endif
 
 //        if (pidProfilesMutable(i)->motor_output_limit > 100 || pidProfilesMutable(i)->motor_output_limit == 0) {
@@ -525,10 +520,10 @@ static void validateAndFixConfig(void)
 
 #if defined(USE_OSD)
     for (int i = 0; i < OSD_TIMER_COUNT; i++) {
-         const uint16_t t = osdConfig()->timers[i];
+         const uint16_t t = osdConfig.timers[i];
          if (OSD_TIMER_SRC(t) >= OSD_TIMER_SRC_COUNT ||
                  OSD_TIMER_PRECISION(t) >= OSD_TIMER_PREC_COUNT) {
-             osdConfigMutable()->timers[i] = osdTimerDefault[i];
+             osdConfig.timers[i] = osdTimerDefault[i];
          }
      }
 #endif
@@ -616,8 +611,8 @@ void validateAndFixGyroConfig(void)
     }
 #ifdef USE_DYN_LPF
     //Prevent invalid dynamic lowpass filter
-    if (gyroConfig()->gyro_lpf1_dyn_min_hz > gyroConfig()->gyro_lpf1_dyn_max_hz) {
-        gyroConfigMutable()->gyro_lpf1_dyn_min_hz = 0;
+    if (gyroConfig.gyro_lpf1_dyn_min_hz > gyroConfig.gyro_lpf1_dyn_max_hz) {
+        gyroConfig.gyro_lpf1_dyn_min_hz = 0;
     }
 #endif
 
@@ -701,14 +696,14 @@ void validateAndFixGyroConfig(void)
     }
 #endif // USE_BLACKBOX
 
-//    if (systemConfig.activeRateProfile >= CONTROL_RATE_PROFILE_COUNT) {
-//        systemConfig.activeRateProfile = 0;
-//    }
+    if (systemConfig.activeRateProfile >= CONTROL_RATE_PROFILE_COUNT) {
+        systemConfig.activeRateProfile = 0;
+    }
     loadControlRateProfile();
 
-//    if (systemConfig.pidProfileIndex >= PID_PROFILE_COUNT) {
-//        systemConfig.pidProfileIndex = 0;
-//    }
+    if (systemConfig.pidProfileIndex >= PID_PROFILE_COUNT) {
+        systemConfig.pidProfileIndex = 0;
+    }
     loadPidProfile();
 }
 
@@ -773,7 +768,7 @@ bool resetEEPROM(bool useCustomDefaults)
     return true;
 }
 
-void ensureEEPROMStructureIsValid(void)
+void isEEPROMStructureValid(void)
 {
 //    if (isEEPROMStructureValid()) {
 //        return;
@@ -831,14 +826,14 @@ void changePidProfile(uint8_t pidProfileIndex)
     // The config switch will cause a big enough delay in the current task to upset the scheduler
     schedulerIgnoreTaskExecTime();
 
-//    if (pidProfileIndex < PID_PROFILE_COUNT) {
-//        systemConfig.pidProfileIndex = pidProfileIndex;
-//        loadPidProfile();
-//
-//        //pidInit(currentPidProfile);
-//        //initEscEndpoints();
-//        //mixerInitProfile();
-//    }
+    if (pidProfileIndex < PID_PROFILE_COUNT) {
+        systemConfig.pidProfileIndex = pidProfileIndex;
+        loadPidProfile();
+
+        //pidInit(currentPidProfile);
+        //initEscEndpoints();
+        //mixerInitProfile();
+    }
 
     //beeperConfirmationBeeps(pidProfileIndex + 1);
 }

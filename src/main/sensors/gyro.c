@@ -29,10 +29,12 @@
 #include "common/maths.h"
 #include "common/filter.h"
 
-//#include "config/feature.h"
+#include "config/feature.h"
 
-//#include "config/config.h"
+#include "config/config.h"
 #include "fc/runtime_config.h"
+
+#include "flight/pid.h"
 
 #ifdef USE_DYN_NOTCH_FILTER
 #include "dyn_notch_filter.h"
@@ -44,6 +46,7 @@
 #include "sensors/gyro.h"
 #include "sensors/gyro_init.h"
 #include "sensors/acceleration.h"
+
 #include "drivers/accgyro/bmi270.h"
 
 #if ((TARGET_FLASH_SIZE > 128) && (defined(USE_GYRO_SPI_ICM20601) || defined(USE_GYRO_SPI_ICM20689) || defined(USE_GYRO_SPI_MPU6500)))
@@ -521,7 +524,7 @@ void gyroFiltering(uint32_t currentTimeUs)
 #endif
 
 #ifdef USE_GYRO_OVERFLOW_CHECK
-    if (gyroConfig()->checkOverflow && !gyro.gyroHasOverflowProtection) {
+    if (gyroConfig.checkOverflow && !gyro.gyroHasOverflowProtection) {
         checkForOverflow(currentTimeUs);
     }
 #endif
@@ -667,10 +670,10 @@ void initYawSpinRecovery(int maxYawRate)
     bool enabledFlag;
     int threshold;
 
-    switch (gyroConfig()->yaw_spin_recovery) {
+    switch (gyroConfig.yaw_spin_recovery) {
     case YAW_SPIN_RECOVERY_ON:
         enabledFlag = true;
-        threshold = gyroConfig()->yaw_spin_threshold;
+        threshold = gyroConfig.yaw_spin_threshold;
         break;
     case YAW_SPIN_RECOVERY_AUTO:
         enabledFlag = true;

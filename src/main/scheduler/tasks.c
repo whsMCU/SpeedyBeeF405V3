@@ -52,7 +52,14 @@
 
 #include "rx/rx.h"
 
+#include "osd/osd.h"
+
 #include "scheduler/tasks.h"
+
+#include "telemetry.h"
+
+#include "telemetry/telemetry.h"
+#include "telemetry/crsf.h"
 
 
 
@@ -303,7 +310,7 @@ task_attribute_t task_attributes[TASK_COUNT] = {
 
     [TASK_GYRO] = DEFINE_TASK("GYRO", NULL, NULL, taskGyroSample, TASK_GYROPID_DESIRED_PERIOD, TASK_PRIORITY_REALTIME),
     [TASK_FILTER] = DEFINE_TASK("FILTER", NULL, NULL, taskFiltering, TASK_GYROPID_DESIRED_PERIOD, TASK_PRIORITY_REALTIME),
-    //[TASK_PID] = DEFINE_TASK("PID", NULL, NULL, taskMainPidLoop, TASK_GYROPID_DESIRED_PERIOD, TASK_PRIORITY_REALTIME),
+    [TASK_PID] = DEFINE_TASK("PID", NULL, NULL, taskMainPidLoop, TASK_GYROPID_DESIRED_PERIOD, TASK_PRIORITY_REALTIME),
 
 #ifdef USE_ACC
     [TASK_ACCEL] = DEFINE_TASK("ACC", NULL, NULL, taskUpdateAccelerometer, TASK_PERIOD_HZ(1000), TASK_PRIORITY_MEDIUM),
@@ -327,7 +334,7 @@ task_attribute_t task_attributes[TASK_COUNT] = {
     [TASK_ALTITUDE] = DEFINE_TASK("ALTITUDE", NULL, NULL, taskCalculateAltitude, TASK_PERIOD_HZ(40), TASK_PRIORITY_LOW),
 
 #ifdef USE_OSD
-   // [TASK_OSD] = DEFINE_TASK("OSD", NULL, osdUpdateCheck, osdUpdate, TASK_PERIOD_HZ(OSD_FRAMERATE_DEFAULT_HZ), TASK_PRIORITY_LOW),
+    [TASK_OSD] = DEFINE_TASK("OSD", NULL, osdUpdateCheck, osdUpdate, TASK_PERIOD_HZ(OSD_FRAMERATE_DEFAULT_HZ), TASK_PRIORITY_LOW),
 #endif
 
 #ifdef USE_TELEMETRY
@@ -373,7 +380,7 @@ void tasksInit(void)
     batteryConfig.voltageMeterSource = VOLTAGE_METER_ADC;
     batteryConfig.currentMeterSource = CURRENT_METER_ADC;
 
-		const bool useBatteryVoltage = batteryConfig.voltageMeterSource != VOLTAGE_METER_NONE;
+	const bool useBatteryVoltage = batteryConfig.voltageMeterSource != VOLTAGE_METER_NONE;
     setTaskEnabled(TASK_BATTERY_VOLTAGE, useBatteryVoltage);
 
 #if defined(USE_BATTERY_VOLTAGE_SAG_COMPENSATION)
@@ -394,10 +401,10 @@ void tasksInit(void)
 
     rescheduleTask(TASK_GYRO, gyro.sampleLooptime);
     rescheduleTask(TASK_FILTER, gyro.targetLooptime);
-    //rescheduleTask(TASK_PID, gyro.targetLooptime);
+    rescheduleTask(TASK_PID, gyro.targetLooptime);
     setTaskEnabled(TASK_GYRO, true);
     setTaskEnabled(TASK_FILTER, true);
-    //setTaskEnabled(TASK_PID, true);
+    setTaskEnabled(TASK_PID, true);
     schedulerEnableGyro();
 
 #if defined(USE_ACC)
@@ -434,16 +441,16 @@ void tasksInit(void)
 #endif
 
 #ifdef USE_TELEMETRY
-    if (true) {//featureIsEnabled(FEATURE_TELEMETRY)
-        setTaskEnabled(TASK_TELEMETRY, true);
-        if (rxRuntimeState.serialrxProvider == SERIALRX_JETIEXBUS) {
-            // Reschedule telemetry to 500hz for Jeti Exbus
-            rescheduleTask(TASK_TELEMETRY, TASK_PERIOD_HZ(500));
-        } else if (rxRuntimeState.serialrxProvider == SERIALRX_CRSF) {
-            // Reschedule telemetry to 500hz, 2ms for CRSF
-            rescheduleTask(TASK_TELEMETRY, TASK_PERIOD_HZ(500));
-        }
-    }
+//    if (featureIsEnabled(FEATURE_TELEMETRY)) {
+//        setTaskEnabled(TASK_TELEMETRY, true);
+//        if (rxRuntimeState.serialrxProvider == SERIALRX_JETIEXBUS) {
+//            // Reschedule telemetry to 500hz for Jeti Exbus
+//            rescheduleTask(TASK_TELEMETRY, TASK_PERIOD_HZ(500));
+//        } else if (rxRuntimeState.serialrxProvider == SERIALRX_CRSF) {
+//            // Reschedule telemetry to 500hz, 2ms for CRSF
+//            rescheduleTask(TASK_TELEMETRY, TASK_PERIOD_HZ(500));
+//        }
+//    }
 #endif
 
 #ifdef USE_LED_STRIP
@@ -455,7 +462,7 @@ void tasksInit(void)
 #endif
 
 #ifdef USE_OSD
-    rescheduleTask(TASK_OSD, TASK_PERIOD_HZ(osdConfig()->framerate_hz));
+    rescheduleTask(TASK_OSD, TASK_PERIOD_HZ(osdConfig.framerate_hz));
     setTaskEnabled(TASK_OSD, featureIsEnabled(FEATURE_OSD) && osdGetDisplayPort(NULL));
 #endif
 
@@ -498,8 +505,8 @@ void tasksInit(void)
 #endif
 
 #ifdef USE_CRSF_V3
-    const bool useCRSF = rxRuntimeState.serialrxProvider == SERIALRX_CRSF;
-    setTaskEnabled(TASK_SPEED_NEGOTIATION, useCRSF);
+    //const bool useCRSF = rxRuntimeState.serialrxProvider == SERIALRX_CRSF;
+    //setTaskEnabled(TASK_SPEED_NEGOTIATION, useCRSF);
 #endif
 }
 

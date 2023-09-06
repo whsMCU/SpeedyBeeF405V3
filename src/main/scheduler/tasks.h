@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "scheduler.h"
+#include "scheduler/scheduler.h"
 
 void tasksInitData(void);
 void tasksInit(void);
