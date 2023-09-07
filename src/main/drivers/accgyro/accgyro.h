@@ -6,6 +6,8 @@
 
 #include "drivers/sensor.h"
 
+#include "common/sensor_alignment.h"
+
 
 #define GYRO_SCALE_2000DPS (2000.0f / (1 << 15))   // 16.384 dps/lsb scalefactor for 2000dps sensors
 #define GYRO_SCALE_4000DPS (4000.0f / (1 << 15))   //  8.192 dps/lsb scalefactor for 4000dps sensors
@@ -76,7 +78,7 @@ typedef struct gyroDev_s {
     int16_t gyroADCRaw[XYZ_AXIS_COUNT];                      // raw data from sensor
     int16_t temperature;
     //mpuDetectionResult_t mpuDetectionResult;
-    //sensor_align_e gyroAlign;
+    sensor_align_e gyroAlign;
     gyroRateKHz_e gyroRateKHz;
     gyroModeSPI_e gyroModeSPI;
 
@@ -111,11 +113,11 @@ typedef struct accDev_s {
     uint16_t acc_1G;
     int16_t ADCRaw[XYZ_AXIS_COUNT];
     //mpuDetectionResult_t mpuDetectionResult;
-    //sensor_align_e accAlign;
+    sensor_align_e accAlign;
     bool dataReady;
     gyroDev_t *gyro;
     bool acc_high_fsr;
     char revisionCode;                                      // a revision code for the sensor, if known
     uint8_t filler[2];
-    //fp_rotationMatrix_t rotationMatrix;
+    fp_rotationMatrix_t rotationMatrix;
 } accDev_t;

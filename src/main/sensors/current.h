@@ -100,6 +100,7 @@ typedef struct currentMeterMSPState_s {
 //
 // Current Meter API
 //
+void currentSensorADCConfig_Init(void);
 
 void currentMeterReset(currentMeter_t *meter);
 

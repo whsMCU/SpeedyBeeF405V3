@@ -27,7 +27,6 @@
 
 
 featureConfig_t featureConfig;
-static void featureConfig_Init(void);
 
 void featureConfig_Init(void)
 {
@@ -38,7 +37,6 @@ static uint32_t runtimeFeatureMask;
 
 void featureInit(void)
 {
-	featureConfig_Init();
   runtimeFeatureMask = featureConfig.enabledFeatures;
 }
 

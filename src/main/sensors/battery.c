@@ -89,7 +89,6 @@ static batteryState_e consumptionState;
 
 batteryConfig_t batteryConfig;
 
-static void batteryConfig_Init(void);
 void batteryConfig_Init(void)
 {
 	// voltage
@@ -186,8 +185,6 @@ static bool isVoltageFromBat(void)
 
 void batteryUpdatePresence(void)
 {
-
-
     if ((voltageState == BATTERY_NOT_PRESENT || voltageState == BATTERY_INIT) && isVoltageFromBat() && isVoltageStable()) {
         // Battery has just been connected - calculate cells, warning voltages and reset state
 
@@ -338,7 +335,6 @@ const char * getBatteryStateString(void)
 
 void batteryInit(void)
 {
-	batteryConfig_Init();
     //
     // presence
     //

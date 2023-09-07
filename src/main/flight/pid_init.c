@@ -239,8 +239,6 @@ static void pidSetTargetLooptime(uint32_t pidLooptime)
 
 void pidInit(const pidProfile_t *pidProfile)
 {
-	pidConfig_Init();
-	pidProfiles_Init();
     pidSetTargetLooptime(gyro.targetLooptime); // Initialize pid looptime
     pidInitFilters(pidProfile);
     pidInitConfig(pidProfile);

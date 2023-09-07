@@ -48,7 +48,7 @@
 #include "flight/pid_init.h"
 //#include "flight/rpm_filter.h"
 //#include "flight/servos.h"
-//#include "flight/position.h"
+#include "flight/position.h"
 
 #include "msp/msp_box.h"
 
@@ -87,7 +87,7 @@ pidProfile_t *currentPidProfile;
 
 
 pilotConfig_t pilotConfig;
-static void pilotConfig_Init(void);
+
 void pilotConfig_Init(void)
 {
 	pilotConfig.name[MAX_NAME_LENGTH + 1] = 0;
@@ -95,7 +95,7 @@ void pilotConfig_Init(void)
 }
 
 systemConfig_t systemConfig;
-static void systemConfig_Init(void);
+
 void systemConfig_Init(void)
 {
 	systemConfig.pidProfileIndex = 0;
@@ -147,8 +147,6 @@ void resetConfig(void)
 
 static void activateConfig(void)
 {
-	pilotConfig_Init();
-	systemConfig_Init();
     loadPidProfile();
     loadControlRateProfile();
 
@@ -172,7 +170,7 @@ static void activateConfig(void)
     reevaluateLedConfig();
 #endif
 
-    //initActiveBoxIds();
+    initActiveBoxIds();
 }
 
 static void adjustFilterLimit(uint16_t *parm, uint16_t resetValue)
@@ -184,22 +182,22 @@ static void adjustFilterLimit(uint16_t *parm, uint16_t resetValue)
 
 static void validateAndFixRatesSettings(void)
 {
-//    for (unsigned profileIndex = 0; profileIndex < CONTROL_RATE_PROFILE_COUNT; profileIndex++) {
-//        const ratesType_e ratesType = controlRateProfilesMutable(profileIndex)->rates_type;
-//        for (unsigned axis = FD_ROLL; axis <= FD_YAW; axis++) {
-//            controlRateProfilesMutable(profileIndex)->rcRates[axis] = constrain(controlRateProfilesMutable(profileIndex)->rcRates[axis], 0, ratesSettingLimits[ratesType].rc_rate_limit);
-//            controlRateProfilesMutable(profileIndex)->rates[axis] = constrain(controlRateProfilesMutable(profileIndex)->rates[axis], 0, ratesSettingLimits[ratesType].srate_limit);
-//            controlRateProfilesMutable(profileIndex)->rcExpo[axis] = constrain(controlRateProfilesMutable(profileIndex)->rcExpo[axis], 0, ratesSettingLimits[ratesType].expo_limit);
-//        }
-//    }
+    for (unsigned profileIndex = 0; profileIndex < CONTROL_RATE_PROFILE_COUNT; profileIndex++) {
+        const ratesType_e ratesType = controlRateProfiles[profileIndex].rates_type;
+        for (unsigned axis = FD_ROLL; axis <= FD_YAW; axis++) {
+            controlRateProfiles[profileIndex].rcRates[axis] = constrain(controlRateProfiles[profileIndex].rcRates[axis], 0, ratesSettingLimits[ratesType].rc_rate_limit);
+            controlRateProfiles[profileIndex].rates[axis] = constrain(controlRateProfiles[profileIndex].rates[axis], 0, ratesSettingLimits[ratesType].srate_limit);
+            controlRateProfiles[profileIndex].rcExpo[axis] = constrain(controlRateProfiles[profileIndex].rcExpo[axis], 0, ratesSettingLimits[ratesType].expo_limit);
+        }
+    }
 }
 
 static void validateAndFixPositionConfig(void)
 {
-//    if (positionConfig()->altNumSatsBaroFallback >= positionConfig()->altNumSatsGpsUse) {
-//        positionConfigMutable()->altNumSatsGpsUse = POSITION_DEFAULT_ALT_NUM_SATS_GPS_USE;
-//        positionConfigMutable()->altNumSatsBaroFallback = POSITION_DEFAULT_ALT_NUM_SATS_BARO_FALLBACK;
-//    }
+    if (positionConfig.altNumSatsBaroFallback >= positionConfig.altNumSatsGpsUse) {
+        positionConfig.altNumSatsGpsUse = POSITION_DEFAULT_ALT_NUM_SATS_GPS_USE;
+        positionConfig.altNumSatsBaroFallback = POSITION_DEFAULT_ALT_NUM_SATS_BARO_FALLBACK;
+    }
 }
 
 static void validateAndFixConfig(void)
@@ -209,16 +207,16 @@ static void validateAndFixConfig(void)
     // This check will be gone when motor/servo mixers are loaded dynamically
     // by configurator as a part of configuration procedure.
 
-//    mixerMode_e mixerMode = mixerConfigMutable()->mixerMode;
+    mixerMode_e mixerMode = mixerConfig.mixerMode;
 
-//    if (!(mixerMode == MIXER_CUSTOM || mixerMode == MIXER_CUSTOM_AIRPLANE || mixerMode == MIXER_CUSTOM_TRI)) {
-//        if (mixers[mixerMode].motorCount && mixers[mixerMode].motor == NULL)
-//            mixerConfigMutable()->mixerMode = MIXER_CUSTOM;
+    if (!(mixerMode == MIXER_CUSTOM || mixerMode == MIXER_CUSTOM_AIRPLANE || mixerMode == MIXER_CUSTOM_TRI)) {
+        if (mixers[mixerMode].motorCount && mixers[mixerMode].motor == NULL)
+            mixerConfig.mixerMode = MIXER_CUSTOM;
 #ifdef USE_SERVOS
         if (mixers[mixerMode].useServo && servoMixers[mixerMode].servoRuleCount == 0)
             mixerConfigMutable()->mixerMode = MIXER_CUSTOM_AIRPLANE;
 #endif
-//    }
+    }
 #endif
 
 //    if (!isSerialConfigValid(serialConfig())) {
@@ -239,47 +237,47 @@ static void validateAndFixConfig(void)
         featureDisableImmediate(FEATURE_GPS);
     }
 
-//    for (unsigned i = 0; i < PID_PROFILE_COUNT; i++) {
-        // Fix filter settings to handle cases where an older configurator was used that
-        // allowed higher cutoff limits from previous firmware versions.
-//        adjustFilterLimit(&pidProfilesMutable(i)->dterm_lpf1_static_hz, LPF_MAX_HZ);
-//        adjustFilterLimit(&pidProfilesMutable(i)->dterm_lpf2_static_hz, LPF_MAX_HZ);
-//        adjustFilterLimit(&pidProfilesMutable(i)->dterm_notch_hz, LPF_MAX_HZ);
-//        adjustFilterLimit(&pidProfilesMutable(i)->dterm_notch_cutoff, 0);
+    for (unsigned i = 0; i < PID_PROFILE_COUNT; i++) {
+        //Fix filter settings to handle cases where an older configurator was used that
+        //allowed higher cutoff limits from previous firmware versions.
+        adjustFilterLimit(&pidProfiles[i].dterm_lpf1_static_hz, LPF_MAX_HZ);
+        adjustFilterLimit(&pidProfiles[i].dterm_lpf2_static_hz, LPF_MAX_HZ);
+        adjustFilterLimit(&pidProfiles[i].dterm_notch_hz, LPF_MAX_HZ);
+        adjustFilterLimit(&pidProfiles[i].dterm_notch_cutoff, 0);
 
-        // Prevent invalid notch cutoff
-//        if (pidProfilesMutable(i)->dterm_notch_cutoff >= pidProfilesMutable(i)->dterm_notch_hz) {
-//            pidProfilesMutable(i)->dterm_notch_hz = 0;
-//        }
+        //Prevent invalid notch cutoff
+        if (pidProfiles[i].dterm_notch_cutoff >= pidProfiles[i].dterm_notch_hz) {
+            pidProfiles[i].dterm_notch_hz = 0;
+        }
 
 #ifdef USE_DYN_LPF
         //Prevent invalid dynamic lowpass
-//        if (pidProfilesMutable(i)->dterm_lpf1_dyn_min_hz > pidProfilesMutable(i)->dterm_lpf1_dyn_max_hz) {
-//            pidProfilesMutable(i)->dterm_lpf1_dyn_min_hz = 0;
-//        }
+        if (pidProfiles[i].dterm_lpf1_dyn_min_hz > pidProfiles[i].dterm_lpf1_dyn_max_hz) {
+            pidProfiles[i].dterm_lpf1_dyn_min_hz = 0;
+        }
 #endif
 
-//        if (pidProfilesMutable(i)->motor_output_limit > 100 || pidProfilesMutable(i)->motor_output_limit == 0) {
-//            pidProfilesMutable(i)->motor_output_limit = 100;
-//        }
+        if (pidProfiles[i].motor_output_limit > 100 || pidProfiles[i].motor_output_limit == 0) {
+            pidProfiles[i].motor_output_limit = 100;
+        }
 
-//        if (pidProfilesMutable(i)->auto_profile_cell_count > MAX_AUTO_DETECT_CELL_COUNT || pidProfilesMutable(i)->auto_profile_cell_count < AUTO_PROFILE_CELL_COUNT_CHANGE) {
-//            pidProfilesMutable(i)->auto_profile_cell_count = AUTO_PROFILE_CELL_COUNT_STAY;
-//        }
+        if (pidProfiles[i].auto_profile_cell_count > MAX_AUTO_DETECT_CELL_COUNT || pidProfiles[i].auto_profile_cell_count < AUTO_PROFILE_CELL_COUNT_CHANGE) {
+            pidProfiles[i].auto_profile_cell_count = AUTO_PROFILE_CELL_COUNT_STAY;
+        }
 
         // If the d_min value for any axis is >= the D gain then reset d_min to 0 for consistent Configurator behavior
-//        for (unsigned axis = 0; axis <= FD_YAW; axis++) {
-//            if (pidProfilesMutable(i)->d_min[axis] > pidProfilesMutable(i)->pid[axis].D) {
-//                pidProfilesMutable(i)->d_min[axis] = 0;
-//            }
-//        }
+        for (unsigned axis = 0; axis <= FD_YAW; axis++) {
+            if (pidProfiles[i].d_min[axis] > pidProfiles[i].pid[axis].D) {
+                pidProfiles[i].d_min[axis] = 0;
+            }
+        }
 
 #if defined(USE_BATTERY_VOLTAGE_SAG_COMPENSATION)
         if (batteryConfig()->voltageMeterSource != VOLTAGE_METER_ADC) {
             pidProfilesMutable(i)->vbat_sag_compensation = 0;
         }
 #endif
-//    }
+    }
 
 //    if (motorConfig()->dev.motorPwmProtocol == PWM_TYPE_BRUSHED) {
 //        featureDisableImmediate(FEATURE_3D);
@@ -715,7 +713,6 @@ bool readEEPROM(void)
     bool success = true;// = loadEEPROM();
 
     featureInit();
-    throttleCorrectionConfig_Init();
 
     validateAndFixConfig();
 
@@ -796,30 +793,30 @@ bool isConfigDirty(void)
     return configIsDirty;
 }
 
-//void changePidProfileFromCellCount(uint8_t cellCount)
-//{
-//    if (currentPidProfile->auto_profile_cell_count == cellCount || currentPidProfile->auto_profile_cell_count == AUTO_PROFILE_CELL_COUNT_STAY) {
-//        return;
-//    }
-//
-//    unsigned profileIndex = (systemConfig()->pidProfileIndex + 1) % PID_PROFILE_COUNT;
-//    int matchingProfileIndex = -1;
-//    while (profileIndex != systemConfig()->pidProfileIndex) {
-//        if (pidProfiles(profileIndex)->auto_profile_cell_count == cellCount) {
-//            matchingProfileIndex = profileIndex;
-//
-//            break;
-//        } else if (matchingProfileIndex < 0 && pidProfiles(profileIndex)->auto_profile_cell_count == AUTO_PROFILE_CELL_COUNT_STAY) {
-//            matchingProfileIndex = profileIndex;
-//        }
-//
-//        profileIndex = (profileIndex + 1) % PID_PROFILE_COUNT;
-//    }
-//
-//    if (matchingProfileIndex >= 0) {
-//        changePidProfile(matchingProfileIndex);
-//    }
-//}
+void changePidProfileFromCellCount(uint8_t cellCount)
+{
+    if (currentPidProfile->auto_profile_cell_count == cellCount || currentPidProfile->auto_profile_cell_count == AUTO_PROFILE_CELL_COUNT_STAY) {
+        return;
+    }
+
+    unsigned profileIndex = (systemConfig.pidProfileIndex + 1) % PID_PROFILE_COUNT;
+    int matchingProfileIndex = -1;
+    while (profileIndex != systemConfig.pidProfileIndex) {
+        if (pidProfiles[profileIndex].auto_profile_cell_count == cellCount) {
+            matchingProfileIndex = profileIndex;
+
+            break;
+        } else if (matchingProfileIndex < 0 && pidProfiles[profileIndex].auto_profile_cell_count == AUTO_PROFILE_CELL_COUNT_STAY) {
+            matchingProfileIndex = profileIndex;
+        }
+
+        profileIndex = (profileIndex + 1) % PID_PROFILE_COUNT;
+    }
+
+    if (matchingProfileIndex >= 0) {
+        changePidProfile(matchingProfileIndex);
+    }
+}
 
 void changePidProfile(uint8_t pidProfileIndex)
 {
@@ -830,9 +827,9 @@ void changePidProfile(uint8_t pidProfileIndex)
         systemConfig.pidProfileIndex = pidProfileIndex;
         loadPidProfile();
 
-        //pidInit(currentPidProfile);
-        //initEscEndpoints();
-        //mixerInitProfile();
+        pidInit(currentPidProfile);
+        initEscEndpoints();
+        mixerInitProfile();
     }
 
     //beeperConfirmationBeeps(pidProfileIndex + 1);

@@ -74,6 +74,8 @@
 #define USE_RC_SMOOTHING_FILTER
 #define USE_FEEDFORWARD
 #define USE_OSD
+#define USE_BOARD_INFO
+#define USE_SIGNATURE
 
 
 #endif /* SRC_COMMON_DEF_H_ */

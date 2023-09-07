@@ -35,6 +35,7 @@ typedef enum {
     FD_YAW
 } flight_dynamics_index_t;
 
+#define FLIGHT_DYNAMICS_INDEX_COUNT 3
 
 typedef enum {
     AI_ROLL = 0,

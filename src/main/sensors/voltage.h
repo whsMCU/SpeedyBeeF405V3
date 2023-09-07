@@ -98,6 +98,7 @@ typedef struct voltageSensorADCConfig_s {
 //
 // Main API
 //
+void voltageSensorADCConfig_Init(void);
 void voltageMeterReset(voltageMeter_t *voltageMeter);
 
 void voltageMeterGenericInit(void);

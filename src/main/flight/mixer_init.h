@@ -56,3 +56,5 @@ typedef struct mixerRuntime_s {
 } mixerRuntime_t;
 
 extern mixerRuntime_t mixerRuntime;
+
+void mixerConfig_Init(void);

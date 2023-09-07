@@ -45,8 +45,6 @@ baro_t baro;                        // barometer access functions
 
 barometerConfig_t barometerConfig;
 
-static void barometerConfig_Init(void);
-
 void barometerConfig_Init(void)
 {
     barometerConfig.baro_sample_count = 21;
@@ -87,7 +85,6 @@ void Baro_Init(void)
 {
 
 	baroSensor_e baroHardware = BARO_DPS310;
-	barometerConfig_Init();
 
   dps310Detect(&baro.dev);
   sensorsSet(SENSOR_BARO);

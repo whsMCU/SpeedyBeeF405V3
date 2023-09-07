@@ -355,7 +355,6 @@ static bool gyroDetectSensor(gyroSensor_t *gyroSensor)
 		}
 		delay(100);
 	}
-	gyroConfig_init();
 
 	#else
 	 UNUSED(config);

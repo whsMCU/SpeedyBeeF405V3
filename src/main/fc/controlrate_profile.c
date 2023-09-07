@@ -35,7 +35,7 @@
 controlRateConfig_t *currentControlRateProfile;
 
 controlRateConfig_t controlRateProfiles[CONTROL_RATE_PROFILE_COUNT];
-static void controlRateProfiles_Init(void);
+
 void controlRateProfiles_Init(void)
 {
     for (int i = 0; i < CONTROL_RATE_PROFILE_COUNT; i++) {

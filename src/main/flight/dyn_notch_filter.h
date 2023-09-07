@@ -36,6 +36,8 @@ typedef struct dynNotchConfig_s
 
 extern dynNotchConfig_t dynNotchConfig;
 
+void dynNotchConfig_Init(void);
+
 void dynNotchInit(const dynNotchConfig_t *config, const uint32_t targetLooptimeUs);
 void dynNotchPush(const int axis, const float sample);
 void dynNotchUpdate(void);

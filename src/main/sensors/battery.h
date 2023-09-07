@@ -89,6 +89,8 @@ typedef enum {
     BATTERY_INIT
 } batteryState_e;
 
+void batteryConfig_Init(void);
+
 void batteryInit(void);
 void batteryUpdateVoltage(timeUs_t currentTimeUs);
 void batteryUpdatePresence(void);

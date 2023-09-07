@@ -122,7 +122,6 @@ voltageMeterADCState_t *getVoltageMeterADC(uint8_t index)
 
 voltageSensorADCConfig_t voltageSensorADCConfigs[MAX_VOLTAGE_SENSOR_ADC];
 
-static void voltageSensorADCConfig_Init(void);
 void voltageSensorADCConfig_Init(void)
 {
     for (int i = 0; i < MAX_VOLTAGE_SENSOR_ADC; i++) {
@@ -205,7 +204,6 @@ bool isSagCompensationConfigured(void)
 
 void voltageMeterADCInit(void)
 {
-	voltageSensorADCConfig_Init();
     for (uint8_t i = 0; i < MAX_VOLTAGE_SENSOR_ADC && i < ARRAYLEN(voltageMeterAdcChannelMap); i++) {
         // store the battery voltage with some other recent battery voltage readings
 

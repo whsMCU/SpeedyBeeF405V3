@@ -164,7 +164,6 @@ static float   pt1LooptimeS;
 
 void dynNotchInit(const dynNotchConfig_t *config, const uint32_t targetLooptimeUs)
 {
-	dynNotchConfig_Init();
     // always initialise, since the dynamic notch could be activated at any time
     dynNotch.q = config->dyn_notch_q / 100.0f;
     dynNotch.minHz = config->dyn_notch_min_hz;

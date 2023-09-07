@@ -225,6 +225,10 @@ extern linkQualitySource_e linkQualitySource;
 
 extern rxRuntimeState_t rxRuntimeState; //!!TODO remove this extern, only needed once for channelCount
 
+void rxConfig_Init(void);
+void rxChannelRangeConfigs_Init(void);
+void rxFailsafeChannelConfigs_Init(void);
+
 void rxInit(void);
 void rxProcessPending(bool state);
 bool rxUpdateCheck(uint32_t currentTimeUs, int32_t currentDeltaTimeUs);

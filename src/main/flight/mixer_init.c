@@ -45,7 +45,7 @@
 
 mixerConfig_t mixerConfig;
 
-static void mixerConfig_Init(void)
+void mixerConfig_Init(void)
 {
 	mixerConfig.mixerMode = DEFAULT_MIXER;
 	mixerConfig.yaw_motors_reversed = false;
@@ -407,8 +407,6 @@ static void mixerConfigureOutput(void)
 void mixerInit(mixerMode_e mixerMode)
 {
     currentMixerMode = mixerMode;
-
-    mixerConfig_Init();
 
     mixerRuntime.feature3dEnabled = false;//featureIsEnabled(FEATURE_3D);
 

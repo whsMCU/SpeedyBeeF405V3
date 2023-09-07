@@ -89,8 +89,6 @@ attitudeEulerAngles_t attitude = EULER_INITIALIZE;
 
 imuConfig_t imuConfig;
 
-static void imuConfig_Init(void);
-
 void imuConfig_Init(void)
 {
 	imuConfig.dcm_kp = 2500;                // 1.0 * 10000
@@ -168,7 +166,7 @@ void imuInit(void)
 #endif
 
     imuComputeRotationMatrix();
-    imuConfig_Init();
+
     imuConfigure(throttleCorrectionConfig.throttle_correction_angle, throttleCorrectionConfig.throttle_correction_value);
 }
 

@@ -58,6 +58,8 @@ typedef struct featureConfig_s {
     uint32_t enabledFeatures;
 } featureConfig_t;
 
+void featureConfig_Init(void);
+
 void featureInit(void);
 bool featureIsEnabled(const uint32_t mask);
 bool featureIsConfigured(const uint32_t mask);

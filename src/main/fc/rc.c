@@ -267,7 +267,7 @@ static void checkForThrottleErrorResetState(uint16_t rxRefreshRate)
 
     const int rxRefreshRateMs = rxRefreshRate / 1000;
     const int indexMax = constrain(THROTTLE_DELTA_MS / rxRefreshRateMs, 1, THROTTLE_BUFFER_MAX);
-    //const int16_t throttleVelocityThreshold = (featureIsEnabled(FEATURE_3D)) ? currentPidProfile->itermThrottleThreshold / 2 : currentPidProfile->itermThrottleThreshold;
+    const int16_t throttleVelocityThreshold = (featureIsEnabled(FEATURE_3D)) ? currentPidProfile->itermThrottleThreshold / 2 : currentPidProfile->itermThrottleThreshold;
 
     rcCommandThrottlePrevious[index++] = rcCommand[THROTTLE];
     if (index >= indexMax) {
@@ -276,13 +276,13 @@ static void checkForThrottleErrorResetState(uint16_t rxRefreshRate)
 
     const int16_t rcCommandSpeed = rcCommand[THROTTLE] - rcCommandThrottlePrevious[index];
 
-//    if (currentPidProfile->antiGravityMode == ANTI_GRAVITY_STEP) {
-//        if (ABS(rcCommandSpeed) > throttleVelocityThreshold) {
-//            pidSetItermAccelerator(CONVERT_PARAMETER_TO_FLOAT(currentPidProfile->itermAcceleratorGain));
-//        } else {
-//            pidSetItermAccelerator(0.0f);
-//        }
-//    }
+    if (currentPidProfile->antiGravityMode == ANTI_GRAVITY_STEP) {
+        if (ABS(rcCommandSpeed) > throttleVelocityThreshold) {
+            pidSetItermAccelerator(CONVERT_PARAMETER_TO_FLOAT(currentPidProfile->itermAcceleratorGain));
+        } else {
+            pidSetItermAccelerator(0.0f);
+        }
+    }
 }
 
 void updateRcRefreshRate(uint32_t currentTimeUs)

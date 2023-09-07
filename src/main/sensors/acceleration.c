@@ -25,7 +25,10 @@
 #include "common/filter.h"
 #include "common/utils.h"
 
+#include "config/feature.h"
+
 #include "sensors/acceleration_init.h"
+#include "sensors/boardalignment.h"
 
 #include "sensors/acceleration.h"
 
@@ -61,8 +64,18 @@ void accUpdate(uint32_t currentTimeUs, rollAndPitchTrims_t *rollAndPitchTrims)
         }
     }
 
+    if (acc.dev.accAlign == ALIGN_CUSTOM) {
+		alignSensorViaMatrix(acc.accADC, &acc.dev.rotationMatrix);
+    } else {
+		alignSensorViaRotation(acc.accADC, acc.dev.accAlign);
+    }
+
     if (!accIsCalibrationComplete()) {
         performAcclerationCalibration(rollAndPitchTrims);
+    }
+
+    if (featureIsEnabled(FEATURE_INFLIGHT_ACC_CAL)) {
+        performInflightAccelerationCalibration(rollAndPitchTrims);
     }
 
     applyAccelerationTrims(accelerationRuntime.accelerationTrims);

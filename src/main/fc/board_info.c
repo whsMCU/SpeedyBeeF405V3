@@ -23,10 +23,10 @@
 
 #include "hw.h"
 
-//#include "platform.h"
-
 #if defined(USE_BOARD_INFO)
-#include "pg/board.h"
+#include "build/version.h"
+
+#include "fc/board_info.h"
 
 static bool boardInformationSet = false;
 static char manufacturerId[MAX_MANUFACTURER_ID_LENGTH + 1];
@@ -36,17 +36,48 @@ static bool boardInformationWasUpdated = false;
 static bool signatureSet = false;
 static uint8_t signature[SIGNATURE_LENGTH];
 
-void initBoardInformation(void)
+boardConfig_t boardConfig;
+
+void boardConfig_Init(void)
 {
-    boardInformationSet = boardConfig()->boardInformationSet;
-    if (boardInformationSet) {
-        strncpy(manufacturerId, boardConfig()->manufacturerId, MAX_MANUFACTURER_ID_LENGTH + 1);
-        strncpy(boardName, boardConfig()->boardName, MAX_BOARD_NAME_LENGTH + 1);
+    if (boardInformationIsSet()) {
+        strncpy(boardConfig.manufacturerId, getManufacturerId(), MAX_MANUFACTURER_ID_LENGTH + 1);
+        strncpy(boardConfig.boardName, getBoardName(), MAX_BOARD_NAME_LENGTH + 1);
+        boardConfig.boardInformationSet = true;
+    } else {
+#if !defined(USE_UNIFIED_TARGET)
+        strncpy(boardConfig.boardName, targetName, MAX_BOARD_NAME_LENGTH + 1);
+
+#if defined(TARGET_MANUFACTURER_IDENTIFIER)
+        strncpy(boardConfig.manufacturerId, TARGET_MANUFACTURER_IDENTIFIER, MAX_MANUFACTURER_ID_LENGTH + 1);
+#endif
+        boardConfig.boardInformationSet = true;
+#else
+        boardConfig.boardInformationSet = false;
+#endif // USE_UNIFIED_TARGET
     }
 
-    signatureSet = boardConfig()->signatureSet;
+#if defined(USE_SIGNATURE)
+    if (signatureIsSet()) {
+        memcpy(boardConfig.signature, getSignature(), SIGNATURE_LENGTH);
+        boardConfig.signatureSet = true;
+    } else {
+        boardConfig.signatureSet = false;
+    }
+#endif
+}
+
+void initBoardInformation(void)
+{
+    boardInformationSet = boardConfig.boardInformationSet;
+    if (boardInformationSet) {
+        strncpy(manufacturerId, boardConfig.manufacturerId, MAX_MANUFACTURER_ID_LENGTH + 1);
+        strncpy(boardName, boardConfig.boardName, MAX_BOARD_NAME_LENGTH + 1);
+    }
+
+    signatureSet = boardConfig.signatureSet;
     if (signatureSet) {
-        memcpy(signature, boardConfig()->signature, SIGNATURE_LENGTH);
+        memcpy(signature, boardConfig.signature, SIGNATURE_LENGTH);
     }
 }
 
@@ -94,9 +125,9 @@ bool setBoardName(const char *newBoardName)
 bool persistBoardInformation(void)
 {
     if (boardInformationWasUpdated) {
-        strncpy(boardConfigMutable()->manufacturerId, manufacturerId, MAX_MANUFACTURER_ID_LENGTH + 1);
-        strncpy(boardConfigMutable()->boardName, boardName, MAX_BOARD_NAME_LENGTH + 1);
-        boardConfigMutable()->boardInformationSet = true;
+        strncpy(boardConfig.manufacturerId, manufacturerId, MAX_MANUFACTURER_ID_LENGTH + 1);
+        strncpy(boardConfig.boardName, boardName, MAX_BOARD_NAME_LENGTH + 1);
+        boardConfig.boardInformationSet = true;
 
         initBoardInformation();
 
@@ -131,8 +162,8 @@ bool setSignature(const uint8_t *newSignature)
 bool persistSignature(void)
 {
     if (!signatureSet) {
-        memcpy(boardConfigMutable()->signature, signature, SIGNATURE_LENGTH);
-        boardConfigMutable()->signatureSet = true;
+        memcpy(boardConfig.signature, signature, SIGNATURE_LENGTH);
+        boardConfig.signatureSet = true;
 
         initBoardInformation();
 

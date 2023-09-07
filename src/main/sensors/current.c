@@ -90,7 +90,6 @@ static pt1Filter_t adciBatFilter;
 
 currentSensorADCConfig_t currentSensorADCConfig;
 
-static void currentSensorADCConfig_Init(void);
 void currentSensorADCConfig_Init(void)
 {
 	currentSensorADCConfig.scale = CURRENT_METER_SCALE_DEFAULT;
@@ -128,7 +127,6 @@ currentMeterADCState_t currentMeterADCState;
 
 void currentMeterADCInit(void)
 {
-	currentSensorADCConfig_Init();
     memset(&currentMeterADCState, 0, sizeof(currentMeterADCState_t));
     pt1FilterInit(&adciBatFilter, pt1FilterGain(GET_BATTERY_LPF_FREQUENCY(batteryConfig.ibatLpfPeriod), HZ_TO_INTERVAL(50)));
 }

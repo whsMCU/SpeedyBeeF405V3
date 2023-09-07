@@ -26,7 +26,7 @@
 #include "build/build_config.h"
 
 #include "common/axis.h"
-//#include "common/color.h"
+#include "common/color.h"
 #include "common/maths.h"
 #include "common/printf_serial.h"
 
@@ -46,14 +46,18 @@
 #include "fc/board_info.h"
 #include "fc/dispatch.h"
 #include "fc/init.h"
+#include "fc/core.h"
 #include "fc/rc_modes.h"
 #include "fc/rc_controls.h"
 #include "fc/runtime_config.h"
 #include "fc/stats.h"
+#include "fc/controlrate_profile.h"
+
 #include "scheduler/tasks.h"
 
 //#include "flight/failsafe.h"
 #include "flight/imu.h"
+#include "flight/mixer_init.h"
 #include "flight/mixer.h"
 #include "flight/pid.h"
 #include "flight/pid_init.h"
@@ -81,7 +85,7 @@
 #include "sensors/barometer.h"
 #include "sensors/battery.h"
 #include "sensors/adcinternal.h"
-//#include "sensors/boardalignment.h"
+#include "sensors/boardalignment.h"
 #include "sensors/compass.h"
 //#include "sensors/esc_sensor.h"
 #include "sensors/gyro.h"
@@ -95,6 +99,8 @@
 #include "rx/rx.h"
 
 uint8_t systemState = SYSTEM_STATE_INITIALISING;
+
+static void Param_Config_Init(void);
 
 void init(void)
 {
@@ -118,12 +124,15 @@ void init(void)
     // Initialize task data as soon as possible. Has to be done before tasksInit(),
     // and any init code that may try to modify task behaviour before tasksInit().
 	tasksInitData();
+	Param_Config_Init();
 
-  cliOpen(_DEF_USB, 57600);
+	cliOpen(_DEF_USB, 57600);
 
 	readEEPROM();
 
 	mixerInit(mixerConfig.mixerMode);
+
+	initBoardAlignment(&boardAlignment);
 
 	Sensor_Init();
 	Baro_Init();
@@ -147,11 +156,6 @@ void init(void)
 	imuInit();
     //failsafeInit();
 
-	positionConfig_Init();
-	rcControlsConfig_Init();
-	armingConfig_Init();
-	flight3DConfig_Init();
-
     rxInit();
 	gpsInit();
 
@@ -166,9 +170,6 @@ void init(void)
 
 	batteryInit(); // always needs doing, regardless of features.
 
-	osdConfig_Init();
-	osdElementConfig_Init();
-
 	tasksInit();
 	MSP_SET_MODE_RANGE(0, 0, 0, 1700, 2100);
 	MSP_SET_MODE_RANGE(1, 1, 0, 1700, 2100);
@@ -177,4 +178,37 @@ void init(void)
 	MSP_SET_MODE_RANGE(4, 7, 5, 1700, 2100);
 	MSP_SET_MODE_RANGE(5, 26, 0, 1700, 2100);
 
+}
+
+void Param_Config_Init(void)
+{
+	systemConfig_Init();
+	pilotConfig_Init();
+	boardConfig_Init();
+	boardAlignment_Init(0, 0, 0);
+    accelerometerConfig_init();
+	gyroConfig_init();
+	barometerConfig_Init();
+    compassConfig_Init();
+    adcConfig_Init();
+	voltageSensorADCConfig_Init();
+    currentSensorADCConfig_Init();
+    dynNotchConfig_Init();
+    imuConfig_Init();
+	pidConfig_Init();
+	pidProfiles_Init();
+    rxConfig_Init();
+    rxChannelRangeConfigs_Init();
+    rxFailsafeChannelConfigs_Init();
+	batteryConfig_Init();
+	controlRateProfiles_Init();
+	mixerConfig_Init();
+    throttleCorrectionConfig_Init();
+	featureConfig_Init();
+	positionConfig_Init();
+	rcControlsConfig_Init();
+	armingConfig_Init();
+	flight3DConfig_Init();
+	osdConfig_Init();
+	osdElementConfig_Init();
 }

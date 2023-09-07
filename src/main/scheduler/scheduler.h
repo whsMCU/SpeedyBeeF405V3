@@ -21,8 +21,10 @@
 #pragma once
 
 #include "hw.h"
+
 #include "common/time.h"
-//#include "config/config.h"
+
+#include "config/config.h"
 
 #define TASK_PERIOD_HZ(hz) (1000000 / (hz))
 #define TASK_PERIOD_MS(ms) ((ms) * 1000)
@@ -112,22 +114,31 @@ typedef enum {
     TASK_SERIAL,
     TASK_LED,
     TASK_DEBUG,
-    //TASK_DISPATCH,
+    TASK_DISPATCH,
     TASK_BATTERY_VOLTAGE,
     TASK_BATTERY_CURRENT,
-    // TASK_BATTERY_ALERTS,
+    TASK_BATTERY_ALERTS,
 #ifdef USE_BEEPER
     TASK_BEEPER,
 #endif
     TASK_GPS,
     TASK_COMPASS,
     TASK_BARO,
+#ifdef USE_RANGEFINDER
+    TASK_RANGEFINDER,
+#endif
     TASK_ALTITUDE,
+#ifdef USE_DASHBOARD
+    TASK_DASHBOARD,
+#endif
 #ifdef USE_TELEMETRY
-    //TASK_TELEMETRY,
+    TASK_TELEMETRY,
 #endif
 #ifdef USE_LED_STRIP
     TASK_LEDSTRIP,
+#endif
+#ifdef USE_TRANSPONDER
+    TASK_TRANSPONDER,
 #endif
 #ifdef USE_STACK_CHECK
     TASK_STACK_CHECK,
@@ -135,12 +146,25 @@ typedef enum {
 #ifdef USE_OSD
     TASK_OSD,
 #endif
+#ifdef USE_CMS
+    TASK_CMS,
+#endif
+#ifdef USE_VTX_CONTROL
+    TASK_VTXCTRL,
+#endif
+#ifdef USE_CAMERA_CONTROL
+    TASK_CAMCTRL,
+#endif
+
+#ifdef USE_RCDEVICE
+    TASK_RCDEVICE,
+#endif
 #ifdef USE_ADC_INTERNAL
     TASK_ADC_INTERNAL,
 #endif
 
 #ifdef USE_CRSF_V3
-    //TASK_SPEED_NEGOTIATION,
+    TASK_SPEED_NEGOTIATION,
 #endif
 
     /* Count of real tasks */

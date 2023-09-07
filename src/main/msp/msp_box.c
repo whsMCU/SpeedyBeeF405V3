@@ -22,8 +22,6 @@
 #include <stdint.h>
 #include <string.h>
 
-//#include "platform.h"
-
 #include "common/bitarray.h"
 #include "common/streambuf.h"
 #include "common/utils.h"
@@ -33,14 +31,12 @@
 #include "config/config.h"
 #include "fc/runtime_config.h"
 
-//#include "flight/mixer.h"
-//#include "flight/pid.h"
+#include "flight/mixer.h"
+#include "flight/pid.h"
 
 #include "sensors.h"
 
-//#include "telemetry/telemetry.h"
-
-//#include "pg/piniobox.h"
+#include "telemetry/telemetry.h"
 
 #include "msp_box.h"
 
@@ -191,11 +187,11 @@ void initActiveBoxIds(void)
     }
 
     bool acceleratorGainsEnabled = false;
-//    for (unsigned i = 0; i < PID_PROFILE_COUNT; i++) {
-//        if (pidProfiles(i)->itermAcceleratorGain != ITERM_ACCELERATOR_GAIN_OFF) {
-//            acceleratorGainsEnabled = true;
-//        }
-//    }
+    for (unsigned i = 0; i < PID_PROFILE_COUNT; i++) {
+        if (pidProfiles[i].itermAcceleratorGain != ITERM_ACCELERATOR_GAIN_OFF) {
+            acceleratorGainsEnabled = true;
+        }
+    }
     if (acceleratorGainsEnabled && !featureIsEnabled(FEATURE_ANTI_GRAVITY)) {
         BME(BOXANTIGRAVITY);
     }
@@ -226,9 +222,9 @@ void initActiveBoxIds(void)
 
     BME(BOXFAILSAFE);
 
-//    if (mixerConfig()->mixerMode == MIXER_FLYING_WING || mixerConfig()->mixerMode == MIXER_AIRPLANE || mixerConfig()->mixerMode == MIXER_CUSTOM_AIRPLANE) {
-//        BME(BOXPASSTHRU);
-//    }
+    if (mixerConfig.mixerMode == MIXER_FLYING_WING || mixerConfig.mixerMode == MIXER_AIRPLANE || mixerConfig.mixerMode == MIXER_CUSTOM_AIRPLANE) {
+        BME(BOXPASSTHRU);
+    }
 
     BME(BOXBEEPERON);
     BME(BOXBEEPERMUTE);

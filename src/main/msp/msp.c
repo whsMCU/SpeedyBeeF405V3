@@ -6,12 +6,10 @@
  */
 
 
-#include "telemetry.h"
-#include "uart.h"
-#include "led.h"
+#include "msp/msp.h"
 
-#include "barometer.h"
-#include "sensors.h"
+#include "sensors/barometer.h"
+#include "sensors/sensors.h"
 
 
 char Buf[128];
@@ -64,7 +62,7 @@ extern uint8_t Manual_Motor_flag;
 
 uint8_t telemetry_loop_counter = 0;
 uint16_t time=0, time1=0, aftertime=0;
-uint16_t debug[4]={0,0,0,0};
+//uint16_t debug[4]={0,0,0,0};
 
 uint8_t GPS_virtual=0;
 

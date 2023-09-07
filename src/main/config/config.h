@@ -60,6 +60,9 @@ extern systemConfig_t systemConfig;
 struct pidProfile_s;
 extern struct pidProfile_s *currentPidProfile;
 
+void systemConfig_Init(void);
+void pilotConfig_Init(void);
+
 void initEEPROM(void);
 bool resetEEPROM(bool useCustomDefaults);
 bool readEEPROM(void);

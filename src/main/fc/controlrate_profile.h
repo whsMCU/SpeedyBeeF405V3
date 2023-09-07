@@ -70,8 +70,11 @@ typedef struct controlRateConfig_s {
     uint8_t levelExpo[2];                   // roll/pitch level mode expo
 } controlRateConfig_t;
 
+extern controlRateConfig_t controlRateProfiles[CONTROL_RATE_PROFILE_COUNT];
 extern controlRateConfig_t *currentControlRateProfile;
 extern const ratesSettingsLimits_t ratesSettingLimits[RATES_TYPE_COUNT];
+
+void controlRateProfiles_Init(void);
 
 void loadControlRateProfile(void);
 void changeControlRateProfile(uint8_t controlRateProfileIndex);

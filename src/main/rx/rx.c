@@ -96,7 +96,7 @@ rxRuntimeState_t rxRuntimeState;
 static uint8_t rcSampleIndex = 0;
 
 rxConfig_t rxConfig;
-static void rxConfig_Init(void);
+
 void rxConfig_Init(void)
 {
 	rxConfig.halfDuplex = 0,
@@ -141,7 +141,7 @@ void rxConfig_Init(void)
 
 
 rxChannelRangeConfig_t rxChannelRangeConfigs[NON_AUX_CHANNEL_COUNT];
-static void rxChannelRangeConfigs_Init(void);
+
 void rxChannelRangeConfigs_Init(void)
 {
     // set default calibration to full range and 1:1 mapping
@@ -152,7 +152,7 @@ void rxChannelRangeConfigs_Init(void)
 }
 
 rxFailsafeChannelConfig_t rxFailsafeChannelConfigs[MAX_SUPPORTED_RC_CHANNEL_COUNT];
-static void rxFailsafeChannelConfigs_Init(void);
+
 void rxFailsafeChannelConfigs_Init(void)
 {
     for (int i = 0; i < MAX_SUPPORTED_RC_CHANNEL_COUNT; i++) {
@@ -239,9 +239,6 @@ void rxInit(void)
     rxRuntimeState.rcProcessFrameFn = nullProcessFrame;
     rxRuntimeState.lastRcFrameTimeUs = 0;
     rcSampleIndex = 0;
-    rxConfig_Init();
-    rxChannelRangeConfigs_Init();
-    rxFailsafeChannelConfigs_Init();
 
     for (int i = 0; i < MAX_SUPPORTED_RC_CHANNEL_COUNT; i++) {
         rcData[i] = rxConfig.midrc;

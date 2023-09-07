@@ -8,7 +8,7 @@
 #ifndef SRC_COMMON_CORE_TELEMETRY_H_
 #define SRC_COMMON_CORE_TELEMETRY_H_
 
-#include "def.h"
+#include "hw.h"
 
 #define TX_BUFFER_SIZE 128
 

@@ -20,9 +20,6 @@ typedef enum
 {
   ST1 = 0u,
   ST2,
-  RGB_RED,
-  RGB_GREEN,
-  RGB_BLUE
 } LED_Type;
 
 

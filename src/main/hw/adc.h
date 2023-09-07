@@ -87,7 +87,7 @@ typedef struct adcOperatingConfig_s {
 struct adcConfig_s;
 bool adcInit(void);
 uint16_t adcGetChannel(uint8_t channel);
-
+void adcConfig_Init(void);
 #ifdef USE_ADC_INTERNAL
 //bool adcInternalIsBusy(void);
 //void adcInternalStartConversion(void);

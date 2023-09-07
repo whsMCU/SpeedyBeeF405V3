@@ -28,9 +28,13 @@
 #include "common/axis.h"
 #include "common/time.h"
 
-//#include "config/config.h"
-#include "runtime_config.h"
+#include "config/config.h"
+
+#include "fc/runtime_config.h"
+
 #include "scheduler/scheduler.h"
+
+#include "sensors/boardalignment.h"
 #include "sensors/gyro.h"
 #include "sensors/gyro_init.h"
 #include "sensors/compass.h"
@@ -50,8 +54,6 @@ magDev_t magDev;
 mag_t mag;
 
 compassConfig_t compassConfig;
-
-static void compassConfig_Init(void);
 
 void compassConfig_Init(void)
 {
@@ -107,7 +109,7 @@ void compassPreInit(void)
 }
 
 
-bool compassDetect(magDev_t *magDev)
+bool compassDetect(magDev_t *magDev, sensor_align_e *alignment)
 {
     magSensor_e magHardware = MAG_NONE;
 
@@ -117,7 +119,7 @@ bool compassDetect(magDev_t *magDev)
 
     if (qmc5883lDetect(magDev)) {
 
-        //*alignment = MAG_QMC5883L_ALIGN;
+        *alignment = MAG_QMC5883;//MAG_QMC5883L_ALIGN;
 
         magHardware = MAG_QMC5883;
     }
@@ -126,8 +128,8 @@ bool compassDetect(magDev_t *magDev)
         return false;
     }
 
-    // detectedSensors[SENSOR_INDEX_MAG] = magHardware;
-    // sensorsSet(SENSOR_MAG);
+    detectedSensors[SENSOR_INDEX_MAG] = magHardware;
+    sensorsSet(SENSOR_MAG);
     return true;
 }
 
@@ -135,13 +137,11 @@ bool compassInit(void)
 {
     // initialize and calibration. turn on led during mag calibration (calibration routine blinks it)
 
-    //sensor_align_e alignment;
+    sensor_align_e alignment;
 
-    if (!compassDetect(&magDev)) {
+    if (!compassDetect(&magDev, &alignment)) {
         return false;
     }
-
-    compassConfig_Init();
 
     //LED1_ON;
     magDev.init(&magDev);
@@ -152,13 +152,13 @@ bool compassInit(void)
     cliAdd("qmc5883l", cliQmc5883l);
     #endif
 
-    //magDev.magAlignment = alignment;
+    magDev.magAlignment = alignment;
 
-    // if (compassConfig()->mag_alignment != ALIGN_DEFAULT) {
-    //     magDev.magAlignment = compassConfig()->mag_alignment;
-    // }
+     if (compassConfig.mag_alignment != ALIGN_DEFAULT) {
+         magDev.magAlignment = compassConfig.mag_alignment;
+     }
 
-    //buildRotationMatrixFromAlignment(&compassConfig()->mag_customAlignment, &magDev.rotationMatrix);
+    buildRotationMatrixFromAlignment(&compassConfig.mag_customAlignment, &magDev.rotationMatrix);
 
     return true;
 }
@@ -195,11 +195,11 @@ uint32_t compassUpdate(uint32_t currentTimeUs)
     for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
         mag.magADC[axis] = magADCRaw[axis];
     }
-    // if (magDev.magAlignment == ALIGN_CUSTOM) {
-    //     alignSensorViaMatrix(mag.magADC, &magDev.rotationMatrix);
-    // } else {
-    //     alignSensorViaRotation(mag.magADC, magDev.magAlignment);
-    // }
+     if (magDev.magAlignment == ALIGN_CUSTOM) {
+         alignSensorViaMatrix(mag.magADC, &magDev.rotationMatrix);
+     } else {
+         alignSensorViaRotation(mag.magADC, magDev.magAlignment);
+     }
 
     flightDynamicsTrims_t *magZero = &compassConfig.magZero;
     if (magInit) {              // we apply offset only once mag calibration is done

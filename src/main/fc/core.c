@@ -60,7 +60,7 @@
 #include "sensors/acceleration.h"
 #include "sensors/barometer.h"
 #include "sensors/battery.h"
-//#include "sensors/boardalignment.h"
+#include "sensors/boardalignment.h"
 #include "sensors/compass.h"
 #include "sensors/sensors.h"
 #include "sensors/gyro.h"

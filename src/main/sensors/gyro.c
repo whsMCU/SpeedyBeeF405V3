@@ -43,6 +43,7 @@
 
 #include "scheduler/scheduler.h"
 
+#include "sensors/boardalignment.h"
 #include "sensors/gyro.h"
 #include "sensors/gyro_init.h"
 #include "sensors/acceleration.h"
@@ -381,6 +382,11 @@ static void gyroUpdateSensor(gyroSensor_t *gyroSensor)
         gyroSensor->gyroDev.gyroADC[Y] = gyroSensor->gyroDev.gyroADCRaw[Y] - gyroSensor->gyroDev.gyroZero[Y];
         gyroSensor->gyroDev.gyroADC[Z] = gyroSensor->gyroDev.gyroADCRaw[Z] - gyroSensor->gyroDev.gyroZero[Z];
 #endif
+		if (gyroSensor->gyroDev.gyroAlign == ALIGN_CUSTOM) {
+			alignSensorViaMatrix(gyroSensor->gyroDev.gyroADC, &gyroSensor->gyroDev.rotationMatrix);
+		} else {
+			alignSensorViaRotation(gyroSensor->gyroDev.gyroADC, gyroSensor->gyroDev.gyroAlign);
+		}
     }else {
         performGyroCalibration(gyroSensor, gyroConfig.gyroMovementCalibrationThreshold);
     }

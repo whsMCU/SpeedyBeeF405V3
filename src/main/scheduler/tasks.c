@@ -31,6 +31,7 @@
 #include "fc/rc.h"
 #include "fc/rc_controls.h"
 #include "fc/runtime_config.h"
+#include "fc/dispatch.h"
 
 #include "flight/imu.h"
 #include "flight/position.h"
@@ -56,7 +57,7 @@
 
 #include "scheduler/tasks.h"
 
-#include "telemetry.h"
+#include "msp/msp.h"
 
 #include "telemetry/telemetry.h"
 #include "telemetry/crsf.h"
@@ -92,9 +93,9 @@ static void ledUpdate(uint32_t currentTimeUs)
 static void debugPrint(uint32_t currentTimeUs)
 {
     //cliPrintf("BARO : %d cm, Load : %d, count : %d \n\r", baro.BaroAlt, getAverageSystemLoadPercent(), getCycleCounter());
-//    cliPrintf("IMU R: %d, P: %d, Y: %d\n\r",    attitude.values.roll,
-//                                                attitude.values.pitch,
-//                                                attitude.values.yaw);
+    cliPrintf("IMU R: %d, P: %d, Y: %d\n\r",    attitude.values.roll,
+                                                attitude.values.pitch,
+                                                attitude.values.yaw);
 
     //p_adc_pg->vrefIntCalibration = 50;
     //cliPrintf("IMU R: %d, P: %d\n\r",    p_pid_pg->dyn_idle_p_gain, p_adc_pg->vrefIntCalibration);
@@ -126,12 +127,12 @@ static void taskHandleSerial(uint32_t currentTimeUs)
 
 static void taskBatteryAlerts(uint32_t currentTimeUs)
 {
-//    if (!ARMING_FLAG(ARMED)) {
-//        // the battery *might* fall out in flight, but if that happens the FC will likely be off too unless the user has battery backup.
-//        batteryUpdatePresence();
-//    }
-//    batteryUpdateStates(currentTimeUs);
-//    batteryUpdateAlarms();
+    if (!ARMING_FLAG(ARMED)) {
+        // the battery *might* fall out in flight, but if that happens the FC will likely be off too unless the user has battery backup.
+        batteryUpdatePresence();
+    }
+    batteryUpdateStates(currentTimeUs);
+    batteryUpdateAlarms();
 }
 
 
@@ -300,9 +301,13 @@ task_attribute_t task_attributes[TASK_COUNT] = {
     [TASK_SYSTEM] = DEFINE_TASK("SYSTEM", "LOAD", NULL, taskSystemLoad, TASK_PERIOD_HZ(10), TASK_PRIORITY_MEDIUM_HIGH),
     [TASK_MAIN] = DEFINE_TASK("SYSTEM", "UPDATE", NULL, taskMain, TASK_PERIOD_HZ(1000), TASK_PRIORITY_MEDIUM_HIGH),
     [TASK_SERIAL] = DEFINE_TASK("SERIAL", NULL, NULL, taskHandleSerial, TASK_PERIOD_HZ(100), TASK_PRIORITY_LOW), // 100 Hz should be enough to flush up to 115 bytes @ 115200 baud
-    //[TASK_BATTERY_ALERTS] = DEFINE_TASK("BATTERY_ALERTS", NULL, NULL, taskBatteryAlerts, TASK_PERIOD_HZ(5), TASK_PRIORITY_MEDIUM),
+    [TASK_BATTERY_ALERTS] = DEFINE_TASK("BATTERY_ALERTS", NULL, NULL, taskBatteryAlerts, TASK_PERIOD_HZ(5), TASK_PRIORITY_MEDIUM),
     [TASK_BATTERY_VOLTAGE] = DEFINE_TASK("BATTERY_VOLTAGE", NULL, NULL, batteryUpdateVoltage, TASK_PERIOD_HZ(SLOW_VOLTAGE_TASK_FREQ_HZ), TASK_PRIORITY_MEDIUM), // Freq may be updated in tasksInit
     [TASK_BATTERY_CURRENT] = DEFINE_TASK("BATTERY_CURRENT", NULL, NULL, batteryUpdateCurrentMeter, TASK_PERIOD_HZ(50), TASK_PRIORITY_MEDIUM),
+
+#ifdef USE_TRANSPONDER
+    [TASK_TRANSPONDER] = DEFINE_TASK("TRANSPONDER", NULL, NULL, transponderUpdate, TASK_PERIOD_HZ(250), TASK_PRIORITY_LOW),
+#endif
 
 #ifdef USE_STACK_CHECK
     [TASK_STACK_CHECK] = DEFINE_TASK("STACKCHECK", NULL, NULL, taskStackCheck, TASK_PERIOD_HZ(10), TASK_PRIORITY_LOWEST),
@@ -316,8 +321,10 @@ task_attribute_t task_attributes[TASK_COUNT] = {
     [TASK_ACCEL] = DEFINE_TASK("ACC", NULL, NULL, taskUpdateAccelerometer, TASK_PERIOD_HZ(1000), TASK_PRIORITY_MEDIUM),
     [TASK_ATTITUDE] = DEFINE_TASK("ATTITUDE", NULL, NULL, imuUpdateAttitude, TASK_PERIOD_HZ(100), TASK_PRIORITY_MEDIUM),
 #endif
+
     [TASK_RX] = DEFINE_TASK("RX", NULL, rxUpdateCheck, taskUpdateRxMain, TASK_PERIOD_HZ(33), TASK_PRIORITY_HIGH), // If event-based scheduling doesn't work, fallback to periodic scheduling
-    //[TASK_DISPATCH] = DEFINE_TASK("DISPATCH", NULL, NULL, dispatchProcess, TASK_PERIOD_HZ(1000), TASK_PRIORITY_HIGH),
+    [TASK_DISPATCH] = DEFINE_TASK("DISPATCH", NULL, NULL, dispatchProcess, TASK_PERIOD_HZ(1000), TASK_PRIORITY_HIGH),
+
     [TASK_LED] = DEFINE_TASK("LED", NULL, NULL, ledUpdate, TASK_PERIOD_HZ(100), TASK_PRIORITY_LOW),
     [TASK_DEBUG] = DEFINE_TASK("DEBUG", NULL, NULL, debugPrint, TASK_PERIOD_HZ(10), TASK_PRIORITY_LOW),
 
@@ -333,24 +340,48 @@ task_attribute_t task_attributes[TASK_COUNT] = {
 
     [TASK_ALTITUDE] = DEFINE_TASK("ALTITUDE", NULL, NULL, taskCalculateAltitude, TASK_PERIOD_HZ(40), TASK_PRIORITY_LOW),
 
+#ifdef USE_DASHBOARD
+    [TASK_DASHBOARD] = DEFINE_TASK("DASHBOARD", NULL, NULL, dashboardUpdate, TASK_PERIOD_HZ(10), TASK_PRIORITY_LOW),
+#endif
+
 #ifdef USE_OSD
     [TASK_OSD] = DEFINE_TASK("OSD", NULL, osdUpdateCheck, osdUpdate, TASK_PERIOD_HZ(OSD_FRAMERATE_DEFAULT_HZ), TASK_PRIORITY_LOW),
 #endif
 
 #ifdef USE_TELEMETRY
-    //[TASK_TELEMETRY] = DEFINE_TASK("TELEMETRY", NULL, NULL, taskTelemetry, TASK_PERIOD_HZ(250), TASK_PRIORITY_LOW),
+    [TASK_TELEMETRY] = DEFINE_TASK("TELEMETRY", NULL, NULL, taskTelemetry, TASK_PERIOD_HZ(250), TASK_PRIORITY_LOW),
 #endif
 
 #ifdef USE_LED_STRIP
     [TASK_LEDSTRIP] = DEFINE_TASK("LEDSTRIP", NULL, NULL, ledStripUpdate, TASK_PERIOD_HZ(100), TASK_PRIORITY_LOW),
 #endif
 
+#ifdef USE_CMS
+    [TASK_CMS] = DEFINE_TASK("CMS", NULL, NULL, cmsHandler, TASK_PERIOD_HZ(20), TASK_PRIORITY_LOW),
+#endif
+
+#ifdef USE_VTX_CONTROL
+    [TASK_VTXCTRL] = DEFINE_TASK("VTXCTRL", NULL, NULL, vtxUpdate, TASK_PERIOD_HZ(5), TASK_PRIORITY_LOWEST),
+#endif
+
+#ifdef USE_RCDEVICE
+    [TASK_RCDEVICE] = DEFINE_TASK("RCDEVICE", NULL, NULL, rcdeviceUpdate, TASK_PERIOD_HZ(20), TASK_PRIORITY_MEDIUM),
+#endif
+
+#ifdef USE_CAMERA_CONTROL
+    [TASK_CAMCTRL] = DEFINE_TASK("CAMCTRL", NULL, NULL, taskCameraControl, TASK_PERIOD_HZ(5), TASK_PRIORITY_LOW),
+#endif
+
 #ifdef USE_ADC_INTERNAL
     [TASK_ADC_INTERNAL] = DEFINE_TASK("ADCINTERNAL", NULL, NULL, adcInternalProcess, TASK_PERIOD_HZ(1), TASK_PRIORITY_LOWEST),
 #endif
 
+#ifdef USE_RANGEFINDER
+    [TASK_RANGEFINDER] = DEFINE_TASK("RANGEFINDER", NULL, NULL, taskUpdateRangefinder, TASK_PERIOD_HZ(10), TASK_PRIORITY_LOWEST),
+#endif
+
 #ifdef USE_CRSF_V3
-    //[TASK_SPEED_NEGOTIATION] = DEFINE_TASK("SPEED_NEGOTIATION", NULL, NULL, speedNegotiationProcess, TASK_PERIOD_HZ(100), TASK_PRIORITY_LOW),
+    [TASK_SPEED_NEGOTIATION] = DEFINE_TASK("SPEED_NEGOTIATION", NULL, NULL, speedNegotiationProcess, TASK_PERIOD_HZ(100), TASK_PRIORITY_LOW),
 #endif
 };
 
@@ -392,8 +423,8 @@ void tasksInit(void)
 
     const bool useBatteryCurrent = batteryConfig.currentMeterSource != CURRENT_METER_NONE;
     setTaskEnabled(TASK_BATTERY_CURRENT, useBatteryCurrent);
-    //const bool useBatteryAlerts = batteryConfig()->useVBatAlerts || batteryConfig()->useConsumptionAlerts || featureIsEnabled(FEATURE_OSD);
-    //setTaskEnabled(TASK_BATTERY_ALERTS, (useBatteryVoltage || useBatteryCurrent) && useBatteryAlerts);
+    const bool useBatteryAlerts = batteryConfig.useVBatAlerts || batteryConfig.useConsumptionAlerts || featureIsEnabled(FEATURE_OSD);
+    setTaskEnabled(TASK_BATTERY_ALERTS, (useBatteryVoltage || useBatteryCurrent) && useBatteryAlerts);
 
 #ifdef USE_STACK_CHECK
     setTaskEnabled(TASK_STACK_CHECK, true);
@@ -421,7 +452,7 @@ void tasksInit(void)
 
     setTaskEnabled(TASK_RX, true);
 
-    //setTaskEnabled(TASK_DISPATCH, dispatchIsEnabled());
+    setTaskEnabled(TASK_DISPATCH, dispatchIsEnabled());
 
 #ifdef USE_BEEPER
     setTaskEnabled(TASK_BEEPER, true);
@@ -441,16 +472,16 @@ void tasksInit(void)
 #endif
 
 #ifdef USE_TELEMETRY
-//    if (featureIsEnabled(FEATURE_TELEMETRY)) {
-//        setTaskEnabled(TASK_TELEMETRY, true);
-//        if (rxRuntimeState.serialrxProvider == SERIALRX_JETIEXBUS) {
-//            // Reschedule telemetry to 500hz for Jeti Exbus
-//            rescheduleTask(TASK_TELEMETRY, TASK_PERIOD_HZ(500));
-//        } else if (rxRuntimeState.serialrxProvider == SERIALRX_CRSF) {
-//            // Reschedule telemetry to 500hz, 2ms for CRSF
-//            rescheduleTask(TASK_TELEMETRY, TASK_PERIOD_HZ(500));
-//        }
-//    }
+    if (featureIsEnabled(FEATURE_TELEMETRY)) {
+        setTaskEnabled(TASK_TELEMETRY, true);
+        if (rxRuntimeState.serialrxProvider == SERIALRX_JETIEXBUS) {
+            // Reschedule telemetry to 500hz for Jeti Exbus
+            rescheduleTask(TASK_TELEMETRY, TASK_PERIOD_HZ(500));
+        } else if (rxRuntimeState.serialrxProvider == SERIALRX_CRSF) {
+            // Reschedule telemetry to 500hz, 2ms for CRSF
+            rescheduleTask(TASK_TELEMETRY, TASK_PERIOD_HZ(500));
+        }
+    }
 #endif
 
 #ifdef USE_LED_STRIP
@@ -505,8 +536,8 @@ void tasksInit(void)
 #endif
 
 #ifdef USE_CRSF_V3
-    //const bool useCRSF = rxRuntimeState.serialrxProvider == SERIALRX_CRSF;
-    //setTaskEnabled(TASK_SPEED_NEGOTIATION, useCRSF);
+    const bool useCRSF = rxRuntimeState.serialrxProvider == SERIALRX_CRSF;
+    setTaskEnabled(TASK_SPEED_NEGOTIATION, useCRSF);
 #endif
 }
 

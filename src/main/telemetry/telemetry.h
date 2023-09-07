@@ -27,16 +27,13 @@
 
 #pragma once
 
-#include "def.h"
+#include "hw.h"
 
 #include "common/unit.h"
 
 //#include "io/serial.h"
 
 #include "rx/rx.h"
-
-//#include "telemetry/ibus_shared.h"
-
 
 typedef enum {
     FRSKY_FORMAT_DMS = 0,

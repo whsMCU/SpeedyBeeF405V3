@@ -35,8 +35,6 @@ volatile uint16_t adcValues[ADC_CHANNEL_COUNT_Custem];
 
 adcConfig_t adcConfig;
 
-static void adcConfig_Init(void);
-
 void adcConfig_Init(void)
 {
     adcConfig.vbat.enabled = true;
@@ -106,7 +104,6 @@ bool adcInit(void)
 {
   bool ret = true;
   ADC_ChannelConfTypeDef sConfig = {0};
-  adcConfig_Init();
 
   hadc1.Instance = ADC1;
   hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV8;

@@ -36,6 +36,7 @@
 
 #include "fc/runtime_config.h"
 
+#include "sensors/boardalignment.h"
 #include "sensors/gyro.h"
 #include "sensors/gyro_init.h"
 #include "sensors/acceleration_init.h"
@@ -339,7 +340,6 @@ bool accInit(uint16_t accSampleRateHz)
     //     return false;
     // }
     bmi270SpiAccDetect(&acc.dev);
-    accelerometerConfig_init();
     acc.dev.acc_1G = 256; // set default
     acc.dev.initFn(&acc.dev); // driver initialisation
     acc.dev.acc_1G_rec = 1.0f / acc.dev.acc_1G;

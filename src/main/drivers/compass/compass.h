@@ -20,7 +20,7 @@
 
 #pragma once
 
-//#include "common/sensor_alignment.h"
+#include "common/sensor_alignment.h"
 
 #include "hw.h"
 #include "drivers/sensor.h"
@@ -35,7 +35,7 @@ typedef struct magDev_s {
     //busDevice_t bus; // For MPU slave bus instance
     uint8_t ch;
     uint8_t address;
-    //sensor_align_e magAlignment;
+    sensor_align_e magAlignment;
     fp_rotationMatrix_t rotationMatrix;
     //ioTag_t magIntExtiTag;
     int16_t magGain[3];
