@@ -23,6 +23,8 @@
 #include <string.h>
 #include <math.h>
 
+#include "build/debug.h"
+
 #include "common/axis.h"
 #include "common/maths.h"
 #include "common/utils.h"
@@ -50,6 +52,7 @@
 #include "dyn_notch_filter.h"
 #endif
 
+#include "flight/failsafe.h"
 #include "flight/imu.h"
 #include "flight/mixer.h"
 #include "flight/pid.h"
@@ -105,28 +108,28 @@ void throttleCorrectionConfig_Init(void)
 	throttleCorrectionConfig.throttle_correction_angle = 800;       // could be 80.0 deg with atlhold or 45.0 for fpv
 }
 
- static bool isCalibrating(void)
- {
-//     return (sensors(SENSOR_GYRO) && !gyroIsCalibrationComplete())
-// #ifdef USE_ACC
-//         || (sensors(SENSOR_ACC) && !accIsCalibrationComplete())
-// #endif
-// #ifdef USE_BARO
-//         || (sensors(SENSOR_BARO) && !baroIsCalibrationComplete())
-// #endif
-// #ifdef USE_MAG
-//         || (sensors(SENSOR_MAG) && !compassIsCalibrationComplete())
-// #endif
-//         ;
+static bool isCalibrating(void)
+{
+	 return (sensors(SENSOR_GYRO) && !gyroIsCalibrationComplete())
+#ifdef USE_ACC
+			 || (sensors(SENSOR_ACC) && !accIsCalibrationComplete())
+#endif
+#ifdef USE_BARO
+			 || (sensors(SENSOR_BARO) && !baroIsCalibrationComplete())
+#endif
+#ifdef USE_MAG
+			 || (sensors(SENSOR_MAG) && !compassIsCalibrationComplete())
+#endif
+			 ;
 	 return 0;
- }
+}
 
- void resetArmingDisabled(void)
- {
-     lastArmingDisabledReason = 0;
- }
+void resetArmingDisabled(void)
+{
+    lastArmingDisabledReason = 0;
+}
 
- #ifdef USE_ACC
+#ifdef USE_ACC
 static bool accNeedsCalibration(void)
 {
  if (sensors(SENSOR_ACC)) {
@@ -152,9 +155,9 @@ static bool accNeedsCalibration(void)
 	 }
 
 	 // Launch Control only requires the ACC if a angle limit is set
-//	 if (isModeActivationConditionPresent(BOXLAUNCHCONTROL) && currentPidProfile->launchControlAngleLimit) {
-//		 return true;
-//	 }
+	 if (isModeActivationConditionPresent(BOXLAUNCHCONTROL) && currentPidProfile->launchControlAngleLimit) {
+		 return true;
+	 }
 
 #ifdef USE_OSD
 	 // Check for any enabled OSD elements that need the ACC
@@ -459,7 +462,7 @@ void tryArm(void)
 			 pidAcroTrainerInit();
 #endif // USE_ACRO_TRAINER
 
-			 if (false) { //isModeActivationConditionPresent(BOXPREARM)
+			 if (isModeActivationConditionPresent(BOXPREARM)) {
 					 ENABLE_ARMING_FLAG(WAS_ARMED_WITH_PREARM);
 			 }
 			 imuQuaternionHeadfreeOffsetSet();
@@ -549,23 +552,23 @@ void tryArm(void)
          AccInflightCalibrationSavetoEEProm = true;
      }
  }
-//
-//
-//static void updateMagHold(void)
-//{
-//    if (fabsf(rcCommand[YAW]) < 15 && FLIGHT_MODE(MAG_MODE)) {
-//        int16_t dif = DECIDEGREES_TO_DEGREES(attitude.values.yaw) - magHold;
-//        if (dif <= -180)
-//            dif += 360;
-//        if (dif >= +180)
-//            dif -= 360;
-//        dif *= -GET_DIRECTION(rcControlsConfig()->yaw_control_reversed);
-//        if (isUpright()) {
-//            rcCommand[YAW] -= dif * currentPidProfile->pid[PID_MAG].P / 30;    // 18 deg
-//        }
-//    } else
-//        magHold = DECIDEGREES_TO_DEGREES(attitude.values.yaw);
-//}
+
+
+static void updateMagHold(void)
+{
+    if (fabsf(rcCommand[YAW]) < 15 && FLIGHT_MODE(MAG_MODE)) {
+        int16_t dif = DECIDEGREES_TO_DEGREES(attitude.values.yaw) - magHold;
+        if (dif <= -180)
+            dif += 360;
+        if (dif >= +180)
+            dif -= 360;
+        dif *= -GET_DIRECTION(rcControlsConfig.yaw_control_reversed);
+        if (isUpright()) {
+            rcCommand[YAW] -= dif * currentPidProfile->pid[PID_MAG].P / 30;    // 18 deg
+        }
+    } else
+        magHold = DECIDEGREES_TO_DEGREES(attitude.values.yaw);
+}
 
 
 #ifdef USE_VTX_CONTROL
@@ -645,12 +648,12 @@ uint8_t calculateThrottlePercentAbs(void)
     return ABS(calculateThrottlePercent());
 }
 
- static bool airmodeIsActivated;
+static bool airmodeIsActivated;
 
- bool isAirmodeActivated()
- {
-     return airmodeIsActivated;
- }
+bool isAirmodeActivated()
+{
+    return airmodeIsActivated;
+}
 
 /*
  * processRx called from taskUpdateRxMain
@@ -671,9 +674,9 @@ bool processRx(timeUs_t currentTimeUs)
 
     updateRSSI(currentTimeUs);
 
-//     if (currentTimeUs > FAILSAFE_POWER_ON_DELAY_US && !failsafeIsMonitoring()) {
-//         failsafeStartMonitoring();
-//     }
+     if (currentTimeUs > FAILSAFE_POWER_ON_DELAY_US && !failsafeIsMonitoring()) {
+         failsafeStartMonitoring();
+     }
 
      const throttleStatus_e throttleStatus = calculateThrottleStatus();
      const uint8_t throttlePercent = calculateThrottlePercentAbs();
@@ -690,16 +693,16 @@ bool processRx(timeUs_t currentTimeUs)
 
     /* In airmode iterm should be prevented to grow when Low thottle and Roll + Pitch Centered.
      This is needed to prevent iterm winding on the ground, but keep full stabilisation on 0 throttle while in air */
-//     if (throttleStatus == THROTTLE_LOW && !airmodeIsActivated && !launchControlActive) {
-//         pidSetItermReset(true);
-//         if (currentPidProfile->pidAtMinThrottle)
-//             pidStabilisationState(PID_STABILISATION_ON);
-//         else
-//             pidStabilisationState(PID_STABILISATION_OFF);
-//     } else {
-//         pidSetItermReset(false);
-//         pidStabilisationState(PID_STABILISATION_ON);
-//     }
+     if (throttleStatus == THROTTLE_LOW && !airmodeIsActivated && !launchControlActive) {
+         pidSetItermReset(true);
+         if (currentPidProfile->pidAtMinThrottle)
+             pidStabilisationState(PID_STABILISATION_ON);
+         else
+             pidStabilisationState(PID_STABILISATION_OFF);
+     } else {
+         pidSetItermReset(false);
+         pidStabilisationState(PID_STABILISATION_ON);
+     }
 
 #ifdef USE_RUNAWAY_TAKEOFF
     // If runaway_takeoff_prevention is enabled, accumulate the amount of time that throttle
@@ -809,7 +812,7 @@ void processRxModes(uint32_t currentTimeUs)
      const timeUs_t autoDisarmDelayUs = armingConfig.auto_disarm_delay * 1e6;
      if (ARMING_FLAG(ARMED)
          && featureIsEnabled(FEATURE_MOTOR_STOP)
-         //&& !isFixedWing()
+         && !isFixedWing()
          && !featureIsEnabled(FEATURE_3D)
          && !airmodeIsEnabled()
          && !FLIGHT_MODE(GPS_RESCUE_MODE)  // disable auto-disarm when GPS Rescue is active
@@ -875,7 +878,7 @@ void processRxModes(uint32_t currentTimeUs)
 
      bool canUseHorizonMode = true;
 
-     if ((IS_RC_MODE_ACTIVE(BOXANGLE))) {//|| failsafeIsActive()) && (sensors(SENSOR_ACC))
+     if ((IS_RC_MODE_ACTIVE(BOXANGLE) || failsafeIsActive()) && (sensors(SENSOR_ACC))) {
          // bumpless transfer to Level mode
          canUseHorizonMode = false;
 
@@ -955,9 +958,9 @@ void processRxModes(uint32_t currentTimeUs)
          DISABLE_FLIGHT_MODE(PASSTHRU_MODE);
      }
 
-//     if (mixerConfig.mixerMode == MIXER_FLYING_WING || mixerConfig.mixerMode == MIXER_AIRPLANE) {
-//         DISABLE_FLIGHT_MODE(HEADFREE_MODE);
-//     }
+     if (mixerConfig.mixerMode == MIXER_FLYING_WING || mixerConfig.mixerMode == MIXER_AIRPLANE) {
+         DISABLE_FLIGHT_MODE(HEADFREE_MODE);
+     }
 
 #ifdef USE_TELEMETRY
     if (featureIsEnabled(FEATURE_TELEMETRY)) {
@@ -990,154 +993,154 @@ void processRxModes(uint32_t currentTimeUs)
 #endif // USE_ACRO_TRAINER
 
 #ifdef USE_RC_SMOOTHING_FILTER
-//    if (ARMING_FLAG(ARMED) && !rcSmoothingInitializationComplete()) {
-//        beeper(BEEPER_RC_SMOOTHING_INIT_FAIL);
-//    }
+    if (ARMING_FLAG(ARMED) && !rcSmoothingInitializationComplete()) {
+        //beeper(BEEPER_RC_SMOOTHING_INIT_FAIL);
+    }
 #endif
 
-    //pidSetAntiGravityState(IS_RC_MODE_ACTIVE(BOXANTIGRAVITY) || featureIsEnabled(FEATURE_ANTI_GRAVITY));
+    pidSetAntiGravityState(IS_RC_MODE_ACTIVE(BOXANTIGRAVITY) || featureIsEnabled(FEATURE_ANTI_GRAVITY));
 }
 
-//static void subTaskPidController(uint32_t currentTimeUs)
-//{
-//    uint32_t startTime = 0;
-//    //if (debugMode == DEBUG_PIDLOOP) {startTime = micros();}
-//    // PID - note this is function pointer set by setPIDController()
-//    pidController(currentPidProfile, currentTimeUs);
-//    //DEBUG_SET(DEBUG_PIDLOOP, 1, micros() - startTime);
-//
-//#ifdef USE_RUNAWAY_TAKEOFF
-//    // Check to see if runaway takeoff detection is active (anti-taz), the pidSum is over the threshold,
-//    // and gyro rate for any axis is above the limit for at least the activate delay period.
-//    // If so, disarm for safety
-//    if (ARMING_FLAG(ARMED)
-//        && !isFixedWing()
-//        && pidConfig()->runaway_takeoff_prevention
-//        && !runawayTakeoffCheckDisabled
-//        && !flipOverAfterCrashActive
-//        && !runawayTakeoffTemporarilyDisabled
-//        && !FLIGHT_MODE(GPS_RESCUE_MODE)   // disable Runaway Takeoff triggering if GPS Rescue is active
-//        && (!featureIsEnabled(FEATURE_MOTOR_STOP) || airmodeIsEnabled() || (calculateThrottleStatus() != THROTTLE_LOW))) {
-//
-//        if (((fabsf(pidData[FD_PITCH].Sum) >= RUNAWAY_TAKEOFF_PIDSUM_THRESHOLD)
-//            || (fabsf(pidData[FD_ROLL].Sum) >= RUNAWAY_TAKEOFF_PIDSUM_THRESHOLD)
-//            || (fabsf(pidData[FD_YAW].Sum) >= RUNAWAY_TAKEOFF_PIDSUM_THRESHOLD))
-//            && ((gyroAbsRateDps(FD_PITCH) > RUNAWAY_TAKEOFF_GYRO_LIMIT_RP)
-//                || (gyroAbsRateDps(FD_ROLL) > RUNAWAY_TAKEOFF_GYRO_LIMIT_RP)
-//                || (gyroAbsRateDps(FD_YAW) > RUNAWAY_TAKEOFF_GYRO_LIMIT_YAW))) {
-//
-//            if (runawayTakeoffTriggerUs == 0) {
-//                runawayTakeoffTriggerUs = currentTimeUs + RUNAWAY_TAKEOFF_ACTIVATE_DELAY;
-//            } else if (currentTimeUs > runawayTakeoffTriggerUs) {
-//                setArmingDisabled(ARMING_DISABLED_RUNAWAY_TAKEOFF);
-//                disarm(DISARM_REASON_RUNAWAY_TAKEOFF);
-//            }
-//        } else {
-//            runawayTakeoffTriggerUs = 0;
-//        }
-//        DEBUG_SET(DEBUG_RUNAWAY_TAKEOFF, DEBUG_RUNAWAY_TAKEOFF_ENABLED_STATE, DEBUG_RUNAWAY_TAKEOFF_TRUE);
-//        DEBUG_SET(DEBUG_RUNAWAY_TAKEOFF, DEBUG_RUNAWAY_TAKEOFF_ACTIVATING_DELAY, runawayTakeoffTriggerUs == 0 ? DEBUG_RUNAWAY_TAKEOFF_FALSE : DEBUG_RUNAWAY_TAKEOFF_TRUE);
-//    } else {
-//        runawayTakeoffTriggerUs = 0;
-//        DEBUG_SET(DEBUG_RUNAWAY_TAKEOFF, DEBUG_RUNAWAY_TAKEOFF_ENABLED_STATE, DEBUG_RUNAWAY_TAKEOFF_FALSE);
-//        DEBUG_SET(DEBUG_RUNAWAY_TAKEOFF, DEBUG_RUNAWAY_TAKEOFF_ACTIVATING_DELAY, DEBUG_RUNAWAY_TAKEOFF_FALSE);
-//    }
-//#endif
-//
-//
-//#ifdef USE_PID_AUDIO
-//    if (isModeActivationConditionPresent(BOXPIDAUDIO)) {
-//        pidAudioUpdate();
-//    }
-//#endif
-//}
+static void subTaskPidController(uint32_t currentTimeUs)
+{
+    uint32_t startTime = 0;
+    if (debugMode == DEBUG_PIDLOOP) {startTime = micros();}
+    // PID - note this is function pointer set by setPIDController()
+    pidController(currentPidProfile, currentTimeUs);
+    //DEBUG_SET(DEBUG_PIDLOOP, 1, micros() - startTime);
 
-//static void subTaskPidSubprocesses(uint32_t currentTimeUs)
-//{
-//    uint32_t startTime = 0;
-//    // if (debugMode == DEBUG_PIDLOOP) {
-//    //     startTime = micros();
-//    // }
-//
-//    updateMagHold();
-//
-//
-//#ifdef USE_BLACKBOX
-//    if (!cliMode && blackboxConfig()->device) {
-//        blackboxUpdate(currentTimeUs);
-//    }
-//#else
-//    UNUSED(currentTimeUs);
-//#endif
-//
-//    //DEBUG_SET(DEBUG_PIDLOOP, 3, micros() - startTime);
-//}
-//
-// #ifdef USE_TELEMETRY
-// #define GYRO_TEMP_READ_DELAY_US 3e6    // Only read the gyro temp every 3 seconds
-// void subTaskTelemetryPollSensors(timeUs_t currentTimeUs)
-// {
-//     static timeUs_t lastGyroTempTimeUs = 0;
-//
-//     if (cmpTimeUs(currentTimeUs, lastGyroTempTimeUs) >= GYRO_TEMP_READ_DELAY_US) {
-//         // Read out gyro temperature if used for telemmetry
-//         gyroReadTemperature();
-//         lastGyroTempTimeUs = currentTimeUs;
-//     }
-// }
-// #endif
-//
-//static void subTaskMotorUpdate(uint32_t currentTimeUs)
-//{
-//    uint32_t startTime = 0;
-//    // if (debugMode == DEBUG_CYCLETIME) {
-//    //     startTime = micros();
-//    //     static uint32_t previousMotorUpdateTime;
-//    //     const uint32_t currentDeltaTime = startTime - previousMotorUpdateTime;
-//    //     debug[2] = currentDeltaTime;
-//    //     debug[3] = currentDeltaTime - targetPidLooptime;
-//    //     previousMotorUpdateTime = startTime;
-//    // } else if (debugMode == DEBUG_PIDLOOP) {
-//    //     startTime = micros();
-//    // }
-//
-//    mixTable(currentTimeUs);
-//
-//#ifdef USE_SERVOS
-//    // motor outputs are used as sources for servo mixing, so motors must be calculated using mixTable() before servos.
-//    if (isMixerUsingServos()) {
-//        writeServos();
-//    }
-//#endif
-//
-//    //writeMotors();
-//
-//#ifdef USE_DSHOT_TELEMETRY_STATS
-//    if (debugMode == DEBUG_DSHOT_RPM_ERRORS && useDshotTelemetry) {
-//        const uint8_t motorCount = MIN(getMotorCount(), 4);
-//        for (uint8_t i = 0; i < motorCount; i++) {
-//            debug[i] = getDshotTelemetryMotorInvalidPercent(i);
-//        }
-//    }
-//#endif
-//
-//    //DEBUG_SET(DEBUG_PIDLOOP, 2, micros() - startTime);
-//}
+#ifdef USE_RUNAWAY_TAKEOFF
+    // Check to see if runaway takeoff detection is active (anti-taz), the pidSum is over the threshold,
+    // and gyro rate for any axis is above the limit for at least the activate delay period.
+    // If so, disarm for safety
+    if (ARMING_FLAG(ARMED)
+        && !isFixedWing()
+        && pidConfig()->runaway_takeoff_prevention
+        && !runawayTakeoffCheckDisabled
+        && !flipOverAfterCrashActive
+        && !runawayTakeoffTemporarilyDisabled
+        && !FLIGHT_MODE(GPS_RESCUE_MODE)   // disable Runaway Takeoff triggering if GPS Rescue is active
+        && (!featureIsEnabled(FEATURE_MOTOR_STOP) || airmodeIsEnabled() || (calculateThrottleStatus() != THROTTLE_LOW))) {
 
-//static void subTaskRcCommand(uint32_t currentTimeUs)
-//{
-//    UNUSED(currentTimeUs);
-//
-//    // If we're armed, at minimum throttle, and we do arming via the
-//    // sticks, do not process yaw input from the rx.  We do this so the
-//    // motors do not spin up while we are trying to arm or disarm.
-//    // Allow yaw control for tricopters if the user wants the servo to move even when unarmed.
-//     if (isUsingSticksForArming() && rcData[THROTTLE] <= rxConfig()->mincheck) {
-//         resetYawAxis();
-//     }
-//
-//     processRcCommand();
-//}
+        if (((fabsf(pidData[FD_PITCH].Sum) >= RUNAWAY_TAKEOFF_PIDSUM_THRESHOLD)
+            || (fabsf(pidData[FD_ROLL].Sum) >= RUNAWAY_TAKEOFF_PIDSUM_THRESHOLD)
+            || (fabsf(pidData[FD_YAW].Sum) >= RUNAWAY_TAKEOFF_PIDSUM_THRESHOLD))
+            && ((gyroAbsRateDps(FD_PITCH) > RUNAWAY_TAKEOFF_GYRO_LIMIT_RP)
+                || (gyroAbsRateDps(FD_ROLL) > RUNAWAY_TAKEOFF_GYRO_LIMIT_RP)
+                || (gyroAbsRateDps(FD_YAW) > RUNAWAY_TAKEOFF_GYRO_LIMIT_YAW))) {
+
+            if (runawayTakeoffTriggerUs == 0) {
+                runawayTakeoffTriggerUs = currentTimeUs + RUNAWAY_TAKEOFF_ACTIVATE_DELAY;
+            } else if (currentTimeUs > runawayTakeoffTriggerUs) {
+                setArmingDisabled(ARMING_DISABLED_RUNAWAY_TAKEOFF);
+                disarm(DISARM_REASON_RUNAWAY_TAKEOFF);
+            }
+        } else {
+            runawayTakeoffTriggerUs = 0;
+        }
+        DEBUG_SET(DEBUG_RUNAWAY_TAKEOFF, DEBUG_RUNAWAY_TAKEOFF_ENABLED_STATE, DEBUG_RUNAWAY_TAKEOFF_TRUE);
+        DEBUG_SET(DEBUG_RUNAWAY_TAKEOFF, DEBUG_RUNAWAY_TAKEOFF_ACTIVATING_DELAY, runawayTakeoffTriggerUs == 0 ? DEBUG_RUNAWAY_TAKEOFF_FALSE : DEBUG_RUNAWAY_TAKEOFF_TRUE);
+    } else {
+        runawayTakeoffTriggerUs = 0;
+        DEBUG_SET(DEBUG_RUNAWAY_TAKEOFF, DEBUG_RUNAWAY_TAKEOFF_ENABLED_STATE, DEBUG_RUNAWAY_TAKEOFF_FALSE);
+        DEBUG_SET(DEBUG_RUNAWAY_TAKEOFF, DEBUG_RUNAWAY_TAKEOFF_ACTIVATING_DELAY, DEBUG_RUNAWAY_TAKEOFF_FALSE);
+    }
+#endif
+
+
+#ifdef USE_PID_AUDIO
+    if (isModeActivationConditionPresent(BOXPIDAUDIO)) {
+        pidAudioUpdate();
+    }
+#endif
+}
+
+static void subTaskPidSubprocesses(uint32_t currentTimeUs)
+{
+    uint32_t startTime = 0;
+     if (debugMode == DEBUG_PIDLOOP) {
+         startTime = micros();
+     }
+
+    updateMagHold();
+
+
+#ifdef USE_BLACKBOX
+    if (!cliMode && blackboxConfig()->device) {
+        blackboxUpdate(currentTimeUs);
+    }
+#else
+    UNUSED(currentTimeUs);
+#endif
+
+    //DEBUG_SET(DEBUG_PIDLOOP, 3, micros() - startTime);
+}
+
+ #ifdef USE_TELEMETRY
+ #define GYRO_TEMP_READ_DELAY_US 3e6    // Only read the gyro temp every 3 seconds
+ void subTaskTelemetryPollSensors(timeUs_t currentTimeUs)
+ {
+     static timeUs_t lastGyroTempTimeUs = 0;
+
+     if (cmpTimeUs(currentTimeUs, lastGyroTempTimeUs) >= GYRO_TEMP_READ_DELAY_US) {
+         // Read out gyro temperature if used for telemmetry
+         gyroReadTemperature();
+         lastGyroTempTimeUs = currentTimeUs;
+     }
+ }
+ #endif
+
+static void subTaskMotorUpdate(uint32_t currentTimeUs)
+{
+    uint32_t startTime = 0;
+     if (debugMode == DEBUG_CYCLETIME) {
+         startTime = micros();
+         static uint32_t previousMotorUpdateTime;
+         const uint32_t currentDeltaTime = startTime - previousMotorUpdateTime;
+         debug[2] = currentDeltaTime;
+         debug[3] = currentDeltaTime - targetPidLooptime;
+         previousMotorUpdateTime = startTime;
+     } else if (debugMode == DEBUG_PIDLOOP) {
+         startTime = micros();
+     }
+
+    mixTable(currentTimeUs);
+
+#ifdef USE_SERVOS
+    // motor outputs are used as sources for servo mixing, so motors must be calculated using mixTable() before servos.
+    if (isMixerUsingServos()) {
+        writeServos();
+    }
+#endif
+
+    //writeMotors();
+
+#ifdef USE_DSHOT_TELEMETRY_STATS
+    if (debugMode == DEBUG_DSHOT_RPM_ERRORS && useDshotTelemetry) {
+        const uint8_t motorCount = MIN(getMotorCount(), 4);
+        for (uint8_t i = 0; i < motorCount; i++) {
+            debug[i] = getDshotTelemetryMotorInvalidPercent(i);
+        }
+    }
+#endif
+
+    //DEBUG_SET(DEBUG_PIDLOOP, 2, micros() - startTime);
+}
+
+static void subTaskRcCommand(uint32_t currentTimeUs)
+{
+    UNUSED(currentTimeUs);
+
+    // If we're armed, at minimum throttle, and we do arming via the
+    // sticks, do not process yaw input from the rx.  We do this so the
+    // motors do not spin up while we are trying to arm or disarm.
+    // Allow yaw control for tricopters if the user wants the servo to move even when unarmed.
+     if (isUsingSticksForArming() && rcData[THROTTLE] <= rxConfig.mincheck) {
+         resetYawAxis();
+     }
+
+     processRcCommand();
+}
 
 void taskGyroSample(timeUs_t currentTimeUs)
 {
@@ -1186,10 +1189,10 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     // 3 - subTaskPidSubprocesses()
     //DEBUG_SET(DEBUG_PIDLOOP, 0, micros() - currentTimeUs);
 
-    //subTaskRcCommand(currentTimeUs);
-    //subTaskPidController(currentTimeUs);
-    //subTaskMotorUpdate(currentTimeUs);
-    //subTaskPidSubprocesses(currentTimeUs);
+    subTaskRcCommand(currentTimeUs);
+    subTaskPidController(currentTimeUs);
+    subTaskMotorUpdate(currentTimeUs);
+    subTaskPidSubprocesses(currentTimeUs);
 
     //DEBUG_SET(DEBUG_CYCLETIME, 0, getTaskDeltaTimeUs(TASK_SELF));
     //DEBUG_SET(DEBUG_CYCLETIME, 1, getAverageSystemLoadPercent());

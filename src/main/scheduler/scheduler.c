@@ -27,10 +27,15 @@
 #include "drivers/accgyro/accgyro.h"
 
 #include "common/maths.h"
+
 #include "rx/rx.h"
+
 #include "fc/core.h"
+
 #include "sensors/gyro_init.h"
 #include "sensors/gyro.h"
+
+#include "flight/failsafe.h"
 
 #include "scheduler/scheduler.h"
 #include "scheduler/tasks.h"

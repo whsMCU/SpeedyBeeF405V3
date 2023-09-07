@@ -46,7 +46,7 @@
 #include "fc/rc_modes.h"
 #include "fc/runtime_config.h"
 
-//#include "flight/failsafe.h"
+#include "flight/failsafe.h"
 //#include "flight/gps_rescue.h"
 #include "flight/imu.h"
 #include "flight/mixer.h"
@@ -128,7 +128,7 @@ void renderOsdWarning(char *warningText, bool *blinking, uint8_t *displayAttr)
         return;
     }
 #endif // USE_DSHOT
-    if (osdWarnGetState(OSD_WARNING_FAIL_SAFE) && false) {//failsafeIsActive()) {
+    if (osdWarnGetState(OSD_WARNING_FAIL_SAFE) && failsafeIsActive()) {
         tfp_sprintf(warningText, "FAIL SAFE");
         *displayAttr = DISPLAYPORT_ATTR_CRITICAL;
         *blinking = true;;

@@ -43,7 +43,7 @@
 #include "fc/rc_modes.h"
 #include "fc/runtime_config.h"
 
-//#include "flight/failsafe.h"
+#include "flight/failsafe.h"
 //#include "flight/gps_rescue.h"
 #include "flight/imu.h"
 #include "flight/mixer_init.h"

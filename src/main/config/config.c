@@ -40,7 +40,7 @@
 #include "fc/rc_controls.h"
 #include "fc/runtime_config.h"
 
-//#include "flight/failsafe.h"
+#include "flight/failsafe.h"
 #include "sensors/sensors.h"
 #include "flight/imu.h"
 #include "flight/mixer.h"

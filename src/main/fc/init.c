@@ -55,7 +55,7 @@
 
 #include "scheduler/tasks.h"
 
-//#include "flight/failsafe.h"
+#include "flight/failsafe.h"
 #include "flight/imu.h"
 #include "flight/mixer_init.h"
 #include "flight/mixer.h"
@@ -186,6 +186,7 @@ void Param_Config_Init(void)
 	pilotConfig_Init();
 	boardConfig_Init();
 	boardAlignment_Init(0, 0, 0);
+	failsafeConfig_Init();
     accelerometerConfig_init();
 	gyroConfig_init();
 	barometerConfig_Init();

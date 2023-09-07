@@ -38,6 +38,8 @@
 #include "fc/rc_modes.h"
 #include "fc/runtime_config.h"
 
+#include "flight/failsafe.h"
+
 #include "rx/rx.h"
 #include "rx/crsf.h"
 //#include "sbus.h"

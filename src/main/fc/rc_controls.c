@@ -34,8 +34,8 @@
 #include "rc.h"
 #include "fc/runtime_config.h"
 
-//#include "fc/pid.h"
-//#include "flight/failsafe.h"
+#include "flight/pid.h"
+#include "flight/failsafe.h"
 
 #include "rx/rx.h"
 
