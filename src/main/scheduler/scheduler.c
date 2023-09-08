@@ -324,19 +324,19 @@ void schedulerInit(void)
     queueClear();
     queueAdd(getTask(TASK_SYSTEM));
 
-    schedLoopStartMinCycles = SCHED_START_LOOP_MIN_US * 168;
-    schedLoopStartMaxCycles = SCHED_START_LOOP_MAX_US * 168;
+    schedLoopStartMinCycles = clockMicrosToCycles(SCHED_START_LOOP_MIN_US);
+    schedLoopStartMaxCycles = clockMicrosToCycles(SCHED_START_LOOP_MAX_US);
     schedLoopStartCycles = schedLoopStartMinCycles;
-    schedLoopStartDeltaDownCycles = 168 / SCHED_START_LOOP_DOWN_STEP;
-    schedLoopStartDeltaUpCycles = 168 / SCHED_START_LOOP_UP_STEP;
+    schedLoopStartDeltaDownCycles = clockMicrosToCycles(1) / SCHED_START_LOOP_DOWN_STEP;
+    schedLoopStartDeltaUpCycles = clockMicrosToCycles(1) / SCHED_START_LOOP_UP_STEP;
 
-    taskGuardMinCycles = TASK_GUARD_MARGIN_MIN_US * 168;
-    taskGuardMaxCycles = TASK_GUARD_MARGIN_MAX_US * 168;
+    taskGuardMinCycles = clockMicrosToCycles(TASK_GUARD_MARGIN_MIN_US);
+    taskGuardMaxCycles = clockMicrosToCycles(TASK_GUARD_MARGIN_MAX_US);
     taskGuardCycles = taskGuardMinCycles;
-    taskGuardDeltaDownCycles = 168 / TASK_GUARD_MARGIN_DOWN_STEP;
-    taskGuardDeltaUpCycles = 168 / TASK_GUARD_MARGIN_UP_STEP;
+    taskGuardDeltaDownCycles = clockMicrosToCycles(1) / TASK_GUARD_MARGIN_DOWN_STEP;
+    taskGuardDeltaUpCycles = clockMicrosToCycles(1) / TASK_GUARD_MARGIN_UP_STEP;
 
-    desiredPeriodCycles = (int32_t)(((uint32_t)getTask(TASK_GYRO)->attribute->desiredPeriodUs) * 168);
+    desiredPeriodCycles = (int32_t)clockMicrosToCycles((uint32_t)getTask(TASK_GYRO)->attribute->desiredPeriodUs);
 
     lastTargetCycles = getCycleCounter();
 
@@ -499,12 +499,12 @@ void scheduler(void)
             rxFrameCheck(currentTimeUs, cmpTimeUs(currentTimeUs, getTask(TASK_RX)->lastExecutedAtUs));
 
             // Check for failsafe conditions without reliance on the RX task being well behaved
-            // if (cmp32(millis(), lastFailsafeCheckMs) > PERIOD_RXDATA_FAILURE) {
-            //     // This is very low cost taking less that 4us every 10ms
-            //     failsafeCheckDataFailurePeriod();
-            //     failsafeUpdateState();
-            //     lastFailsafeCheckMs = millis();
-            // }
+             if (cmp32(millis(), lastFailsafeCheckMs) > PERIOD_RXDATA_FAILURE) {
+                 // This is very low cost taking less that 4us every 10ms
+                 failsafeCheckDataFailurePeriod();
+                 failsafeUpdateState();
+                 lastFailsafeCheckMs = millis();
+             }
 
 #if defined(USE_LATE_TASK_STATISTICS)
             // % CPU busy

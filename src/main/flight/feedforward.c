@@ -24,6 +24,7 @@
 
 #ifdef USE_FEEDFORWARD
 
+#include "build/debug.h"
 
 #include "common/maths.h"
 
@@ -78,9 +79,9 @@ float feedforwardApply(int axis, bool newRcFrame, feedforwardAveraging_t feedfor
         float rcCommandDelta = getRcCommandDelta(axis);
 
         if (axis == FD_ROLL) {
-            //DEBUG_SET(DEBUG_FEEDFORWARD, 3, lrintf(rcCommandDelta * 100.0f));
+            DEBUG_SET(DEBUG_FEEDFORWARD, 3, lrintf(rcCommandDelta * 100.0f));
             // rcCommand packet difference = value of 100 if 1000 RC steps
-            //DEBUG_SET(DEBUG_FEEDFORWARD, 0, lrintf(setpoint));
+            DEBUG_SET(DEBUG_FEEDFORWARD, 0, lrintf(setpoint));
             // un-smoothed in blackbox
         }
 
@@ -171,8 +172,8 @@ float feedforwardApply(int axis, bool newRcFrame, feedforwardAveraging_t feedfor
 
 
         if (axis == FD_ROLL) {
-            //DEBUG_SET(DEBUG_FEEDFORWARD, 1, lrintf(setpointSpeed * pidGetDT() * 100.0f)); // setpoint speed after smoothing
-            //DEBUG_SET(DEBUG_FEEDFORWARD, 2, lrintf(setpointAcceleration * pidGetDT() * 100.0f)); // boost amount after smoothing
+            DEBUG_SET(DEBUG_FEEDFORWARD, 1, lrintf(setpointSpeed * pidGetDT() * 100.0f)); // setpoint speed after smoothing
+            DEBUG_SET(DEBUG_FEEDFORWARD, 2, lrintf(setpointAcceleration * pidGetDT() * 100.0f)); // boost amount after smoothing
             // debug 0 is interpolated setpoint, above
             // debug 3 is rcCommand delta, above
         }
@@ -194,10 +195,10 @@ float feedforwardApply(int axis, bool newRcFrame, feedforwardAveraging_t feedfor
 float applyFeedforwardLimit(int axis, float value, float Kp, float currentPidSetpoint) {
     switch (axis) {
     case FD_ROLL:
-        //DEBUG_SET(DEBUG_FEEDFORWARD_LIMIT, 0, value);
+        DEBUG_SET(DEBUG_FEEDFORWARD_LIMIT, 0, value);
         break;
     case FD_PITCH:
-        //DEBUG_SET(DEBUG_FEEDFORWARD_LIMIT, 1, value);
+        DEBUG_SET(DEBUG_FEEDFORWARD_LIMIT, 1, value);
         break;
     }
 
@@ -210,7 +211,7 @@ float applyFeedforwardLimit(int axis, float value, float Kp, float currentPidSet
     }
 
     if (axis == FD_ROLL) {
-        //DEBUG_SET(DEBUG_FEEDFORWARD_LIMIT, 2, value);
+        DEBUG_SET(DEBUG_FEEDFORWARD_LIMIT, 2, value);
     }
 
     return value;

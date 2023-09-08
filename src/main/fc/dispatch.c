@@ -22,8 +22,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-//#include "platform.h"
-
 #include "common/utils.h"
 
 #include "time.h"

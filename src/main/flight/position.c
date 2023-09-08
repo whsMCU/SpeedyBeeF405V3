@@ -24,6 +24,7 @@
 #include <math.h>
 #include <limits.h>
 
+#include "build/debug.h"
 
 #include "common/maths.h"
 
@@ -31,7 +32,7 @@
 
 #include "flight/position.h"
 #include "flight/imu.h"
-//#include "flight/pid.h"
+#include "flight/pid.h"
 
 //#include "io/gps.h"
 
@@ -197,11 +198,10 @@ void calculateEstimatedAltitude(timeUs_t currentTimeUs)
 #endif
     }
 
+    DEBUG_SET(DEBUG_ALTITUDE, 0, (int32_t)(100 * gpsTrust));
+    DEBUG_SET(DEBUG_ALTITUDE, 1, baroAlt);
+    DEBUG_SET(DEBUG_ALTITUDE, 2, gpsAlt);
 
-
-    //DEBUG_SET(DEBUG_ALTITUDE, 0, (int32_t)(100 * gpsTrust));
-    //DEBUG_SET(DEBUG_ALTITUDE, 1, baroAlt);
-    //DEBUG_SET(DEBUG_ALTITUDE, 2, gpsAlt);
 #ifdef USE_VARIO
     DEBUG_SET(DEBUG_ALTITUDE, 3, estimatedVario);
 #endif

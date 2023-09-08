@@ -22,6 +22,8 @@
 #include <stdint.h>
 #include <math.h>
 
+#include "build/debug.h"
+
 #include "common/maths.h"
 
 #include "fc/runtime_config.h"
@@ -187,7 +189,7 @@ uint32_t baroUpdate(timeUs_t currentTimeUs)
     timeUs_t executeTimeUs;
     timeUs_t sleepTime = 1000; // Wait 1ms between states
 
-    //DEBUG_SET(DEBUG_BARO, 0, state);
+    DEBUG_SET(DEBUG_BARO, 0, state);
 
     if (busBusy()){
         // If the bus is busy, simply return to have another go later
@@ -253,9 +255,9 @@ uint32_t baroUpdate(timeUs_t currentTimeUs)
                 state = BARO_STATE_TEMPERATURE_START;
             }
 
-            // DEBUG_SET(DEBUG_BARO, 1, baroTemperature);
-            // DEBUG_SET(DEBUG_BARO, 2, baroPressure);
-            // DEBUG_SET(DEBUG_BARO, 3, baroPressureSum);
+            DEBUG_SET(DEBUG_BARO, 1, baroTemperature);
+            DEBUG_SET(DEBUG_BARO, 2, baroPressure);
+            DEBUG_SET(DEBUG_BARO, 3, baroPressureSum);
 
             sleepTime = baro.dev.ut_delay;
             break;

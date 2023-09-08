@@ -170,7 +170,7 @@ static bool accNeedsCalibration(void)
 
 #ifdef USE_GPS_RESCUE
 	 // Check if failsafe will use GPS Rescue
-	 if (failsafeConfig()->failsafe_procedure == FAILSAFE_PROCEDURE_GPS_RESCUE) {
+	 if (failsafeConfig.failsafe_procedure == FAILSAFE_PROCEDURE_GPS_RESCUE) {
 		 return true;
 	 }
 #endif
@@ -397,7 +397,7 @@ void disarm(flightLogDisarmReason_e reason)
 void tryArm(void)
 {
 	 if (armingConfig.gyro_cal_on_first_arm) {
-			 gyroStartCalibration(true);
+		 gyroStartCalibration(true);
 	 }
 
 	 updateArmingStatus();
@@ -553,7 +553,7 @@ void tryArm(void)
      }
  }
 
-
+#if defined(USE_GPS) || defined(USE_MAG)
 static void updateMagHold(void)
 {
     if (fabsf(rcCommand[YAW]) < 15 && FLIGHT_MODE(MAG_MODE)) {
@@ -569,7 +569,7 @@ static void updateMagHold(void)
     } else
         magHold = DECIDEGREES_TO_DEGREES(attitude.values.yaw);
 }
-
+#endif
 
 #ifdef USE_VTX_CONTROL
 static bool canUpdateVTX(void)
@@ -1007,7 +1007,7 @@ static void subTaskPidController(uint32_t currentTimeUs)
     if (debugMode == DEBUG_PIDLOOP) {startTime = micros();}
     // PID - note this is function pointer set by setPIDController()
     pidController(currentPidProfile, currentTimeUs);
-    //DEBUG_SET(DEBUG_PIDLOOP, 1, micros() - startTime);
+    DEBUG_SET(DEBUG_PIDLOOP, 1, micros() - startTime);
 
 #ifdef USE_RUNAWAY_TAKEOFF
     // Check to see if runaway takeoff detection is active (anti-taz), the pidSum is over the threshold,
@@ -1073,7 +1073,7 @@ static void subTaskPidSubprocesses(uint32_t currentTimeUs)
     UNUSED(currentTimeUs);
 #endif
 
-    //DEBUG_SET(DEBUG_PIDLOOP, 3, micros() - startTime);
+    DEBUG_SET(DEBUG_PIDLOOP, 3, micros() - startTime);
 }
 
  #ifdef USE_TELEMETRY
@@ -1124,7 +1124,7 @@ static void subTaskMotorUpdate(uint32_t currentTimeUs)
     }
 #endif
 
-    //DEBUG_SET(DEBUG_PIDLOOP, 2, micros() - startTime);
+    DEBUG_SET(DEBUG_PIDLOOP, 2, micros() - startTime);
 }
 
 static void subTaskRcCommand(uint32_t currentTimeUs)
@@ -1194,8 +1194,8 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     subTaskMotorUpdate(currentTimeUs);
     subTaskPidSubprocesses(currentTimeUs);
 
-    //DEBUG_SET(DEBUG_CYCLETIME, 0, getTaskDeltaTimeUs(TASK_SELF));
-    //DEBUG_SET(DEBUG_CYCLETIME, 1, getAverageSystemLoadPercent());
+    DEBUG_SET(DEBUG_CYCLETIME, 0, getTaskDeltaTimeUs(TASK_SELF));
+    DEBUG_SET(DEBUG_CYCLETIME, 1, getAverageSystemLoadPercent());
 }
 
 bool isFlipOverAfterCrashActive(void)

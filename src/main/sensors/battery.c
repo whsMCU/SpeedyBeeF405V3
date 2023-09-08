@@ -22,17 +22,19 @@
 #include <stdint.h>
 #include <math.h>
 
+#include "build/debug.h"
+
 #include "common/filter.h"
 #include "common/maths.h"
 #include "common/utils.h"
 
 #include "config/config.h"
-//#include "config/feature.h"
+#include "config/feature.h"
 
 #include "fc/runtime_config.h"
 #include "fc/rc_controls.h"
 
-//#include "fc/mixer.h"
+#include "flight/mixer.h"
 
 //#include "io/beeper.h"
 
@@ -145,8 +147,8 @@ void batteryUpdateVoltage(timeUs_t currentTimeUs)
             break;
     }
 
-    //DEBUG_SET(DEBUG_BATTERY, 0, voltageMeter.unfiltered);
-    //DEBUG_SET(DEBUG_BATTERY, 1, voltageMeter.displayFiltered);
+    DEBUG_SET(DEBUG_BATTERY, 0, voltageMeter.unfiltered);
+    DEBUG_SET(DEBUG_BATTERY, 1, voltageMeter.displayFiltered);
 }
 
 static void updateBatteryBeeperAlert(void)

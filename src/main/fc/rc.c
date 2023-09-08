@@ -22,6 +22,8 @@
 #include <stdint.h>
 #include <math.h>
 
+#include "build/debug.h"
+
 #include "common/axis.h"
 #include "common/utils.h"
 
@@ -296,8 +298,8 @@ void updateRcRefreshRate(uint32_t currentTimeUs)
         frameDeltaUs = cmpTimeUs(currentTimeUs, lastRxTimeUs); // calculate a delta here if not supplied by the protocol
     }
 
-    //DEBUG_SET(DEBUG_RX_TIMING, 0, MIN(frameDeltaUs / 10, INT16_MAX));
-    //DEBUG_SET(DEBUG_RX_TIMING, 1, MIN(frameAgeUs / 10, INT16_MAX));
+    DEBUG_SET(DEBUG_RX_TIMING, 0, MIN(frameDeltaUs / 10, INT16_MAX));
+    DEBUG_SET(DEBUG_RX_TIMING, 1, MIN(frameAgeUs / 10, INT16_MAX));
 
     lastRxTimeUs = currentTimeUs;
     isRxRateValid = (frameDeltaUs >= RC_RX_RATE_MIN_US && frameDeltaUs <= RC_RX_RATE_MAX_US);
@@ -512,26 +514,26 @@ static void processRcSmoothingFilter(void)
             }
 
             // rx frame rate training blackbox debugging
-            //DEBUG_SET(DEBUG_RC_SMOOTHING_RATE, 0, currentRxRefreshRate);              // log each rx frame interval
-            //DEBUG_SET(DEBUG_RC_SMOOTHING_RATE, 1, rcSmoothingData.training.count);    // log the training step count
-            //DEBUG_SET(DEBUG_RC_SMOOTHING_RATE, 2, rcSmoothingData.averageFrameTimeUs);// the current calculated average
-            //DEBUG_SET(DEBUG_RC_SMOOTHING_RATE, 3, sampleState);                       // indicates whether guard time is active
+            DEBUG_SET(DEBUG_RC_SMOOTHING_RATE, 0, currentRxRefreshRate);              // log each rx frame interval
+            DEBUG_SET(DEBUG_RC_SMOOTHING_RATE, 1, rcSmoothingData.training.count);    // log the training step count
+            DEBUG_SET(DEBUG_RC_SMOOTHING_RATE, 2, rcSmoothingData.averageFrameTimeUs);// the current calculated average
+            DEBUG_SET(DEBUG_RC_SMOOTHING_RATE, 3, sampleState);                       // indicates whether guard time is active
         }
         // Get new values to be smoothed
         for (int i = 0; i < PRIMARY_CHANNEL_COUNT; i++) {
             rxDataToSmooth[i] = i == THROTTLE ? rcCommand[i] : rawSetpoint[i];
             if (i < THROTTLE) {
-                //DEBUG_SET(DEBUG_RC_INTERPOLATION, i, lrintf(rxDataToSmooth[i]));
+                DEBUG_SET(DEBUG_RC_INTERPOLATION, i, lrintf(rxDataToSmooth[i]));
             } else {
-                //DEBUG_SET(DEBUG_RC_INTERPOLATION, i, ((lrintf(rxDataToSmooth[i])) - 1000));
+                DEBUG_SET(DEBUG_RC_INTERPOLATION, i, ((lrintf(rxDataToSmooth[i])) - 1000));
             }
         }
     }
 
-    if (false) { //rcSmoothingData.filterInitialized && (debugMode == DEBUG_RC_SMOOTHING)
+    if (rcSmoothingData.filterInitialized && (debugMode == DEBUG_RC_SMOOTHING)) {
         // after training has completed then log the raw rc channel and the calculated
         // average rx frame rate that was used to calculate the automatic filter cutoffs
-        //DEBUG_SET(DEBUG_RC_SMOOTHING, 3, rcSmoothingData.averageFrameTimeUs);
+        DEBUG_SET(DEBUG_RC_SMOOTHING, 3, rcSmoothingData.averageFrameTimeUs);
     }
 
     // each pid loop, apply the last received channel value to the filter, if initialised - thanks @klutvott
@@ -564,9 +566,9 @@ void processRcCommand(void)
         newRxDataForFF = true;
     }
 
-//    if (isRxDataNew && pidAntiGravityEnabled()) {
-//        checkForThrottleErrorResetState(currentRxRefreshRate);
-//    }
+    if (isRxDataNew && pidAntiGravityEnabled()) {
+        checkForThrottleErrorResetState(currentRxRefreshRate);
+    }
 
     if (isRxDataNew) {
         for (int axis = FD_ROLL; axis <= FD_YAW; axis++) {
@@ -606,7 +608,7 @@ void processRcCommand(void)
 
             }
             rawSetpoint[axis] = constrainf(angleRate, -1.0f * currentControlRateProfile->rate_limit[axis], 1.0f * currentControlRateProfile->rate_limit[axis]);
-            //DEBUG_SET(DEBUG_ANGLERATE, axis, angleRate);
+            DEBUG_SET(DEBUG_ANGLERATE, axis, angleRate);
         }
         // adjust raw setpoint steps to camera angle (mixing Roll and Yaw)
         if (rxConfig.fpvCamAngleDegrees && IS_RC_MODE_ACTIVE(BOXFPVANGLEMIX) && !FLIGHT_MODE(HEADFREE_MODE)) {
@@ -665,7 +667,7 @@ void updateRcCommands(void)
 
     rcCommand[THROTTLE] = rcLookupThrottle(tmp);
 
-     if (featureIsEnabled(FEATURE_3D) && true) {//!failsafeIsActive()
+     if (featureIsEnabled(FEATURE_3D) && !failsafeIsActive()) {
          if (!flight3DConfig.switched_mode3d) {
              if (IS_RC_MODE_ACTIVE(BOX3D)) {
                  fix12_t throttleScaler = qConstruct(rcCommand[THROTTLE] - 1000, 1000);

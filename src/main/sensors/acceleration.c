@@ -21,6 +21,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "build/debug.h"
+
 #include "common/axis.h"
 #include "common/filter.h"
 #include "common/utils.h"
@@ -54,7 +56,7 @@ void accUpdate(uint32_t currentTimeUs, rollAndPitchTrims_t *rollAndPitchTrims)
     acc.isAccelUpdatedAtLeastOnce = true;
 
     for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
-        //DEBUG_SET(DEBUG_ACCELEROMETER, axis, acc.dev.ADCRaw[axis]);
+        DEBUG_SET(DEBUG_ACCELEROMETER, axis, acc.dev.ADCRaw[axis]);
         acc.accADC[axis] = acc.dev.ADCRaw[axis];
     }
 

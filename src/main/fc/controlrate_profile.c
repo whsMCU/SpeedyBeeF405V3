@@ -94,6 +94,6 @@ void copyControlRateProfile(const uint8_t dstControlRateProfileIndex, const uint
     if ((dstControlRateProfileIndex < CONTROL_RATE_PROFILE_COUNT && srcControlRateProfileIndex < CONTROL_RATE_PROFILE_COUNT)
         && dstControlRateProfileIndex != srcControlRateProfileIndex
     ) {
-        //memcpy(controlRateProfilesMutable(dstControlRateProfileIndex), controlRateProfiles(srcControlRateProfileIndex), sizeof(controlRateConfig_t));
+        memcpy(&controlRateProfiles[dstControlRateProfileIndex], &controlRateProfiles[srcControlRateProfileIndex], sizeof(controlRateConfig_t));
     }
 }

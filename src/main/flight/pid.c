@@ -23,6 +23,8 @@
 #include <string.h>
 #include <math.h>
 
+#include "build/debug.h"
+
 #include "common/axis.h"
 #include "common/filter.h"
 #include "common/maths.h"
@@ -752,9 +754,9 @@ STATIC_UNIT_TESTED void applyItermRelax(const int axis, const float iterm,
             }
 
             if (axis == FD_ROLL) {
-                //DEBUG_SET(DEBUG_ITERM_RELAX, 0, lrintf(setpointHpf));
-                //DEBUG_SET(DEBUG_ITERM_RELAX, 1, lrintf(itermRelaxFactor * 100.0f));
-                //DEBUG_SET(DEBUG_ITERM_RELAX, 2, lrintf(*itermErrorRate));
+                DEBUG_SET(DEBUG_ITERM_RELAX, 0, lrintf(setpointHpf));
+                DEBUG_SET(DEBUG_ITERM_RELAX, 1, lrintf(itermRelaxFactor * 100.0f));
+                DEBUG_SET(DEBUG_ITERM_RELAX, 2, lrintf(*itermErrorRate));
             }
         }
 
@@ -904,7 +906,7 @@ static float applyLaunchControl(int axis, const rollAndPitchTrims_t *angleTrim)
      } else {
          pidRuntime.antiGravityPBoost = 0.0f;
      }
-     //DEBUG_SET(DEBUG_ANTI_GRAVITY, 0, lrintf(pidRuntime.itermAccelerator * 1000));
+     DEBUG_SET(DEBUG_ANTI_GRAVITY, 0, lrintf(pidRuntime.itermAccelerator * 1000));
 
      float agGain = pidRuntime.dT * pidRuntime.itermAccelerator * AG_KI;
 
@@ -931,9 +933,9 @@ static float applyLaunchControl(int axis, const rollAndPitchTrims_t *angleTrim)
 
          // Log the unfiltered D
           if (axis == FD_ROLL) {
-              //DEBUG_SET(DEBUG_D_LPF, 0, lrintf(delta));
+              DEBUG_SET(DEBUG_D_LPF, 0, lrintf(delta));
           } else if (axis == FD_PITCH) {
-             // DEBUG_SET(DEBUG_D_LPF, 1, lrintf(delta));
+              DEBUG_SET(DEBUG_D_LPF, 1, lrintf(delta));
           }
 
          gyroRateDterm[axis] = pidRuntime.dtermNotchApplyFn((filter_t *) &pidRuntime.dtermNotch[axis], gyroRateDterm[axis]);
@@ -1095,11 +1097,11 @@ static float applyLaunchControl(int axis, const rollAndPitchTrims_t *angleTrim)
                  dMinFactor = pt2FilterApply(&pidRuntime.dMinLowpass[axis], dMinFactor);
                  dMinFactor = MIN(dMinFactor, 1.0f);
                  if (axis == FD_ROLL) {
-                     //DEBUG_SET(DEBUG_D_MIN, 0, lrintf(dMinGyroFactor * 100));
-                     //DEBUG_SET(DEBUG_D_MIN, 1, lrintf(dMinSetpointFactor * 100));
-                     //DEBUG_SET(DEBUG_D_MIN, 2, lrintf(pidRuntime.pidCoefficient[axis].Kd * dMinFactor * 10 / DTERM_SCALE));
+                     DEBUG_SET(DEBUG_D_MIN, 0, lrintf(dMinGyroFactor * 100));
+                     DEBUG_SET(DEBUG_D_MIN, 1, lrintf(dMinSetpointFactor * 100));
+                     DEBUG_SET(DEBUG_D_MIN, 2, lrintf(pidRuntime.pidCoefficient[axis].Kd * dMinFactor * 10 / DTERM_SCALE));
                  } else if (axis == FD_PITCH) {
-                     //DEBUG_SET(DEBUG_D_MIN, 3, lrintf(pidRuntime.pidCoefficient[axis].Kd * dMinFactor * 10 / DTERM_SCALE));
+                     DEBUG_SET(DEBUG_D_MIN, 3, lrintf(pidRuntime.pidCoefficient[axis].Kd * dMinFactor * 10 / DTERM_SCALE));
                  }
              }
 
@@ -1111,19 +1113,19 @@ static float applyLaunchControl(int axis, const rollAndPitchTrims_t *angleTrim)
              // Log the value of D pre application of TPA
              preTpaD *= D_LPF_FILT_SCALE;
 
-             // if (axis == FD_ROLL) {
-             //     DEBUG_SET(DEBUG_D_LPF, 2, lrintf(preTpaD));
-             // } else if (axis == FD_PITCH) {
-             //     DEBUG_SET(DEBUG_D_LPF, 3, lrintf(preTpaD));
-             // }
+              if (axis == FD_ROLL) {
+                  DEBUG_SET(DEBUG_D_LPF, 2, lrintf(preTpaD));
+              } else if (axis == FD_PITCH) {
+                  DEBUG_SET(DEBUG_D_LPF, 3, lrintf(preTpaD));
+              }
          } else {
              pidData[axis].D = 0;
 
-             // if (axis == FD_ROLL) {
-             //     DEBUG_SET(DEBUG_D_LPF, 2, 0);
-             // } else if (axis == FD_PITCH) {
-             //     DEBUG_SET(DEBUG_D_LPF, 3, 0);
-             // }
+              if (axis == FD_ROLL) {
+                  DEBUG_SET(DEBUG_D_LPF, 2, 0);
+              } else if (axis == FD_PITCH) {
+                  DEBUG_SET(DEBUG_D_LPF, 3, 0);
+              }
          }
 
          previousGyroRateDterm[axis] = gyroRateDterm[axis];
@@ -1195,7 +1197,7 @@ static float applyLaunchControl(int axis, const rollAndPitchTrims_t *angleTrim)
          const float agBoost = 1.0f + (pidRuntime.antiGravityPBoost / agBoostAttenuator);
          if (axis != FD_YAW) {
              pidData[axis].P *= agBoost;
-             //DEBUG_SET(DEBUG_ANTI_GRAVITY, axis + 2, lrintf(agBoost * 1000));
+             DEBUG_SET(DEBUG_ANTI_GRAVITY, axis + 2, lrintf(agBoost * 1000));
          }
 
          const float pidSum = pidData[axis].P + pidData[axis].I + pidData[axis].D + pidData[axis].F;

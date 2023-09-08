@@ -25,6 +25,9 @@
 #include "hw.h"
 
 #if defined(USE_MAG)
+
+#include "build/debug.h"
+
 #include "common/axis.h"
 #include "common/time.h"
 
@@ -57,9 +60,9 @@ compassConfig_t compassConfig;
 
 void compassConfig_Init(void)
 {
-    //compassConfig->mag_alignment = ALIGN_DEFAULT;
-    //memset(&compassConfig->mag_customAlignment, 0x00, sizeof(compassConfig->mag_customAlignment));
-    //compassConfig->mag_hardware = MAG_DEFAULT;
+    compassConfig.mag_alignment = ALIGN_DEFAULT;
+    memset(&compassConfig.mag_customAlignment, 0x00, sizeof(compassConfig.mag_customAlignment));
+    compassConfig.mag_hardware = MAG_DEFAULT;
 
 // Generate a reasonable default for backward compatibility
 // Strategy is

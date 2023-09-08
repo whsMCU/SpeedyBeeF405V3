@@ -18,7 +18,6 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-//#include "platform.h"
 #include "hw.h"
 
 #ifdef USE_PERSISTENT_STATS

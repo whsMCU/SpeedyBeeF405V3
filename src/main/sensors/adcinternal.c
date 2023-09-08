@@ -20,11 +20,11 @@
 
 #include "adcinternal.h"
 
+#include "hw.h"
+
 #if defined(USE_ADC_INTERNAL)
 
-//#include "build/debug.h"
-
-
+#include "build/debug.h"
 
 #include "adc.h"
 
@@ -87,10 +87,10 @@ void adcInternalProcess(timeUs_t currentTimeUs)
     vrefMv = adcInternalCompensateVref(adcVrefintValue);
     coreTemperature = adcInternalComputeTemperature(adcTempsensorValue, vrefMv);
 
-//    DEBUG_SET(DEBUG_ADC_INTERNAL, 0, coreTemperature);
-//    DEBUG_SET(DEBUG_ADC_INTERNAL, 1, vrefintSample);
-//    DEBUG_SET(DEBUG_ADC_INTERNAL, 2, tempsensorSample);
-//    DEBUG_SET(DEBUG_ADC_INTERNAL, 3, vrefMv);
+    DEBUG_SET(DEBUG_ADC_INTERNAL, 0, coreTemperature);
+    DEBUG_SET(DEBUG_ADC_INTERNAL, 1, vrefintSample);
+    DEBUG_SET(DEBUG_ADC_INTERNAL, 2, tempsensorSample);
+    DEBUG_SET(DEBUG_ADC_INTERNAL, 3, vrefMv);
 
     //adcInternalStartConversion(); // Start next conversion
 }

@@ -24,8 +24,8 @@
 #include <stdint.h>
 #include <math.h>
 
-//#include "build/build_config.h"
-//#include "build/debug.h"
+#include "build/build_config.h"
+#include "build/debug.h"
 
 #include "common/axis.h"
 #include "common/time.h"
@@ -35,8 +35,8 @@
 
 //#include "flight/gps_rescue.h"
 #include "flight/imu.h"
-//#include "flight/mixer.h"
-//#include "pid.h"
+#include "flight/mixer.h"
+#include "flight/pid.h"
 
 #include "scheduler/scheduler.h"
 

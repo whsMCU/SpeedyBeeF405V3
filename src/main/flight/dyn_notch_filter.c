@@ -35,6 +35,8 @@
 
 #ifdef USE_DYN_NOTCH_FILTER
 
+#include "build/debug.h"
+
 #include "common/axis.h"
 #include "common/filter.h"
 #include "common/maths.h"
@@ -230,7 +232,7 @@ void dynNotchUpdate(void)
             sampleAvg[axis] = sampleAccumulator[axis] * sampleCountRcp;
             sampleAccumulator[axis] = 0;
             if (axis == gyro.gyroDebugAxis) {
-                //DEBUG_SET(DEBUG_FFT, 2, lrintf(sampleAvg[axis]));
+                DEBUG_SET(DEBUG_FFT, 2, lrintf(sampleAvg[axis]));
             }
         }
 
@@ -259,11 +261,11 @@ void dynNotchUpdate(void)
 static void dynNotchProcess(void)
 {
     uint32_t startTime = 0;
-    // if (debugMode == DEBUG_FFT_TIME) {
-    //     startTime = micros();
-    // }
+     if (debugMode == DEBUG_FFT_TIME) {
+         startTime = micros();
+     }
 
-    //DEBUG_SET(DEBUG_FFT_TIME, 0, state.step);
+    DEBUG_SET(DEBUG_FFT_TIME, 0, state.step);
 
     switch (state.step) {
     
@@ -277,7 +279,7 @@ static void dynNotchProcess(void)
                 sdftNoiseThreshold += sdftData[bin];                        // sdftData contains power spectral density
             }
 
-            //DEBUG_SET(DEBUG_FFT_TIME, 1, micros() - startTime);
+            DEBUG_SET(DEBUG_FFT_TIME, 1, micros() - startTime);
 
             break;
         }
@@ -322,7 +324,7 @@ static void dynNotchProcess(void)
                 }
             }
 
-            //DEBUG_SET(DEBUG_FFT_TIME, 1, micros() - startTime);
+            DEBUG_SET(DEBUG_FFT_TIME, 1, micros() - startTime);
 
             break;
         }
@@ -381,12 +383,12 @@ static void dynNotchProcess(void)
 
             if (state.axis == gyro.gyroDebugAxis) {
                 for (int p = 0; p < dynNotch.count && p < 3; p++) {
-                    //DEBUG_SET(DEBUG_FFT_FREQ, p, lrintf(dynNotch.centerFreq[state.axis][p]));
+                    DEBUG_SET(DEBUG_FFT_FREQ, p, lrintf(dynNotch.centerFreq[state.axis][p]));
                 }
-                //DEBUG_SET(DEBUG_DYN_LPF, 1, lrintf(dynNotch.centerFreq[state.axis][0]));
+                DEBUG_SET(DEBUG_DYN_LPF, 1, lrintf(dynNotch.centerFreq[state.axis][0]));
             }
 
-            //DEBUG_SET(DEBUG_FFT_TIME, 1, micros() - startTime);
+            DEBUG_SET(DEBUG_FFT_TIME, 1, micros() - startTime);
 
             break;
         }
@@ -399,7 +401,7 @@ static void dynNotchProcess(void)
                 }
             }
 
-            //DEBUG_SET(DEBUG_FFT_TIME, 1, micros() - startTime);
+            DEBUG_SET(DEBUG_FFT_TIME, 1, micros() - startTime);
 
             state.axis = (state.axis + 1) % XYZ_AXIS_COUNT;
         }
