@@ -95,6 +95,7 @@
 #include "telemetry/telemetry.h"
 
 #include "drivers/gps/gps.h"
+#include "drivers/motor.h"
 
 #include "rx/rx.h"
 
@@ -187,24 +188,26 @@ void Param_Config_Init(void)
 	boardConfig_Init();
 	boardAlignment_Init(0, 0, 0);
 	failsafeConfig_Init();
-    accelerometerConfig_init();
+	accelerometerConfig_init();
 	gyroConfig_init();
+	gyroDeviceConfig_Init();
+	motorConfig_Init();
 	barometerConfig_Init();
-    compassConfig_Init();
-    adcConfig_Init();
+	compassConfig_Init();
+	adcConfig_Init();
 	voltageSensorADCConfig_Init();
-    currentSensorADCConfig_Init();
-    dynNotchConfig_Init();
-    imuConfig_Init();
+	currentSensorADCConfig_Init();
+	dynNotchConfig_Init();
+	imuConfig_Init();
 	pidConfig_Init();
 	pidProfiles_Init();
-    rxConfig_Init();
-    rxChannelRangeConfigs_Init();
-    rxFailsafeChannelConfigs_Init();
+	rxConfig_Init();
+	rxChannelRangeConfigs_Init();
+	rxFailsafeChannelConfigs_Init();
 	batteryConfig_Init();
 	controlRateProfiles_Init();
 	mixerConfig_Init();
-    throttleCorrectionConfig_Init();
+	throttleCorrectionConfig_Init();
 	featureConfig_Init();
 	positionConfig_Init();
 	rcControlsConfig_Init();

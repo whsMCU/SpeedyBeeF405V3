@@ -59,6 +59,8 @@ typedef struct compassConfig_s {
     sensorAlignment_t mag_customAlignment;
 } compassConfig_t;
 
+extern compassConfig_t compassConfig;
+
 void compassConfig_Init(void);
 bool compassIsHealthy(void);
 uint32_t compassUpdate(uint32_t currentTime);

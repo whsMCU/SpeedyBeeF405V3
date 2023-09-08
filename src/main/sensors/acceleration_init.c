@@ -314,6 +314,7 @@ void accInitFilters(void)
 
 bool accInit(uint16_t accSampleRateHz)
 {
+		accelerationSensor_e accHardware = ACC_NONE;
     memset(&acc, 0, sizeof(acc));
     // copy over the common gyro mpu settings
     acc.dev.gyro = gyroActiveDev();
@@ -323,23 +324,19 @@ bool accInit(uint16_t accSampleRateHz)
     // Copy alignment from active gyro, as all production boards use acc-gyro-combi chip.
     // Exceptions are STM32F3DISCOVERY and STM32F411DISCOVERY, and (may be) handled in future enhancement.
 
-    //sensor_align_e alignment = gyroDeviceConfig(0)->alignment;
-    //const sensorAlignment_t* customAlignment = &gyroDeviceConfig(0)->customAlignment;
+    sensor_align_e alignment = gyroDeviceConfig[0].alignment;
+    const sensorAlignment_t* customAlignment = &gyroDeviceConfig[0].customAlignment;
 
-#ifdef USE_MULTI_GYRO
-    if (gyroConfig()->gyro_to_use == GYRO_CONFIG_USE_GYRO_2) {
-        alignment = gyroDeviceConfig(1)->alignment;
-
-        customAlignment = &gyroDeviceConfig(1)->customAlignment;
-    }
-#endif
-    //acc.dev.accAlign = alignment;
-    //buildRotationMatrixFromAlignment(customAlignment, &acc.dev.rotationMatrix);
+    acc.dev.accAlign = alignment;
+    buildRotationMatrixFromAlignment(customAlignment, &acc.dev.rotationMatrix);
 
     // if (!accDetect(&acc.dev, accelerometerConfig()->acc_hardware)) {
     //     return false;
     // }
     bmi270SpiAccDetect(&acc.dev);
+    accHardware = ACC_BMI270;
+    detectedSensors[SENSOR_INDEX_ACC] = accHardware;
+    sensorsSet(SENSOR_ACC);
     acc.dev.acc_1G = 256; // set default
     acc.dev.initFn(&acc.dev); // driver initialisation
     acc.dev.acc_1G_rec = 1.0f / acc.dev.acc_1G;
@@ -394,7 +391,7 @@ void performAcclerationCalibration(rollAndPitchTrims_t *rollAndPitchTrims)
         accelerationRuntime.accelerationTrims->raw[Y] = (a[Y] + (CALIBRATING_ACC_CYCLES / 2)) / CALIBRATING_ACC_CYCLES;
         accelerationRuntime.accelerationTrims->raw[Z] = (a[Z] + (CALIBRATING_ACC_CYCLES / 2)) / CALIBRATING_ACC_CYCLES - acc.dev.acc_1G;
 
-        //resetRollAndPitchTrims(rollAndPitchTrims);
+        resetRollAndPitchTrims(rollAndPitchTrims);
         setConfigCalibrationCompleted();
 
         //saveConfigAndNotify();

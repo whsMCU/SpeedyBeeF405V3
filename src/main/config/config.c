@@ -23,7 +23,7 @@
 #include <string.h>
 #include <math.h>
 
-//#include "common/sensor_alignment.h"
+#include "common/sensor_alignment.h"
 
 //#include "config/config_eeprom.h"
 #include "config/config.h"
@@ -294,7 +294,7 @@ static void validateAndFixConfig(void)
     validateAndFixGyroConfig();
 
 #if defined(USE_MAG)
-    //buildAlignmentFromStandardAlignment(&compassConfigMutable()->mag_customAlignment, compassConfig()->mag_alignment);
+    buildAlignmentFromStandardAlignment(&compassConfig.mag_customAlignment, compassConfig.mag_alignment);
 #endif
     //buildAlignmentFromStandardAlignment(&gyroDeviceConfigMutable(0)->customAlignment, gyroDeviceConfig(0)->alignment);
 #if defined(USE_MULTI_GYRO)
@@ -350,7 +350,7 @@ static void validateAndFixConfig(void)
     }
 
     if (
-        featureIsConfigured(FEATURE_3D) || !featureIsConfigured(FEATURE_GPS)// || mixerModeIsFixedWing(mixerConfig()->mixerMode)
+        featureIsConfigured(FEATURE_3D) || !featureIsConfigured(FEATURE_GPS) || mixerModeIsFixedWing(mixerConfig.mixerMode)
 #if !defined(USE_GPS) || !defined(USE_GPS_RESCUE)
         || true
 #endif
@@ -562,10 +562,10 @@ static void validateAndFixConfig(void)
 
     // validate that the minimum battery cell voltage is less than the maximum cell voltage
     // reset to defaults if not
-//    if (batteryConfig()->vbatmincellvoltage >=  batteryConfig()->vbatmaxcellvoltage) {
-//        batteryConfigMutable()->vbatmincellvoltage = VBAT_CELL_VOLTAGE_DEFAULT_MIN;
-//        batteryConfigMutable()->vbatmaxcellvoltage = VBAT_CELL_VOLTAGE_DEFAULT_MAX;
-//    }
+    if (batteryConfig.vbatmincellvoltage >=  batteryConfig.vbatmaxcellvoltage) {
+        batteryConfig.vbatmincellvoltage = VBAT_CELL_VOLTAGE_DEFAULT_MIN;
+        batteryConfig.vbatmaxcellvoltage = VBAT_CELL_VOLTAGE_DEFAULT_MAX;
+    }
 
 #ifdef USE_MSP_DISPLAYPORT
     // validate that displayport_msp_serial is referencing a valid UART that actually has MSP enabled

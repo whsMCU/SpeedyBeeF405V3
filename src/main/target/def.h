@@ -76,6 +76,8 @@
 #define USE_OSD
 #define USE_BOARD_INFO
 #define USE_SIGNATURE
+#define USE_MOTOR
+#define USE_PWM_OUTPUT
 
 
 #endif /* SRC_COMMON_DEF_H_ */

@@ -200,7 +200,23 @@ typedef struct gyroConfig_s {
 
 extern gyroConfig_t gyroConfig;
 
+#define MAX_GYRODEV_COUNT 1
+typedef struct gyroDeviceConfig_s {
+    int8_t index;
+    //uint8_t busType;
+    //uint8_t spiBus;
+    //ioTag_t csnTag;
+    //uint8_t i2cBus;
+    //uint8_t i2cAddress;
+    //ioTag_t extiTag;
+    uint8_t alignment;        // sensor_align_e
+    sensorAlignment_t customAlignment;
+} gyroDeviceConfig_t;
+
+extern gyroDeviceConfig_t gyroDeviceConfig[MAX_GYRODEV_COUNT];
+
 void gyroConfig_init(void);
+void gyroDeviceConfig_Init(void);
 void gyroUpdate(void);
 void gyroFiltering(timeUs_t currentTimeUs);
 bool gyroGetAccumulationAverage(float *accumulation);
