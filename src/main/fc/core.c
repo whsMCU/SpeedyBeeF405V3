@@ -1113,7 +1113,7 @@ static void subTaskMotorUpdate(uint32_t currentTimeUs)
     }
 #endif
 
-    //writeMotors();
+    writeMotors();
 
 #ifdef USE_DSHOT_TELEMETRY_STATS
     if (debugMode == DEBUG_DSHOT_RPM_ERRORS && useDshotTelemetry) {

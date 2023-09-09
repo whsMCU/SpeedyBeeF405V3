@@ -66,7 +66,7 @@ void motorConfig_Init(void)
     {
         motorConfig.minthrottle = 1070;
         motorConfig.dev.motorPwmRate = BRUSHLESS_MOTORS_PWM_RATE;
-        motorConfig.dev.motorPwmProtocol = PWM_TYPE_DISABLED;
+        motorConfig.dev.motorPwmProtocol = PWM_TYPE_MULTISHOT;
     }
 #endif // BRUSHED_MOTORS
 

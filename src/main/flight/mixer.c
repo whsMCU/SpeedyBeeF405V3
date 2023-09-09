@@ -75,7 +75,7 @@ float getMotorMixRange(void)
 
 void writeMotors(void)
 {
-    //motorWriteAll(motor);
+    motorWriteAll(motor);
 }
 
 static void writeAllMotors(int16_t mc)

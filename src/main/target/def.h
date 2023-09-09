@@ -51,6 +51,9 @@
 #define MAX_SUPPORTED_MOTORS 8
 
 
+#define USE_HAL_DRIVER
+
+
 #define USE_GYRO_OVERFLOW_CHECK
 #define USE_YAW_SPIN_RECOVERY
 #define USE_ACC

@@ -96,6 +96,7 @@
 
 #include "drivers/gps/gps.h"
 #include "drivers/motor.h"
+#include "drivers/pwm_output.h"
 
 #include "rx/rx.h"
 
@@ -132,6 +133,19 @@ void init(void)
 	readEEPROM();
 
 	mixerInit(mixerConfig.mixerMode);
+
+  uint16_t idlePulse = motorConfig.mincommand;
+  if (featureIsEnabled(FEATURE_3D)) {
+      idlePulse = flight3DConfig.neutral3d;
+  }
+  if (motorConfig.dev.motorPwmProtocol == PWM_TYPE_BRUSHED) {
+      idlePulse = 0; // brushed motors
+  }
+
+  /* Motors needs to be initialized soon as posible because hardware initialization
+   * may send spurious pulses to esc's causing their early initialization. Also ppm
+   * receiver may share timer with motors so motors MUST be initialized here. */
+  motorDevInit(&motorConfig.dev, idlePulse, getMotorCount());
 
 	initBoardAlignment(&boardAlignment);
 

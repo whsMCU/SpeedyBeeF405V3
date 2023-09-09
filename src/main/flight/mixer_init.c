@@ -33,8 +33,9 @@
 
 //#include "flight/mixer_tricopter.h"
 #include "flight/mixer_init.h"
-
 #include "flight/pid.h"
+
+#include "drivers/motor.h"
 
 #include "rx/rx.h"
 
@@ -289,7 +290,7 @@ void initEscEndpoints(void)
     if (currentPidProfile->motor_output_limit < 100) {
         motorOutputLimit = currentPidProfile->motor_output_limit / 100.0f;
     }
-    //motorInitEndpoints(motorConfig(), motorOutputLimit, &mixerRuntime.motorOutputLow, &mixerRuntime.motorOutputHigh, &mixerRuntime.disarmMotorOutput, &mixerRuntime.deadbandMotor3dHigh, &mixerRuntime.deadbandMotor3dLow);
+    motorInitEndpoints(&motorConfig, motorOutputLimit, &mixerRuntime.motorOutputLow, &mixerRuntime.motorOutputHigh, &mixerRuntime.disarmMotorOutput, &mixerRuntime.deadbandMotor3dHigh, &mixerRuntime.deadbandMotor3dLow);
 }
 
 // Initialize pidProfile related mixer settings

@@ -42,9 +42,23 @@
 struct timerHardware_s;
 
 typedef struct {
-    volatile timCCR_t *ccr;
-    TIM_TypeDef       *tim;
+    volatile uint32_t 	*ccr;
+    TIM_HandleTypeDef   *tim;
+    uint8_t 						channel;
 } timerChannel_t;
+
+typedef enum {
+    TIM_USE_ANY            = 0x0,
+    TIM_USE_NONE           = 0x0,
+    TIM_USE_PPM            = 0x1,
+    TIM_USE_PWM            = 0x2,
+    TIM_USE_MOTOR          = 0x4,
+    TIM_USE_SERVO          = 0x8,
+    TIM_USE_LED            = 0x10,
+    TIM_USE_TRANSPONDER    = 0x20,
+    TIM_USE_BEEPER         = 0x40,
+    TIM_USE_CAMERA_CONTROL = 0x80,
+} timerUsageFlag_e;
 
 typedef struct {
     timerChannel_t channel;
@@ -52,7 +66,8 @@ typedef struct {
     float pulseOffset;
     bool forceOverflow;
     bool enabled;
-    IO_t io;
+    timerUsageFlag_e usageFlags;
+    //IO_t io;
 } pwmOutputPort_t;
 
 extern pwmOutputPort_t motors[MAX_SUPPORTED_MOTORS];
@@ -64,14 +79,14 @@ typedef struct servoDevConfig_s {
     // PWM values, in milliseconds, common range is 1000-2000 (1ms to 2ms)
     uint16_t servoCenterPulse;              // This is the value for servos when they should be in the middle. e.g. 1500.
     uint16_t servoPwmRate;                  // The update rate of servo outputs (50-498Hz)
-    ioTag_t  ioTags[MAX_SUPPORTED_SERVOS];
+    //ioTag_t  ioTags[MAX_SUPPORTED_SERVOS];
 } servoDevConfig_t;
 
 void servoDevInit(const servoDevConfig_t *servoDevConfig);
 
 void pwmServoConfig(const struct timerHardware_s *timerHardware, uint8_t servoIndex, uint16_t servoPwmRate, uint16_t servoCenterPulse);
 
-void pwmOutConfig(timerChannel_t *channel, const timerHardware_t *timerHardware, uint32_t hz, uint16_t period, uint16_t value, uint8_t inversion);
+void pwmOutConfig(pwmOutputPort_t *motors, uint32_t hz, uint16_t period, uint16_t value, uint8_t inversion);
 
 void pwmWriteServo(uint8_t index, float value);
 

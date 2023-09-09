@@ -63,6 +63,8 @@ typedef struct motorConfig_s {
 
 extern motorConfig_t motorConfig;
 
+void motorConfig_Init(void);
+
 typedef enum {
     PWM_TYPE_STANDARD = 0,
     PWM_TYPE_ONESHOT125,
