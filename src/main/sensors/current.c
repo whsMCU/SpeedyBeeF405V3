@@ -94,7 +94,7 @@ currentSensorADCConfig_t currentSensorADCConfig;
 
 void currentSensorADCConfig_Init(void)
 {
-	currentSensorADCConfig.scale = CURRENT_METER_SCALE_DEFAULT;
+	currentSensorADCConfig.scale = 386;
 	currentSensorADCConfig.offset = CURRENT_METER_OFFSET_DEFAULT;
 }
 

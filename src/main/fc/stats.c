@@ -32,8 +32,6 @@
 //#include "io/beeper.h"
 //#include "io/gps.h"
 
-#include "pg/stats.h"
-
 
 #define STATS_SAVE_DELAY_US 500000 // Let disarming complete and save stats after this time
 
@@ -41,6 +39,16 @@ static timeMs_t arm_millis;
 static uint32_t arm_distance_cm;
 
 static bool saveRequired = false;
+
+statsConfig_t statsConfig;
+
+void statsConfig_Init(void)
+{
+	statsConfig.stats_min_armed_time_s = STATS_OFF;
+	statsConfig.stats_total_flights = 0;
+	statsConfig.stats_total_time_s = 0;
+	statsConfig.stats_total_dist_m = 0;
+}
 
 #ifdef USE_GPS
     #define DISTANCE_FLOWN_CM (GPS_distanceFlownInCm)
@@ -84,13 +92,13 @@ void statsOnArm(void)
 
 void statsOnDisarm(void)
 {
-    int8_t minArmedTimeS = statsConfig()->stats_min_armed_time_s;
+    int8_t minArmedTimeS = statsConfig.stats_min_armed_time_s;
     if (minArmedTimeS >= 0) {
         uint32_t dtS = (millis() - arm_millis) / 1000;
         if (dtS >= (uint8_t)minArmedTimeS) {
-            statsConfigMutable()->stats_total_flights += 1;    // arm / flight counter
-            statsConfigMutable()->stats_total_time_s += dtS;
-            statsConfigMutable()->stats_total_dist_m += (DISTANCE_FLOWN_CM - arm_distance_cm) / 100;
+            statsConfig.stats_total_flights += 1;    // arm / flight counter
+            statsConfig.stats_total_time_s += dtS;
+            statsConfig.stats_total_dist_m += (DISTANCE_FLOWN_CM - arm_distance_cm) / 100;
 
             saveRequired = true;
         }

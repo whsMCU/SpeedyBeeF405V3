@@ -226,7 +226,7 @@ uint32_t compassUpdate(uint32_t currentTimeUs)
                 magZero->raw[axis] = (magZeroTempMin.raw[axis] + magZeroTempMax.raw[axis]) / 2; // Calculate offsets
             }
 
-            //saveConfigAndNotify();
+            saveConfigAndNotify();
         }
     }
 

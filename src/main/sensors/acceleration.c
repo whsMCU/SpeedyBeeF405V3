@@ -21,6 +21,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "hw.h"
+
+#ifdef USE_ACC
+
 #include "build/debug.h"
 
 #include "common/axis.h"
@@ -105,3 +109,5 @@ bool accGetAccumulationAverage(float *accumulationAverage)
         return false;
     }
 }
+
+#endif

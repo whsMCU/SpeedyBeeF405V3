@@ -163,7 +163,7 @@ void processRcStickPositions()
             resetTryingToArm();
             // Disarming via ARM BOX
             resetArmingDisabled();
-            if (ARMING_FLAG(ARMED) && rxIsReceivingSignal()) {// && !failsafeIsActive()
+            if (ARMING_FLAG(ARMED) && rxIsReceivingSignal() && !failsafeIsActive()  ) {
                 rcDisarmTicks++;
                 if (rcDisarmTicks > 3) {
                     disarm(DISARM_REASON_SWITCH);
@@ -244,7 +244,7 @@ void processRcStickPositions()
         return;
     }
 
-    if ((rcSticks == THR_LO + YAW_LO + PIT_HI + ROL_HI)) { //featureIsEnabled(FEATURE_INFLIGHT_ACC_CAL) &&
+    if (featureIsEnabled(FEATURE_INFLIGHT_ACC_CAL) && (rcSticks == THR_LO + YAW_LO + PIT_HI + ROL_HI)) {
         // Inflight ACC Calibration
         handleInflightCalibrationStickPosition();
         return;

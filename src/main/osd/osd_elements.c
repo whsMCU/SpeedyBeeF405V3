@@ -135,6 +135,7 @@
 #include "fc/rc_adjustments.h"
 #include "fc/rc_controls.h"
 #include "fc/runtime_config.h"
+#include "fc/stats.h"
 
 //#include "flight/gps_rescue.h"
 #include "flight/position.h"
@@ -884,7 +885,7 @@ static void osdBackgroundDisplayName(osdElementParms_t *element)
 #ifdef USE_PERSISTENT_STATS
 static void osdElementTotalFlights(osdElementParms_t *element)
 {
-    const int32_t total_flights = statsConfig()->stats_total_flights;
+    const int32_t total_flights = statsConfig.stats_total_flights;
     tfp_sprintf(element->buff, "#%d", total_flights);
 }
 #endif

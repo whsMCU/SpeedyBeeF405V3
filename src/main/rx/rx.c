@@ -24,6 +24,8 @@
 
 #include <string.h>
 
+#include "build/debug.h"
+
 #include "common/maths.h"
 #include "common/utils.h"
 #include "common/time.h"
@@ -101,38 +103,38 @@ rxConfig_t rxConfig;
 
 void rxConfig_Init(void)
 {
-	rxConfig.halfDuplex = 0,
-	rxConfig.serialrx_provider = SERIALRX_PROVIDER,
-	rxConfig.serialrx_inverted = 0,
-	rxConfig.spektrum_sat_bind = 0,
-	rxConfig.spektrum_sat_bind_autoreset = 1,
-	rxConfig.midrc = RX_MID_USEC,
-	rxConfig.mincheck = 1050,
-	rxConfig.maxcheck = 1900,
-	rxConfig.rx_min_usec = RX_MIN_USEC,          // any of first 4 channels below this value will trigger rx loss detection
-	rxConfig.rx_max_usec = RX_MAX_USEC,         // any of first 4 channels above this value will trigger rx loss detection
-	rxConfig.rssi_src_frame_errors = false,
-	rxConfig.rssi_channel = 0,
-	rxConfig.rssi_scale = RSSI_SCALE_DEFAULT,
-	rxConfig.rssi_offset = 0,
-	rxConfig.rssi_invert = 0,
-	rxConfig.rssi_src_frame_lpf_period = 30,
-	rxConfig.fpvCamAngleDegrees = 0,
-	rxConfig.airModeActivateThreshold = 25,
-	rxConfig.max_aux_channel = DEFAULT_AUX_CHANNEL_COUNT,
-	rxConfig.rc_smoothing_mode = 1,
-	rxConfig.rc_smoothing_setpoint_cutoff = 0,
-	rxConfig.rc_smoothing_feedforward_cutoff = 0,
-	rxConfig.rc_smoothing_throttle_cutoff = 0,
-	rxConfig.rc_smoothing_debug_axis = ROLL,
-	rxConfig.rc_smoothing_auto_factor_rpy = 30,
-	rxConfig.rc_smoothing_auto_factor_throttle = 30,
-	rxConfig.srxl2_unit_id = 1,
-	rxConfig.srxl2_baud_fast = true,
-	rxConfig.sbus_baud_fast = false,
-	rxConfig.crsf_use_rx_snr = false,
-	rxConfig.msp_override_channels_mask = 0,
-	rxConfig.crsf_use_negotiated_baud = false,
+	rxConfig.halfDuplex = 0;
+	rxConfig.serialrx_provider = SERIALRX_CRSF;
+	rxConfig.serialrx_inverted = 0;
+	rxConfig.spektrum_sat_bind = 0;
+	rxConfig.spektrum_sat_bind_autoreset = 1;
+	rxConfig.midrc = RX_MID_USEC;
+	rxConfig.mincheck = 1050;
+	rxConfig.maxcheck = 1900;
+	rxConfig.rx_min_usec = RX_MIN_USEC;          // any of first 4 channels below this value will trigger rx loss detection
+	rxConfig.rx_max_usec = RX_MAX_USEC;         // any of first 4 channels above this value will trigger rx loss detection
+	rxConfig.rssi_src_frame_errors = false;
+	rxConfig.rssi_channel = 0;
+	rxConfig.rssi_scale = RSSI_SCALE_DEFAULT;
+	rxConfig.rssi_offset = 0;
+	rxConfig.rssi_invert = 0;
+	rxConfig.rssi_src_frame_lpf_period = 30;
+	rxConfig.fpvCamAngleDegrees = 0;
+	rxConfig.airModeActivateThreshold = 25;
+	rxConfig.max_aux_channel = DEFAULT_AUX_CHANNEL_COUNT;
+	rxConfig.rc_smoothing_mode = 1;
+	rxConfig.rc_smoothing_setpoint_cutoff = 0;
+	rxConfig.rc_smoothing_feedforward_cutoff = 0;
+	rxConfig.rc_smoothing_throttle_cutoff = 0;
+	rxConfig.rc_smoothing_debug_axis = ROLL;
+	rxConfig.rc_smoothing_auto_factor_rpy = 30;
+	rxConfig.rc_smoothing_auto_factor_throttle = 30;
+	rxConfig.srxl2_unit_id = 1;
+	rxConfig.srxl2_baud_fast = true;
+	rxConfig.sbus_baud_fast = false;
+	rxConfig.crsf_use_rx_snr = false;
+	rxConfig.msp_override_channels_mask = 0;
+	rxConfig.crsf_use_negotiated_baud = false;
 
 #ifdef RX_CHANNELS_TAER
     parseRcChannels("TAER1234", &rxConfig);
@@ -562,7 +564,7 @@ static uint16_t getRxfailValue(uint8_t channel)
             return rcData[channel]; // last good value
         }
     case RX_FAILSAFE_MODE_SET:
-        return RXFAIL_STEP_TO_CHANNEL_VALUE(CHANNEL_VALUE_TO_RXFAIL_STEP(1000));
+        return RXFAIL_STEP_TO_CHANNEL_VALUE(channelFailsafeConfig->step);
     }
 }
 
@@ -623,13 +625,13 @@ void detectAndApplySignalLossBehaviour(void)
             validRxSignalTimeout[channel] = currentTimeMs + MAX_INVALID_PULSE_TIME_MS;
         }
 
-       if (false) { //ARMING_FLAG(ARMED) && failsafeIsActive()
+        if (ARMING_FLAG(ARMED) && failsafeIsActive()) {
             // while in failsafe Stage 2, whether Rx loss or switch induced, pass valid incoming flight channel values
             // this allows GPS Rescue to detect the 30% requirement for termination
             if (channel < NON_AUX_CHANNEL_COUNT) {
                 if (!thisChannelValid) {
                     if (channel == THROTTLE ) {
-                        sample = 1150; // stage 2 failsafe throttle value
+                        sample = failsafeConfig.failsafe_throttle; // stage 2 failsafe throttle value
                     } else {
                         sample = rxConfig.midrc;
                     }
@@ -675,14 +677,14 @@ void detectAndApplySignalLossBehaviour(void)
     }
 
     if (rxFlightChannelsValid) {
-        //failsafeOnValidDataReceived();
+        failsafeOnValidDataReceived();
         //  --> start the timer to exit stage 2 failsafe
     } else {
-        //failsafeOnValidDataFailed();
+        failsafeOnValidDataFailed();
         //  -> start timer to enter stage2 failsafe
     }
 
-    //DEBUG_SET(DEBUG_RX_SIGNAL_LOSS, 3, rcData[THROTTLE]);
+    DEBUG_SET(DEBUG_RX_SIGNAL_LOSS, 3, rcData[THROTTLE]);
 }
 
 bool calculateRxChannelsAndUpdateFailsafe(uint32_t currentTimeUs)
@@ -782,7 +784,7 @@ void setRssiMsp(uint8_t newMspRssi)
 static void updateRSSIPWM(void)
 {
     // Read value of AUX channel as rssi
-    int16_t pwmRssi = rcData[10 - 1]; //.rssi_channel = 0
+    int16_t pwmRssi = rcData[rxConfig.rssi_channel - 1]; //.rssi_channel = 0
 
     // Range of rawPwmRssi is [1000;2000]. rssi should be in [0;1023];
     setRssiDirect(scaleRange(constrain(pwmRssi, PWM_RANGE_MIN, PWM_RANGE_MAX), PWM_RANGE_MIN, PWM_RANGE_MAX, 0, RSSI_MAX_VALUE), RSSI_SOURCE_RX_CHANNEL);
@@ -793,17 +795,17 @@ static void updateRSSIADC(uint32_t currentTimeUs)
 #ifndef USE_ADC
     UNUSED(currentTimeUs);
 #else
-//    static uint32_t rssiUpdateAt = 0;
-//
-//    if ((int32_t)(currentTimeUs - rssiUpdateAt) < 0) {
-//        return;
-//    }
-//    rssiUpdateAt = currentTimeUs + DELAY_20_MS;
-//
-//    const uint16_t adcRssiSample = adcGetChannel(ADC_RSSI);
-//    uint16_t rssiValue = adcRssiSample / RSSI_ADC_DIVISOR;
-//
-//    setRssi(rssiValue, RSSI_SOURCE_ADC);
+    static uint32_t rssiUpdateAt = 0;
+
+    if ((int32_t)(currentTimeUs - rssiUpdateAt) < 0) {
+        return;
+    }
+    rssiUpdateAt = currentTimeUs + DELAY_20_MS;
+
+    const uint16_t adcRssiSample = adcGetChannel(ADC_RSSI);
+    uint16_t rssiValue = adcRssiSample / RSSI_ADC_DIVISOR;
+
+    setRssi(rssiValue, RSSI_SOURCE_ADC);
 #endif
 }
 
@@ -938,17 +940,6 @@ uint32_t rxFrameTimeUs(void)
 {
     return rxRuntimeState.lastRcFrameTimeUs;
 }
-
-#define THROTTLE_LOOKUP_LENGTH 12
-static int16_t lookupThrottleRC[THROTTLE_LOOKUP_LENGTH];    // lookup table for expo & mid THROTTLE
-
-static int16_t rcLookupThrottle(int32_t tmp)
-{
-    const int32_t tmp2 = tmp / 100;
-    // [0;1000] -> expo -> [MINTHROTTLE;MAXTHROTTLE]
-    return lookupThrottleRC[tmp2] + (tmp - tmp2 * 100) * (lookupThrottleRC[tmp2 + 1] - lookupThrottleRC[tmp2]) / 100;
-}
-
 
 #ifdef _USE_HW_CLI
 void cliRx(cli_args_t *args)

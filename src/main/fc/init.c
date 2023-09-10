@@ -98,6 +98,8 @@
 #include "drivers/motor.h"
 #include "drivers/pwm_output.h"
 
+#include "fc/stats.h"
+
 #include "rx/rx.h"
 
 uint8_t systemState = SYSTEM_STATE_INITIALISING;
@@ -185,6 +187,16 @@ void init(void)
 
 	batteryInit(); // always needs doing, regardless of features.
 
+#ifdef USE_PERSISTENT_STATS
+    statsInit();
+#endif
+    setArmingDisabled(ARMING_DISABLED_BOOT_GRACE_TIME);
+
+#ifdef USE_MOTOR
+    motorPostInit();
+    motorEnable();
+#endif
+
 	tasksInit();
 	MSP_SET_MODE_RANGE(0, 0, 0, 1700, 2100);
 	MSP_SET_MODE_RANGE(1, 1, 0, 1700, 2100);
@@ -205,7 +217,9 @@ void Param_Config_Init(void)
 	accelerometerConfig_init();
 	gyroConfig_init();
 	gyroDeviceConfig_Init();
+	statsConfig_Init();
 	motorConfig_Init();
+	gpsConfig_Init();
 	barometerConfig_Init();
 	compassConfig_Init();
 	adcConfig_Init();

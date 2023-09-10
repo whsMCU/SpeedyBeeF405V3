@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#include "build/debug.h"
+
 #include "common/utils.h"
 
 #include "config/feature.h"
@@ -111,6 +113,11 @@ static void debugPrint(uint32_t currentTimeUs)
 static void taskHandleSerial(uint32_t currentTimeUs)
 {
     UNUSED(currentTimeUs);
+
+#if defined(USE_VCP)
+    DEBUG_SET(DEBUG_USB, 0, usbCableIsInserted());
+    DEBUG_SET(DEBUG_USB, 1, usbVcpIsConnected());
+#endif
 
 #ifdef USE_CLI
     // in cli mode, all serial stuff goes to here. enter cli mode by sending #
@@ -213,34 +220,40 @@ static void taskUpdateRxMain(uint32_t currentTimeUs)
         }
     }
 
-    // if (debugMode == DEBUG_RX_STATE_TIME) {
-    //     debug[oldRxState] = rxStateDurationFractionUs[oldRxState] >> RX_TASK_DECAY_SHIFT;
-    // }
+     if (debugMode == DEBUG_RX_STATE_TIME) {
+         debug[oldRxState] = rxStateDurationFractionUs[oldRxState] >> RX_TASK_DECAY_SHIFT;
+     }
 
     schedulerSetNextStateTime(rxStateDurationFractionUs[rxState] >> RX_TASK_DECAY_SHIFT);
 }
 
+#ifdef USE_BARO
 static void taskUpdateBaro(uint32_t currentTimeUs)
 {
     UNUSED(currentTimeUs);
     
+    if (sensors(SENSOR_BARO)) {
         const uint32_t newDeadline = baroUpdate(currentTimeUs);
         if (newDeadline != 0) {
             rescheduleTask(TASK_SELF, newDeadline);
         }
+    }
 }
+#endif
 
+#ifdef USE_MAG
 static void taskUpdateMag(uint32_t currentTimeUs)
 {
     UNUSED(currentTimeUs);
 
-    if (false) {
+    if (sensors(SENSOR_MAG)) {
         const uint32_t newDeadline = compassUpdate(currentTimeUs);
         if (newDeadline != 0) {
             rescheduleTask(TASK_SELF, newDeadline);
         }
     }
 }
+#endif
 
 #if defined(USE_RANGEFINDER)
 void taskUpdateRangefinder(uint32_t currentTimeUs)

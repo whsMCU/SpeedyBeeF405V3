@@ -492,8 +492,8 @@ static void handleCrashRecovery(
 			 // and iterm windup during crash recovery can be extreme, especially on yaw axis
 			 pidData[axis].I = 0.0f;
 			 if (cmpTimeUs(currentTimeUs, pidRuntime.crashDetectedAtUs) > pidRuntime.crashTimeLimitUs
-					 || (//getMotorMixRange() < 1.0f &&
-									   fabsf(gyro.gyroADCf[FD_ROLL]) < pidRuntime.crashRecoveryRate
+					 || (getMotorMixRange() < 1.0f
+							    && fabsf(gyro.gyroADCf[FD_ROLL]) < pidRuntime.crashRecoveryRate
 									&& fabsf(gyro.gyroADCf[FD_PITCH]) < pidRuntime.crashRecoveryRate
 									&& fabsf(gyro.gyroADCf[FD_YAW]) < pidRuntime.crashRecoveryRate)) {
 					 if (sensors(SENSOR_ACC)) {
@@ -519,7 +519,7 @@ static void detectAndSetCrashRecovery(
 	 // no point in trying to recover if the crash is so severe that the gyro overflows
 	 if ((crash_recovery || FLIGHT_MODE(GPS_RESCUE_MODE)) && !gyroOverflowDetected()) {
 			 if (ARMING_FLAG(ARMED)) {
-					 if (!pidRuntime.inCrashRecoveryMode//getMotorMixRange() >= 1.0f &&
+					 if (getMotorMixRange() >= 1.0f && !pidRuntime.inCrashRecoveryMode
 							 && fabsf(delta) > pidRuntime.crashDtermThreshold
 							 && fabsf(errorRate) > pidRuntime.crashGyroThreshold
 							 && fabsf(getSetpointRate(axis)) < pidRuntime.crashSetpointThreshold) {
@@ -679,12 +679,12 @@ float applyRcSmoothingFeedforwardFilter(int axis, float pidSetpointDelta)
 {
     float ret = pidSetpointDelta;
     if (axis == pidRuntime.rcSmoothingDebugAxis) {
-        //DEBUG_SET(DEBUG_RC_SMOOTHING, 1, lrintf(pidSetpointDelta * 100.0f));
+        DEBUG_SET(DEBUG_RC_SMOOTHING, 1, lrintf(pidSetpointDelta * 100.0f));
     }
     if (pidRuntime.feedforwardLpfInitialized) {
         ret = pt3FilterApply(&pidRuntime.feedforwardPt3[axis], pidSetpointDelta);
         if (axis == pidRuntime.rcSmoothingDebugAxis) {
-            //DEBUG_SET(DEBUG_RC_SMOOTHING, 2, lrintf(ret * 100.0f));
+            DEBUG_SET(DEBUG_RC_SMOOTHING, 2, lrintf(ret * 100.0f));
         }
     }
     return ret;
@@ -896,7 +896,7 @@ static float applyLaunchControl(int axis, const rollAndPitchTrims_t *angleTrim)
      if ((pidRuntime.antiGravityMode == ANTI_GRAVITY_SMOOTH) && pidRuntime.antiGravityEnabled) {
          // traditional itermAccelerator factor for iTerm
          pidRuntime.itermAccelerator = pidRuntime.antiGravityThrottleHpf * 0.01f * pidRuntime.itermAcceleratorGain;
-         //DEBUG_SET(DEBUG_ANTI_GRAVITY, 1, lrintf(pidRuntime.itermAccelerator * 1000));
+         DEBUG_SET(DEBUG_ANTI_GRAVITY, 1, lrintf(pidRuntime.itermAccelerator * 1000));
          // users AG Gain changes P boost
          pidRuntime.antiGravityPBoost *= pidRuntime.itermAcceleratorGain;
          // add some percentage of that slower, longer acting P boost factor to prolong AG effect on iTerm
@@ -913,7 +913,7 @@ static float applyLaunchControl(int axis, const rollAndPitchTrims_t *angleTrim)
      // gradually scale back integration when above windup point
      float dynCi = pidRuntime.dT;
      if (pidRuntime.itermWindupPointInv > 1.0f) {
-         //dynCi *= constrainf((1.0f - getMotorMixRange()) * pidRuntime.itermWindupPointInv, 0.0f, 1.0f);
+         dynCi *= constrainf((1.0f - getMotorMixRange()) * pidRuntime.itermWindupPointInv, 0.0f, 1.0f);
      }
 
      // Precalculate gyro deta for D-term here, this allows loop unrolling
@@ -1141,7 +1141,7 @@ static float applyLaunchControl(int axis, const rollAndPitchTrims_t *angleTrim)
          float feedforwardGain = launchControlActive ? 0.0f : pidRuntime.pidCoefficient[axis].Kf;
          if (feedforwardGain > 0) {
              // halve feedforward in Level mode since stick sensitivity is weaker by about half
-             feedforwardGain *= 0.5f;//FLIGHT_MODE(ANGLE_MODE) ? 0.5f : 1.0f;
+        	   feedforwardGain *= FLIGHT_MODE(ANGLE_MODE) ? 0.5f : 1.0f;
              // transition now calculated in feedforward.c when new RC data arrives
              float feedForward = feedforwardGain * pidSetpointDelta * pidRuntime.pidFrequency;
 

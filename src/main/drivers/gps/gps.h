@@ -94,6 +94,10 @@ typedef struct gpsConfig_s {
     uint8_t sbas_integrity;
 } gpsConfig_t;
 
+extern gpsConfig_t gpsConfig;
+
+extern void gpsConfig_Init(void);
+
 typedef struct gpsCoordinateDDDMMmmmm_s {
     int16_t dddmm;
     int16_t mmmm;

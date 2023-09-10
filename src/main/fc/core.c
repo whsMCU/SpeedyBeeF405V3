@@ -304,9 +304,9 @@ static bool accNeedsCalibration(void)
          }
  #endif
 
-//         if (!isMotorProtocolEnabled()) {
-//             setArmingDisabled(ARMING_DISABLED_MOTOR_PROTOCOL);
-//         }
+         if (!isMotorProtocolEnabled()) {
+             setArmingDisabled(ARMING_DISABLED_MOTOR_PROTOCOL);
+         }
 
          if (!isUsingSticksForArming()) {
              if (!IS_RC_MODE_ACTIVE(BOXARM)) {
@@ -627,9 +627,9 @@ int8_t calculateThrottlePercent(void)
         && !flight3DConfig.switched_mode3d) {
 
         if (channelData > (rxConfig.midrc + flight3DConfig.deadband3d_throttle)) {
-            ret = ((channelData - rxConfig.midrc - 0) * 100) / (PWM_RANGE_MAX - rxConfig.midrc - 0);
-        } else if (channelData < (rxConfig.midrc - 0)) {
-            ret = -((rxConfig.midrc - 0 - channelData) * 100) / (rxConfig.midrc - 0 - PWM_RANGE_MIN);
+            ret = ((channelData - rxConfig.midrc - flight3DConfig.deadband3d_throttle) * 100) / (PWM_RANGE_MAX - rxConfig.midrc - flight3DConfig.deadband3d_throttle);
+        } else if (channelData < (rxConfig.midrc - flight3DConfig.deadband3d_throttle)) {
+            ret = -((rxConfig.midrc - flight3DConfig.deadband3d_throttle - channelData) * 100) / (rxConfig.midrc - flight3DConfig.deadband3d_throttle - PWM_RANGE_MIN);
         }
     } else {
         ret = constrain(((channelData - rxConfig.mincheck) * 100) / (PWM_RANGE_MAX - rxConfig.mincheck), 0, 100);
@@ -1062,7 +1062,11 @@ static void subTaskPidSubprocesses(uint32_t currentTimeUs)
          startTime = micros();
      }
 
-    updateMagHold();
+#if defined(USE_GPS) || defined(USE_MAG)
+    if (sensors(SENSOR_GPS) || sensors(SENSOR_MAG)) {
+        updateMagHold();
+    }
+#endif
 
 
 #ifdef USE_BLACKBOX
@@ -1135,11 +1139,19 @@ static void subTaskRcCommand(uint32_t currentTimeUs)
     // sticks, do not process yaw input from the rx.  We do this so the
     // motors do not spin up while we are trying to arm or disarm.
     // Allow yaw control for tricopters if the user wants the servo to move even when unarmed.
-     if (isUsingSticksForArming() && rcData[THROTTLE] <= rxConfig.mincheck) {
-         resetYawAxis();
-     }
+    if (isUsingSticksForArming() && rcData[THROTTLE] <= rxConfig.mincheck
+#ifndef USE_QUAD_MIXER_ONLY
+#ifdef USE_SERVOS
+                && !((mixerConfig.mixerMode == MIXER_TRI || mixerConfig.mixerMode == MIXER_CUSTOM_TRI) && servoConfig.tri_unarmed_servo)
+#endif
+                && mixerConfig.mixerMode != MIXER_AIRPLANE
+                && mixerConfig.mixerMode != MIXER_FLYING_WING
+#endif
+    ) {
+        resetYawAxis();
+    }
 
-     processRcCommand();
+    processRcCommand();
 }
 
 void taskGyroSample(timeUs_t currentTimeUs)

@@ -61,6 +61,7 @@
 #include "fc/rc_controls.h"
 #include "fc/rc_modes.h"
 #include "fc/runtime_config.h"
+#include "fc/stats.h"
 
 #if defined(USE_DYN_NOTCH_FILTER)
 #include "flight/dyn_notch_filter.h"
@@ -834,12 +835,12 @@ static bool osdDisplayStat(int statistic, uint8_t displayRow)
 
 #ifdef USE_PERSISTENT_STATS
     case OSD_STAT_TOTAL_FLIGHTS:
-        itoa(statsConfig()->stats_total_flights, buff, 10);
+        itoa(statsConfig.stats_total_flights, buff, 10);
         osdDisplayStatisticLabel(displayRow, "TOTAL FLIGHTS", buff);
         return true;
 
     case OSD_STAT_TOTAL_TIME: {
-        int minutes = statsConfig()->stats_total_time_s / 60;
+        int minutes = statsConfig.stats_total_time_s / 60;
         tfp_sprintf(buff, "%d:%02dH", minutes / 60, minutes % 60);
         osdDisplayStatisticLabel(displayRow, "TOTAL FLIGHT TIME", buff);
         return true;
@@ -848,10 +849,10 @@ static bool osdDisplayStat(int statistic, uint8_t displayRow)
     case OSD_STAT_TOTAL_DIST:
         #define METERS_PER_KILOMETER 1000
         #define METERS_PER_MILE      1609
-        if (osdConfig()->units == UNIT_IMPERIAL) {
-            tfp_sprintf(buff, "%d%c", statsConfig()->stats_total_dist_m / METERS_PER_MILE, SYM_MILES);
+        if (osdConfig.units == UNIT_IMPERIAL) {
+            tfp_sprintf(buff, "%d%c", statsConfig.stats_total_dist_m / METERS_PER_MILE, SYM_MILES);
         } else {
-            tfp_sprintf(buff, "%d%c", statsConfig()->stats_total_dist_m / METERS_PER_KILOMETER, SYM_KM);
+            tfp_sprintf(buff, "%d%c", statsConfig.stats_total_dist_m / METERS_PER_KILOMETER, SYM_KM);
         }
         osdDisplayStatisticLabel(displayRow, "TOTAL DISTANCE", buff);
         return true;

@@ -566,7 +566,7 @@ void mixTable(timeUs_t currentTimeUs)
 
     //  The following fixed throttle values will not be shown in the blackbox log
     // ?? Should they be influenced by airmode?  If not, should go after the apply airmode code.
-    const bool airmodeEnabled = false;//airmodeIsEnabled() || launchControlActive;
+    const bool airmodeEnabled = airmodeIsEnabled() || launchControlActive;
 #ifdef USE_YAW_SPIN_RECOVERY
     // 50% throttle provides the maximum authority for yaw recovery when airmode is not active.
     // When airmode is active the throttle setting doesn't impact recovery authority.
@@ -598,8 +598,8 @@ void mixTable(timeUs_t currentTimeUs)
         applyMixerAdjustment(motorMix, motorMixMin, motorMixMax, airmodeEnabled);
     }
 
-    if (featureIsEnabled(FEATURE_MOTOR_STOP) &&
-        ARMING_FLAG(ARMED)
+    if (featureIsEnabled(FEATURE_MOTOR_STOP)
+        && ARMING_FLAG(ARMED)
         && !mixerRuntime.feature3dEnabled
         && !airmodeEnabled
         && !FLIGHT_MODE(GPS_RESCUE_MODE)   // disable motor_stop while GPS Rescue is active

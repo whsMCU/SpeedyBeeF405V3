@@ -306,7 +306,7 @@ void imuUpdateEulerAngles(void)
 {
     quaternionProducts buffer;
 
-    if (false) { //FLIGHT_MODE(HEADFREE_MODE)
+    if (FLIGHT_MODE(HEADFREE_MODE)) {
        imuQuaternionComputeProducts(&headfree, &buffer);
 
        attitude.values.roll = lrintf(atan2_approx((+2.0f * (buffer.wx + buffer.yz)), (+1.0f - 2.0f * (buffer.xx + buffer.yy))) * (1800.0f / M_PIf));
@@ -460,9 +460,15 @@ static void imuCalculateEstimatedAttitude(timeUs_t currentTimeUs)
     const timeDelta_t deltaT = currentTimeUs - previousIMUUpdateTime;
     previousIMUUpdateTime = currentTimeUs;
 
-    if (compassIsHealthy()) {
+#ifdef USE_MAG
+    if (sensors(SENSOR_MAG) && compassIsHealthy()
+#ifdef USE_GPS_RESCUE
+        && !gpsRescueDisableMag()
+#endif
+        ) {
         useMag = true;
     }
+#endif
 
 #if defined(USE_GPS)
     if (!useMag && sensors(SENSOR_GPS) && STATE(GPS_FIX) && gpsSol.numSat >= 5 && gpsSol.groundSpeed >= GPS_COG_MIN_GROUNDSPEED) {
@@ -537,7 +543,7 @@ static int calculateThrottleAngleCorrection(void)
 
 void imuUpdateAttitude(timeUs_t currentTimeUs)
 {
-    if (acc.isAccelUpdatedAtLeastOnce) {
+    if (sensors(SENSOR_ACC) && acc.isAccelUpdatedAtLeastOnce) {
         imuCalculateEstimatedAttitude(currentTimeUs);
 
         // Update the throttle correction for angle and supply it to the mixer
@@ -545,7 +551,7 @@ void imuUpdateAttitude(timeUs_t currentTimeUs)
         if (throttleAngleValue && (FLIGHT_MODE(ANGLE_MODE) || FLIGHT_MODE(HORIZON_MODE)) && ARMING_FLAG(ARMED)) {
             throttleAngleCorrection = calculateThrottleAngleCorrection();
         }
-        //mixerSetThrottleAngleCorrection(throttleAngleCorrection);
+        mixerSetThrottleAngleCorrection(throttleAngleCorrection);
 
     } else {
         acc.accADC[X] = 0;
