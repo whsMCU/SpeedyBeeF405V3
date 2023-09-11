@@ -21,7 +21,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
-#include "def.h"
+#include "hw.h"
 
 
 #ifdef USE_TELEMETRY_CRSF

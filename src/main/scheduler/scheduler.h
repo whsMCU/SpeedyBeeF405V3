@@ -121,13 +121,21 @@ typedef enum {
 #ifdef USE_BEEPER
     TASK_BEEPER,
 #endif
+#ifdef USE_GPS
     TASK_GPS,
+#endif
+#ifdef USE_MAG
     TASK_COMPASS,
+#endif
+#ifdef USE_BARO
     TASK_BARO,
+#endif
 #ifdef USE_RANGEFINDER
     TASK_RANGEFINDER,
 #endif
+#if defined(USE_BARO) || defined(USE_GPS)
     TASK_ALTITUDE,
+#endif
 #ifdef USE_DASHBOARD
     TASK_DASHBOARD,
 #endif

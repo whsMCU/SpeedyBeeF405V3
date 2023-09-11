@@ -270,10 +270,12 @@ void taskUpdateRangefinder(uint32_t currentTimeUs)
 }
 #endif
 
+#if defined(USE_BARO) || defined(USE_GPS)
 static void taskCalculateAltitude(uint32_t currentTimeUs)
 {
     calculateEstimatedAltitude(currentTimeUs);
 }
+#endif // USE_BARO || USE_GPS
 
 #ifdef USE_TELEMETRY
 static void taskTelemetry(uint32_t currentTimeUs)
@@ -345,13 +347,21 @@ task_attribute_t task_attributes[TASK_COUNT] = {
     [TASK_BEEPER] = DEFINE_TASK("BEEPER", NULL, NULL, beeperUpdate, TASK_PERIOD_HZ(100), TASK_PRIORITY_LOW),
 #endif
 
+#ifdef USE_GPS
     [TASK_GPS] = DEFINE_TASK("GPS", NULL, NULL, gpsUpdate, TASK_PERIOD_HZ(TASK_GPS_RATE), TASK_PRIORITY_MEDIUM), // Required to prevent buffer overruns if running at 115200 baud (115 bytes / period < 256 bytes buffer)
+#endif
 
+#ifdef USE_MAG
     [TASK_COMPASS] = DEFINE_TASK("COMPASS", NULL, NULL, taskUpdateMag, TASK_PERIOD_HZ(10), TASK_PRIORITY_LOW),
+#endif
 
+#ifdef USE_BARO
     [TASK_BARO] = DEFINE_TASK("BARO", NULL, NULL, taskUpdateBaro, TASK_PERIOD_HZ(20), TASK_PRIORITY_LOW),
+#endif
 
+#if defined(USE_BARO) || defined(USE_GPS)
     [TASK_ALTITUDE] = DEFINE_TASK("ALTITUDE", NULL, NULL, taskCalculateAltitude, TASK_PERIOD_HZ(40), TASK_PRIORITY_LOW),
+#endif
 
 #ifdef USE_DASHBOARD
     [TASK_DASHBOARD] = DEFINE_TASK("DASHBOARD", NULL, NULL, dashboardUpdate, TASK_PERIOD_HZ(10), TASK_PRIORITY_LOW),
@@ -421,8 +431,6 @@ void tasksInit(void)
     setTaskEnabled(TASK_LED, true);
     setTaskEnabled(TASK_DEBUG, true);
     rescheduleTask(TASK_SERIAL, TASK_PERIOD_HZ(100));
-    batteryConfig.voltageMeterSource = VOLTAGE_METER_ADC;
-    batteryConfig.currentMeterSource = CURRENT_METER_ADC;
 
 	const bool useBatteryVoltage = batteryConfig.voltageMeterSource != VOLTAGE_METER_NONE;
     setTaskEnabled(TASK_BATTERY_VOLTAGE, useBatteryVoltage);
@@ -443,18 +451,21 @@ void tasksInit(void)
     setTaskEnabled(TASK_STACK_CHECK, true);
 #endif
 
-    rescheduleTask(TASK_GYRO, gyro.sampleLooptime);
-    rescheduleTask(TASK_FILTER, gyro.targetLooptime);
-    rescheduleTask(TASK_PID, gyro.targetLooptime);
-    setTaskEnabled(TASK_GYRO, true);
-    setTaskEnabled(TASK_FILTER, true);
-    setTaskEnabled(TASK_PID, true);
-    schedulerEnableGyro();
-
+    if (sensors(SENSOR_GYRO)) {
+			rescheduleTask(TASK_GYRO, gyro.sampleLooptime);
+			rescheduleTask(TASK_FILTER, gyro.targetLooptime);
+			rescheduleTask(TASK_PID, gyro.targetLooptime);
+			setTaskEnabled(TASK_GYRO, true);
+			setTaskEnabled(TASK_FILTER, true);
+			setTaskEnabled(TASK_PID, true);
+			schedulerEnableGyro();
+    }
 #if defined(USE_ACC)
-    setTaskEnabled(TASK_ACCEL, true);
-    rescheduleTask(TASK_ACCEL, TASK_PERIOD_HZ(acc.sampleRateHz));
-    setTaskEnabled(TASK_ATTITUDE, true);
+    if (sensors(SENSOR_ACC) && acc.sampleRateHz) {
+			setTaskEnabled(TASK_ACCEL, true);
+			rescheduleTask(TASK_ACCEL, TASK_PERIOD_HZ(acc.sampleRateHz));
+			setTaskEnabled(TASK_ATTITUDE, true);
+    }
 #endif
 
 #ifdef USE_RANGEFINDER
@@ -471,14 +482,21 @@ void tasksInit(void)
     setTaskEnabled(TASK_BEEPER, true);
 #endif
 
+#ifdef USE_GPS
     setTaskEnabled(TASK_GPS, true);
+#endif
 
+#ifdef USE_MAG
     setTaskEnabled(TASK_COMPASS, true);
+#endif
 
+#ifdef USE_BARO
     setTaskEnabled(TASK_BARO, true);
+#endif
 
-    setTaskEnabled(TASK_ALTITUDE, true);
-
+#if defined(USE_BARO) || defined(USE_GPS)
+    setTaskEnabled(TASK_ALTITUDE, sensors(SENSOR_BARO) || featureIsEnabled(FEATURE_GPS));
+#endif
 
 #ifdef USE_DASHBOARD
     setTaskEnabled(TASK_DASHBOARD, featureIsEnabled(FEATURE_DASHBOARD));

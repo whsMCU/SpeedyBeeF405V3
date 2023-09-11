@@ -23,6 +23,8 @@
 #include <string.h>
 #include <math.h>
 
+#include "hw.h"
+
 #include "build/build_config.h"
 
 #include "common/axis.h"
@@ -182,7 +184,9 @@ void init(void)
     rxInit();
 
 #ifdef USE_GPS
-	gpsInit();
+    if (featureIsEnabled(FEATURE_GPS)) {
+        gpsInit();
+    }
 #endif
 
 #ifdef USE_ACC
@@ -236,7 +240,9 @@ void Param_Config_Init(void)
 	gyroDeviceConfig_Init();
 	statsConfig_Init();
 	motorConfig_Init();
+#ifdef USE_GPS
 	gpsConfig_Init();
+#endif
 	barometerConfig_Init();
 	compassConfig_Init();
 	adcConfig_Init();

@@ -87,7 +87,9 @@ enum {
 
 #define GYRO_WATCHDOG_DELAY 80 //  delay for gyro sync
 
+#if defined(USE_GPS) || defined(USE_MAG)
 int16_t magHold;
+#endif
 
 static uint8_t pidUpdateCounter;
 

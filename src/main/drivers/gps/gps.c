@@ -24,6 +24,10 @@
 #include <string.h>
 #include <math.h>
 
+#include "hw.h"
+
+#ifdef USE_GPS
+
 #include "common/axis.h"
 #include "common/gps_conversion.h"
 #include "common/maths.h"
@@ -40,9 +44,6 @@
 #include "scheduler/scheduler.h"
 
 #include "sensors/sensors.h"
-
-#define USE_GPS_UBLOX
-
 
 #define LOG_ERROR        '?'
 #define LOG_IGNORED      '!'
@@ -1874,3 +1875,5 @@ void gpsSetFixState(bool state)
         DISABLE_STATE(GPS_FIX);
     }
 }
+
+#endif

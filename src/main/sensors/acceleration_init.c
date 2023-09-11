@@ -80,11 +80,14 @@ void accelerometerConfig_init(void)
 {
 
     accelerometerConfig.acc_lpf_hz = 10,
-    accelerometerConfig.acc_hardware = ACC_DEFAULT,
+    accelerometerConfig.acc_hardware = ACC_BMI270,
 	  accelerometerConfig.acc_high_fsr = false,
 
     resetRollAndPitchTrims(&accelerometerConfig.accelerometerTrims);
     resetFlightDynamicsTrims(&accelerometerConfig.accZero);
+    accelerometerConfig.accZero.values.roll = 8;
+    accelerometerConfig.accZero.values.pitch = -15;
+    accelerometerConfig.accZero.values.yaw = 45;
 }
 
 extern uint16_t InflightcalibratingA;
