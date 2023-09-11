@@ -85,9 +85,9 @@ void accelerometerConfig_init(void)
 
     resetRollAndPitchTrims(&accelerometerConfig.accelerometerTrims);
     resetFlightDynamicsTrims(&accelerometerConfig.accZero);
-    accelerometerConfig.accZero.values.roll = 8;
-    accelerometerConfig.accZero.values.pitch = -15;
-    accelerometerConfig.accZero.values.yaw = 45;
+    accelerometerConfig.accZero.values.roll = 29;
+    accelerometerConfig.accZero.values.pitch = -35;
+    accelerometerConfig.accZero.values.yaw = -9;
 }
 
 extern uint16_t InflightcalibratingA;

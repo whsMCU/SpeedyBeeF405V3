@@ -97,6 +97,9 @@ void compassConfig_Init(void)
     compassConfig->mag_spi_csn = IO_TAG_NONE;
 #endif
     //compassConfig->interruptTag = IO_TAG(MAG_INT_EXTI);
+    compassConfig.magZero.values.roll = -352;
+    compassConfig.magZero.values.pitch = -368;
+    compassConfig.magZero.values.yaw = 75;
 }
 
 static int16_t magADCRaw[XYZ_AXIS_COUNT];
