@@ -58,8 +58,8 @@ float rcCommand[4];           // interval [1000;2000] for THROTTLE and [-500;+50
 rcControlsConfig_t rcControlsConfig;
 void rcControlsConfig_Init(void)
 {
-	rcControlsConfig.deadband = 0;
-	rcControlsConfig.yaw_deadband = 0;
+	rcControlsConfig.deadband = 5;
+	rcControlsConfig.yaw_deadband = 5;
 	rcControlsConfig.alt_hold_deadband = 40;
 	rcControlsConfig.alt_hold_fast_change = 1;
 	rcControlsConfig.yaw_control_reversed = false;
