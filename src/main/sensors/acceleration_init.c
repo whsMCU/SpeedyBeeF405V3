@@ -314,7 +314,7 @@ void accInitFilters(void)
 
 bool accInit(uint16_t accSampleRateHz)
 {
-		accelerationSensor_e accHardware = ACC_NONE;
+	accelerationSensor_e accHardware = ACC_NONE;
     memset(&acc, 0, sizeof(acc));
     // copy over the common gyro mpu settings
     acc.dev.gyro = gyroActiveDev();
@@ -330,9 +330,9 @@ bool accInit(uint16_t accSampleRateHz)
     acc.dev.accAlign = alignment;
     buildRotationMatrixFromAlignment(customAlignment, &acc.dev.rotationMatrix);
 
-    // if (!accDetect(&acc.dev, accelerometerConfig()->acc_hardware)) {
-    //     return false;
-    // }
+//     if (!accDetect(&acc.dev, accelerometerConfig.acc_hardware)) {
+//         return false;
+//     }
     bmi270SpiAccDetect(&acc.dev);
     accHardware = ACC_BMI270;
     detectedSensors[SENSOR_INDEX_ACC] = accHardware;

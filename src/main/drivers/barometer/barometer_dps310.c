@@ -18,8 +18,12 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "barometer_dps310.h"
-#include "i2c.h"
+#include "hw.h"
+
+#include "drivers/barometer/barometer_dps310.h"
+
+#include "hw/i2c.h"
+
 #include "common/utils.h"
 
 #ifdef USE_BARO_DPS310

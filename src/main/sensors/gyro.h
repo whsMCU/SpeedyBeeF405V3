@@ -32,10 +32,7 @@
 #include "flight/dyn_notch_filter.h"
 #endif
 
-//#include "flight/pid.h"
-
-
-
+#include "flight/pid.h"
 
 #define LPF_MAX_HZ 1000 // so little filtering above 1000hz that if the user wants less delay, they must disable the filter
 #define DYN_LPF_MAX_HZ 1000

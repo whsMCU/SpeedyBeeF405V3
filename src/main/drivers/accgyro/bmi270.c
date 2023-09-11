@@ -18,6 +18,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "hw.h"
 
 #include "common/axis.h"
 
@@ -244,12 +245,8 @@ bool bmi270_Init(void)
     delay(35);
 
     gyroInit();
-    gyroSetTargetLooptime(activePidLoopDenom);
-    gyroStartCalibration(false);
 
     accInit(gyro.accSampleRateHz);
-
-    accStartCalibration();
     
     #ifdef _USE_HW_CLI
         cliAdd("bmi270", cliBmi270);

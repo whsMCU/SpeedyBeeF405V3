@@ -22,6 +22,9 @@
 #include <stdint.h>
 
 #include <math.h>
+
+#include "hw.h"
+
 #include "common/axis.h"
 #include "common/maths.h"
 #include "common/utils.h"

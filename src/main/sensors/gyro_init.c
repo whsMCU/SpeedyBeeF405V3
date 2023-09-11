@@ -24,6 +24,10 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "build/debug.h"
+
+#include "hw.h"
+
 #include "common/axis.h"
 #include "common/maths.h"
 #include "common/filter.h"
@@ -261,8 +265,8 @@ static void gyroInitSensorFilters(gyroSensor_t *gyroSensor)
  void gyroInitSensor(gyroSensor_t *gyroSensor)
  {
      gyroSensor->gyroDev.gyro_high_fsr = gyroConfig.gyro_high_fsr;
-     //gyroSensor->gyroDev.gyroAlign = config->alignment;
-     //buildRotationMatrixFromAlignment(&config->customAlignment, &gyroSensor->gyroDev.rotationMatrix);
+     gyroSensor->gyroDev.gyroAlign = gyroDeviceConfig[0].alignment;
+     buildRotationMatrixFromAlignment(&gyroDeviceConfig[0].customAlignment, &gyroSensor->gyroDev.rotationMatrix);
      //gyroSensor->gyroDev.mpuIntExtiTag = config->extiTag;
      gyroSensor->gyroDev.hardware_lpf = gyroConfig.gyro_hardware_lpf;
 
@@ -378,7 +382,7 @@ bool gyroInit(void)
     }
 #endif
 
-    gyro.gyroDebugMode = 0;//DEBUG_NONE;
+    gyro.gyroDebugMode = DEBUG_NONE;
     gyro.useDualGyroDebugging = false;
     gyro.gyroHasOverflowProtection = true;
 
@@ -392,6 +396,10 @@ bool gyroInit(void)
         gyroDetectionFlags |= GYRO_1_MASK;
     }
 
+    if (gyroDetectionFlags == GYRO_NONE_MASK) {
+        return false;
+    }
+
     bool eepromWriteRequired = false;
     if (!gyrosToScan) {
         gyroConfig.gyrosDetected = gyroDetectionFlags;
@@ -399,7 +407,7 @@ bool gyroInit(void)
     }
 
     if (eepromWriteRequired) {
-        //writeEEPROM();
+        writeEEPROM();
     }
 
      if (gyro.gyroToUse == GYRO_CONFIG_USE_GYRO_1 || gyro.gyroToUse == GYRO_CONFIG_USE_GYRO_BOTH) {
@@ -459,10 +467,10 @@ gyroDev_t *gyroActiveDev(void)
     return &ACTIVE_GYRO->gyroDev;
 }
 
-// const mpuDetectionResult_t *gyroMpuDetectionResult(void)
-// {
-//     return &ACTIVE_GYRO->gyroDev.mpuDetectionResult;
-// }
+//const mpuDetectionResult_t *gyroMpuDetectionResult(void)
+//{
+//    return &ACTIVE_GYRO->gyroDev.mpuDetectionResult;
+//}
 
 int16_t gyroRateDps(int axis)
 {

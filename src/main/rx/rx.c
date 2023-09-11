@@ -231,13 +231,20 @@ static void cliRx(cli_args_t *args);
 
 void rxInit(void)
 {
-    rxRuntimeState.rxProvider = RX_PROVIDER_SERIAL;
-#ifdef USE_SERIALRX_SBUS
-    rxRuntimeState.serialrxProvider = SERIALRX_SBUS;
-#endif
-#ifdef USE_SERIALRX_CRSF
-    rxRuntimeState.serialrxProvider = SERIALRX_CRSF;
-#endif
+    if (featureIsEnabled(FEATURE_RX_PARALLEL_PWM)) {
+        rxRuntimeState.rxProvider = RX_PROVIDER_PARALLEL_PWM;
+    } else if (featureIsEnabled(FEATURE_RX_PPM)) {
+        rxRuntimeState.rxProvider = RX_PROVIDER_PPM;
+    } else if (featureIsEnabled(FEATURE_RX_SERIAL)) {
+        rxRuntimeState.rxProvider = RX_PROVIDER_SERIAL;
+    } else if (featureIsEnabled(FEATURE_RX_MSP)) {
+        rxRuntimeState.rxProvider = RX_PROVIDER_MSP;
+    } else if (featureIsEnabled(FEATURE_RX_SPI)) {
+        rxRuntimeState.rxProvider = RX_PROVIDER_SPI;
+    } else {
+        rxRuntimeState.rxProvider = RX_PROVIDER_NONE;
+    }
+    rxRuntimeState.serialrxProvider = rxConfig.serialrx_provider;
     rxRuntimeState.rcReadRawFn = nullReadRawRC;
     rxRuntimeState.rcFrameStatusFn = nullFrameStatus;
     rxRuntimeState.rcProcessFrameFn = nullProcessFrame;
@@ -249,7 +256,7 @@ void rxInit(void)
         validRxSignalTimeout[i] = millis() + MAX_INVALID_PULSE_TIME_MS;
     }
 
-    rcData[THROTTLE] = rxConfig.rx_min_usec;
+    rcData[THROTTLE] = (featureIsEnabled(FEATURE_3D)) ? rxConfig.midrc : rxConfig.rx_min_usec;
 
     // Initialize ARM switch to OFF position when arming via switch is defined
     // TODO - move to rc_mode.c
@@ -351,7 +358,7 @@ void suspendRxSignal(void)
         skipRxSamples = SKIP_RC_SAMPLES_ON_RESUME;
     }
 #endif
-    //failsafeOnRxSuspend(DELAY_1500_MS);  // 1.5s
+    failsafeOnRxSuspend(DELAY_1500_MS);  // 1.5s
 }
 
 void resumeRxSignal(void)
@@ -362,7 +369,7 @@ void resumeRxSignal(void)
         skipRxSamples = SKIP_RC_SAMPLES_ON_RESUME;
     }
 #endif
-    //failsafeOnRxResume();
+    failsafeOnRxResume();
 }
 
 #ifdef USE_RX_LINK_QUALITY_INFO

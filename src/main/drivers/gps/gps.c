@@ -318,10 +318,10 @@ void gpsInit(void)
 
     gpsData.lastMessage = millis();
 
-    // if (gpsConfig()->provider == GPS_MSP) { // no serial ports used when GPS_MSP is configured
-    //     gpsSetState(GPS_STATE_INITIALIZED);
-    //     return;
-    // }
+     if (gpsConfig.provider == GPS_MSP) { // no serial ports used when GPS_MSP is configured
+         gpsSetState(GPS_STATE_INITIALIZED);
+         return;
+     }
 
 
     // const serialPortConfig_t *gpsPortConfig = findSerialPortConfig(FUNCTION_GPS);
@@ -355,59 +355,59 @@ void gpsInit(void)
     gpsSetState(GPS_STATE_INITIALIZING);
 }
 
-// #ifdef USE_GPS_NMEA
-// void gpsInitNmea(void)
-// {
-// #if !defined(GPS_NMEA_TX_ONLY)
-//     uint32_t now;
-// #endif
-//     switch (gpsData.state) {
-//         case GPS_STATE_INITIALIZING:
-// #if !defined(GPS_NMEA_TX_ONLY)
-//            now = millis();
-//            if (now - gpsData.state_ts < 1000) {
-//                return;
-//            }
-//            gpsData.state_ts = now;
-//            if (gpsData.state_position < 1) {
-//                serialSetBaudRate(gpsPort, 4800);
-//                gpsData.state_position++;
-//            } else if (gpsData.state_position < 2) {
-//                // print our FIXED init string for the baudrate we want to be at
-//                serialPrint(gpsPort, "$PSRF100,1,115200,8,1,0*05\r\n");
-//                gpsData.state_position++;
-//            } else {
-//                // we're now (hopefully) at the correct rate, next state will switch to it
-//                gpsSetState(GPS_STATE_CHANGE_BAUD);
-//            }
-//            break;
-// #endif
-//         case GPS_STATE_CHANGE_BAUD:
-// #if !defined(GPS_NMEA_TX_ONLY)
-//            now = millis();
-//            if (now - gpsData.state_ts < 1000) {
-//                return;
-//            }
-//            gpsData.state_ts = now;
-//            if (gpsData.state_position < 1) {
-//                serialSetBaudRate(gpsPort, baudRates[gpsInitData[gpsData.baudrateIndex].baudrateIndex]);
-//                gpsData.state_position++;
-//            } else if (gpsData.state_position < 2) {
-//                serialPrint(gpsPort, "$PSRF103,00,6,00,0*23\r\n");
-//                gpsData.state_position++;
-//            } else
-// #else
-//            {
-//                serialSetBaudRate(gpsPort, baudRates[gpsInitData[gpsData.baudrateIndex].baudrateIndex]);
-//            }
-// #endif
-//                gpsSetState(GPS_STATE_RECEIVING_DATA);
-//             break;
-//     }
-// }
-// #endif // USE_GPS_NMEA
+#ifdef USE_GPS_NMEA
+void gpsInitNmea(void)
+{
+#if !defined(GPS_NMEA_TX_ONLY)
+ uint32_t now;
+#endif
+ switch (gpsData.state) {
+	 case GPS_STATE_INITIALIZING:
+#if !defined(GPS_NMEA_TX_ONLY)
+		now = millis();
+		if (now - gpsData.state_ts < 1000) {
+			return;
+		}
+		gpsData.state_ts = now;
+		if (gpsData.state_position < 1) {
+			serialSetBaudRate(gpsPort, 4800);
+			gpsData.state_position++;
+		} else if (gpsData.state_position < 2) {
+			// print our FIXED init string for the baudrate we want to be at
+			serialPrint(gpsPort, "$PSRF100,1,115200,8,1,0*05\r\n");
+			gpsData.state_position++;
+		} else {
+			// we're now (hopefully) at the correct rate, next state will switch to it
+			gpsSetState(GPS_STATE_CHANGE_BAUD);
+		}
+		break;
+#endif
+	 case GPS_STATE_CHANGE_BAUD:
+#if !defined(GPS_NMEA_TX_ONLY)
+		now = millis();
+		if (now - gpsData.state_ts < 1000) {
+			return;
+		}
+		gpsData.state_ts = now;
+		if (gpsData.state_position < 1) {
+			serialSetBaudRate(gpsPort, baudRates[gpsInitData[gpsData.baudrateIndex].baudrateIndex]);
+			gpsData.state_position++;
+		} else if (gpsData.state_position < 2) {
+			serialPrint(gpsPort, "$PSRF103,00,6,00,0*23\r\n");
+			gpsData.state_position++;
+		} else
+#else
+		{
+			serialSetBaudRate(gpsPort, baudRates[gpsInitData[gpsData.baudrateIndex].baudrateIndex]);
+		}
+#endif
+			gpsSetState(GPS_STATE_RECEIVING_DATA);
+		 break;
+ }
+}
+#endif // USE_GPS_NMEA
 
-//#ifdef USE_GPS_UBLOX
+#ifdef USE_GPS_UBLOX
 static void ubloxSendByteUpdateChecksum(const uint8_t data, uint8_t *checksumA, uint8_t *checksumB)
 {
     *checksumA += data;
@@ -516,45 +516,45 @@ static void ubloxSetNavRate(uint16_t measRate, uint16_t navRate, uint16_t timeRe
     ubloxSendConfigMessage(&tx_buffer, MSG_CFG_RATE, sizeof(ubx_cfg_rate));
 }
 
-// static void ubloxSetSbas() {
-//     ubx_message tx_buffer;
+ static void ubloxSetSbas() {
+     ubx_message tx_buffer;
 
-//     //NOTE: default ublox config for sbas mode is: UBLOX_MODE_ENABLED, test is disabled
-//     tx_buffer.payload.cfg_sbas.mode = UBLOX_MODE_TEST;
-//     if (gpsConfig()->sbasMode != SBAS_NONE) {
-//         tx_buffer.payload.cfg_sbas.mode |= UBLOX_MODE_ENABLED;
-//     }
+     //NOTE: default ublox config for sbas mode is: UBLOX_MODE_ENABLED, test is disabled
+     tx_buffer.payload.cfg_sbas.mode = UBLOX_MODE_TEST;
+     if (gpsConfig.sbasMode != SBAS_NONE) {
+         tx_buffer.payload.cfg_sbas.mode |= UBLOX_MODE_ENABLED;
+     }
 
-//     //NOTE: default ublox config for sbas mode is: UBLOX_USAGE_RANGE | UBLOX_USAGE_DIFFCORR, integrity is disabled
-//     tx_buffer.payload.cfg_sbas.usage = UBLOX_USAGE_RANGE | UBLOX_USAGE_DIFFCORR;
-//     if (gpsConfig()->sbas_integrity) {
-//         tx_buffer.payload.cfg_sbas.usage |= UBLOX_USAGE_INTEGRITY;
-//     }
+     //NOTE: default ublox config for sbas mode is: UBLOX_USAGE_RANGE | UBLOX_USAGE_DIFFCORR, integrity is disabled
+     tx_buffer.payload.cfg_sbas.usage = UBLOX_USAGE_RANGE | UBLOX_USAGE_DIFFCORR;
+     if (gpsConfig.sbas_integrity) {
+         tx_buffer.payload.cfg_sbas.usage |= UBLOX_USAGE_INTEGRITY;
+     }
 
-//     tx_buffer.payload.cfg_sbas.maxSBAS = 3;
-//     tx_buffer.payload.cfg_sbas.scanmode2 = 0;
-//     switch (gpsConfig()->sbasMode) {
-//         case SBAS_AUTO:
-//             tx_buffer.payload.cfg_sbas.scanmode1 = 0;
-//             break;
-//         case SBAS_EGNOS:
-//             tx_buffer.payload.cfg_sbas.scanmode1 = 0x00010048; //PRN123, PRN126, PRN136
-//             break;
-//         case SBAS_WAAS:
-//             tx_buffer.payload.cfg_sbas.scanmode1 = 0x0004A800; //PRN131, PRN133, PRN135, PRN138
-//             break;
-//         case SBAS_MSAS:
-//             tx_buffer.payload.cfg_sbas.scanmode1 = 0x00020200; //PRN129, PRN137
-//             break;
-//         case SBAS_GAGAN:
-//             tx_buffer.payload.cfg_sbas.scanmode1 = 0x00001180; //PRN127, PRN128, PRN132
-//             break;
-//         default:
-//             tx_buffer.payload.cfg_sbas.scanmode1 = 0;
-//             break;
-//     }
-//     ubloxSendConfigMessage(&tx_buffer, MSG_CFG_SBAS, sizeof(ubx_cfg_sbas));
-// }
+     tx_buffer.payload.cfg_sbas.maxSBAS = 3;
+     tx_buffer.payload.cfg_sbas.scanmode2 = 0;
+     switch (gpsConfig.sbasMode) {
+         case SBAS_AUTO:
+             tx_buffer.payload.cfg_sbas.scanmode1 = 0;
+             break;
+         case SBAS_EGNOS:
+             tx_buffer.payload.cfg_sbas.scanmode1 = 0x00010048; //PRN123, PRN126, PRN136
+             break;
+         case SBAS_WAAS:
+             tx_buffer.payload.cfg_sbas.scanmode1 = 0x0004A800; //PRN131, PRN133, PRN135, PRN138
+             break;
+         case SBAS_MSAS:
+             tx_buffer.payload.cfg_sbas.scanmode1 = 0x00020200; //PRN129, PRN137
+             break;
+         case SBAS_GAGAN:
+             tx_buffer.payload.cfg_sbas.scanmode1 = 0x00001180; //PRN127, PRN128, PRN132
+             break;
+         default:
+             tx_buffer.payload.cfg_sbas.scanmode1 = 0;
+             break;
+     }
+     ubloxSendConfigMessage(&tx_buffer, MSG_CFG_SBAS, sizeof(ubx_cfg_sbas));
+ }
 
 void gpsInitUblox(void)
 {
@@ -726,25 +726,25 @@ void gpsInitUblox(void)
             break;
     }
 }
-//#endif // USE_GPS_UBLOX
+#endif // USE_GPS_UBLOX
 
 void gpsInitHardware(void)
 {
-//     switch (gpsConfig()->provider) {
-//     case GPS_NMEA:
-// #ifdef USE_GPS_NMEA
-//         gpsInitNmea();
-// #endif
-//         break;
+	switch (gpsConfig.provider) {
+	case GPS_NMEA:
+#ifdef USE_GPS_NMEA
+	 gpsInitNmea();
+#endif
+	 break;
 
-//     case GPS_UBLOX:
+	case GPS_UBLOX:
 #ifdef USE_GPS_UBLOX
         gpsInitUblox();
 #endif
-    //     break;
-    // default:
-    //     break;
-    // }
+         break;
+     default:
+         break;
+     }
 }
 
 static void updateGpsIndicator(uint32_t currentTimeUs)

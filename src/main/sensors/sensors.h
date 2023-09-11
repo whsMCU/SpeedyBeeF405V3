@@ -10,7 +10,6 @@
 
 #include "hw.h"
 
-
 typedef enum {
     GYRO_OVERFLOW_NONE = 0x00,
     GYRO_OVERFLOW_X = 0x01,

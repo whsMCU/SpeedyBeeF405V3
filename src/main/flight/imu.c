@@ -166,8 +166,6 @@ void imuInit(void)
 #endif
 
     imuComputeRotationMatrix();
-
-    imuConfigure(throttleCorrectionConfig.throttle_correction_angle, throttleCorrectionConfig.throttle_correction_value);
 }
 
 #if defined(USE_ACC)

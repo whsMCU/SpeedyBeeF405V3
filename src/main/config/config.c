@@ -131,10 +131,10 @@ uint8_t getCurrentControlRateProfileIndex(void)
     return systemConfig.activeRateProfile;
 }
 
-//uint16_t getCurrentMinthrottle(void)
-//{
-//    return motorConfig()->minthrottle;
-//}
+uint16_t getCurrentMinthrottle(void)
+{
+    return motorConfig.minthrottle;
+}
 
 void resetConfig(void)
 {
@@ -152,13 +152,13 @@ static void activateConfig(void)
 
     initRcProcessing();
 
-    //activeAdjustmentRangeReset();
+    activeAdjustmentRangeReset();
 
     pidInit(currentPidProfile);
 
     rcControlsInit();
 
-    //failsafeReset();
+    failsafeReset();
 #ifdef USE_ACC
     setAccelerationTrims(&accelerometerConfig.accZero);
     accInitFilters();
@@ -279,17 +279,17 @@ static void validateAndFixConfig(void)
 #endif
     }
 
-//    if (motorConfig()->dev.motorPwmProtocol == PWM_TYPE_BRUSHED) {
-//        featureDisableImmediate(FEATURE_3D);
-//
-//        if (motorConfig()->mincommand < 1000) {
-//            motorConfigMutable()->mincommand = 1000;
-//        }
-//    }
+    if (motorConfig.dev.motorPwmProtocol == PWM_TYPE_BRUSHED) {
+        featureDisableImmediate(FEATURE_3D);
 
-//    if ((motorConfig()->dev.motorPwmProtocol == PWM_TYPE_STANDARD) && (motorConfig()->dev.motorPwmRate > BRUSHLESS_MOTORS_PWM_RATE)) {
-//        motorConfigMutable()->dev.motorPwmRate = BRUSHLESS_MOTORS_PWM_RATE;
-//    }
+        if (motorConfig.mincommand < 1000) {
+            motorConfig.mincommand = 1000;
+        }
+    }
+
+    if ((motorConfig.dev.motorPwmProtocol == PWM_TYPE_STANDARD) && (motorConfig.dev.motorPwmRate > BRUSHLESS_MOTORS_PWM_RATE)) {
+        motorConfig.dev.motorPwmRate = BRUSHLESS_MOTORS_PWM_RATE;
+    }
 
     validateAndFixGyroConfig();
 
@@ -489,7 +489,7 @@ static void validateAndFixConfig(void)
 #endif
 
     bool configuredMotorProtocolDshot = false;
-    //checkMotorProtocolEnabled(&motorConfig()->dev, &configuredMotorProtocolDshot);
+    checkMotorProtocolEnabled(&motorConfig.dev, &configuredMotorProtocolDshot);
 #if defined(USE_DSHOT)
     // If using DSHOT protocol disable unsynched PWM as it's meaningless
     if (configuredMotorProtocolDshot) {
@@ -629,52 +629,52 @@ void validateAndFixGyroConfig(void)
         }
 #endif
 
-//        switch (motorConfig()->dev.motorPwmProtocol) {
-//        case PWM_TYPE_STANDARD:
-//                motorUpdateRestriction = 1.0f / BRUSHLESS_MOTORS_PWM_RATE;
-//                break;
-//        case PWM_TYPE_ONESHOT125:
-//                motorUpdateRestriction = 0.0005f;
-//                break;
-//        case PWM_TYPE_ONESHOT42:
-//                motorUpdateRestriction = 0.0001f;
-//                break;
-//#ifdef USE_DSHOT
-//        case PWM_TYPE_DSHOT150:
-//                motorUpdateRestriction = 0.000250f;
-//                break;
-//        case PWM_TYPE_DSHOT300:
-//                motorUpdateRestriction = 0.0001f;
-//                break;
-//#endif
-//        default:
-//            motorUpdateRestriction = 0.00003125f;
-//            break;
-//        }
+        switch (motorConfig.dev.motorPwmProtocol) {
+        case PWM_TYPE_STANDARD:
+                motorUpdateRestriction = 1.0f / BRUSHLESS_MOTORS_PWM_RATE;
+                break;
+        case PWM_TYPE_ONESHOT125:
+                motorUpdateRestriction = 0.0005f;
+                break;
+        case PWM_TYPE_ONESHOT42:
+                motorUpdateRestriction = 0.0001f;
+                break;
+#ifdef USE_DSHOT
+        case PWM_TYPE_DSHOT150:
+                motorUpdateRestriction = 0.000250f;
+                break;
+        case PWM_TYPE_DSHOT300:
+                motorUpdateRestriction = 0.0001f;
+                break;
+#endif
+        default:
+            motorUpdateRestriction = 0.00003125f;
+            break;
+        }
 
-//        if (motorConfig()->dev.useUnsyncedPwm) {
-//            bool configuredMotorProtocolDshot = false;
-//            checkMotorProtocolEnabled(&motorConfig()->dev, &configuredMotorProtocolDshot);
-//            // Prevent overriding the max rate of motors
-//            if (!configuredMotorProtocolDshot && motorConfig()->dev.motorPwmProtocol != PWM_TYPE_STANDARD) {
-//                const uint32_t maxEscRate = lrintf(1.0f / motorUpdateRestriction);
-//                motorConfigMutable()->dev.motorPwmRate = MIN(motorConfig()->dev.motorPwmRate, maxEscRate);
-//            }
-//        } else {
-//            const float pidLooptime = samplingTime * pidConfig()->pid_process_denom;
-//            if (motorConfig()->dev.useDshotTelemetry) {
-//                motorUpdateRestriction *= 2;
-//            }
-//            if (pidLooptime < motorUpdateRestriction) {
-//                uint8_t minPidProcessDenom = motorUpdateRestriction / samplingTime;
-//                if (motorUpdateRestriction / samplingTime > minPidProcessDenom) {
-//                    // if any fractional part then round up
-//                    minPidProcessDenom++;
-//                }
-//                minPidProcessDenom = constrain(minPidProcessDenom, 1, MAX_PID_PROCESS_DENOM);
-//                pidConfigMutable()->pid_process_denom = MAX(pidConfigMutable()->pid_process_denom, minPidProcessDenom);
-//            }
-//        }
+        if (motorConfig.dev.useUnsyncedPwm) {
+            bool configuredMotorProtocolDshot = false;
+            checkMotorProtocolEnabled(&motorConfig.dev, &configuredMotorProtocolDshot);
+            // Prevent overriding the max rate of motors
+            if (!configuredMotorProtocolDshot && motorConfig.dev.motorPwmProtocol != PWM_TYPE_STANDARD) {
+                const uint32_t maxEscRate = lrintf(1.0f / motorUpdateRestriction);
+                motorConfig.dev.motorPwmRate = MIN(motorConfig.dev.motorPwmRate, maxEscRate);
+            }
+        } else {
+            const float pidLooptime = samplingTime * pidConfig.pid_process_denom;
+            if (motorConfig.dev.useDshotTelemetry) {
+                motorUpdateRestriction *= 2;
+            }
+            if (pidLooptime < motorUpdateRestriction) {
+                uint8_t minPidProcessDenom = motorUpdateRestriction / samplingTime;
+                if (motorUpdateRestriction / samplingTime > minPidProcessDenom) {
+                    // if any fractional part then round up
+                    minPidProcessDenom++;
+                }
+                minPidProcessDenom = constrain(minPidProcessDenom, 1, MAX_PID_PROCESS_DENOM);
+                pidConfig.pid_process_denom = MAX(pidConfig.pid_process_denom, minPidProcessDenom);
+            }
+        }
     }
 
 #ifdef USE_BLACKBOX

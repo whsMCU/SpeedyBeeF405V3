@@ -76,7 +76,6 @@ const ratesSettingsLimits_t ratesSettingLimits[RATES_TYPE_COUNT] = {
 
 void loadControlRateProfile(void)
 {
-	controlRateProfiles_Init();
     currentControlRateProfile = &controlRateProfiles[systemConfig.activeRateProfile];
 }
 

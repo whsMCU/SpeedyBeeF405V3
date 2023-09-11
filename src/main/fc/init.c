@@ -151,9 +151,15 @@ void init(void)
 
 	initBoardAlignment(&boardAlignment);
 
+#ifdef USE_ACC
 	Sensor_Init();
+#endif
+#ifdef USE_BARO
 	Baro_Init();
+#endif
+#ifdef USE_MAG
 	compassInit();
+#endif
 	adcInternalInit();
 
     // Set the targetLooptime based on the detected gyro sampleRateHz and pid_process_denom
@@ -171,24 +177,34 @@ void init(void)
 	mixerInitProfile();
 
 	imuInit();
-    //failsafeInit();
+    failsafeInit();
 
     rxInit();
+
+#ifdef USE_GPS
 	gpsInit();
+#endif
+
+#ifdef USE_ACC
+    if (mixerConfig.mixerMode == MIXER_GIMBAL) {
+        accStartCalibration();
+    }
+#endif
 
     gyroStartCalibration(false);
     baroStartCalibration();
-
-//    if (featureIsEnabled(FEATURE_TELEMETRY)) {
-//        telemetryInit();
-//    }
-
-    //setArmingDisabled(ARMING_DISABLED_BOOT_GRACE_TIME);
 
 	batteryInit(); // always needs doing, regardless of features.
 
 #ifdef USE_PERSISTENT_STATS
     statsInit();
+#endif
+
+#ifdef USE_TELEMETRY
+    // Telemetry will initialise displayport and register with CMS by itself.
+    if (featureIsEnabled(FEATURE_TELEMETRY)) {
+        telemetryInit();
+    }
 #endif
     setArmingDisabled(ARMING_DISABLED_BOOT_GRACE_TIME);
 
