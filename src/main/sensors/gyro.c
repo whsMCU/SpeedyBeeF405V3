@@ -29,6 +29,7 @@
 #include "common/axis.h"
 #include "common/maths.h"
 #include "common/filter.h"
+#include "common/sensor_alignment.h"
 
 #include "config/feature.h"
 #include "config/config.h"
@@ -126,6 +127,8 @@ void gyroConfig_init(void)
 	 gyroConfig.gyro_lpf1_dyn_expo = 5;
 	 gyroConfig.simplified_gyro_filter = true;
 	 gyroConfig.simplified_gyro_filter_multiplier = 100;
+	 gyroConfig.alignment = 0;
+	 gyroConfig.customAlignment = CUSTOM_ALIGN_CW0_DEG;
 }
 
 void gyroDeviceConfig_Init(void)

@@ -59,16 +59,16 @@ static void pwmWriteUnused(uint8_t index, float value)
 static void pwmWriteStandard(uint8_t index, float value)
 {
     /* TODO: move value to be a number between 0-1 (i.e. percent throttle from mixer) */
-    //*motors[index].channel.ccr = lrintf((value * motors[index].pulseScale) + motors[index].pulseOffset);
+    *motors[index].channel.ccr = lrintf((value * motors[index].pulseScale) + motors[index].pulseOffset);
 }
 
 void pwmShutdownPulsesForAllMotors(void)
 {
     for (int index = 0; index < motorPwmDevice.count; index++) {
         // Set the compare register to 0, which stops the output pulsing if the timer overflows
-//        if (motors[index].channel.ccr) {
-//            *motors[index].channel.ccr = 0;
-//        }
+        if (motors[index].channel.ccr) {
+            *motors[index].channel.ccr = 0;
+        }
     }
 }
 

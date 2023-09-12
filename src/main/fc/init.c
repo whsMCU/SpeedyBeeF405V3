@@ -244,7 +244,9 @@ void Param_Config_Init(void)
 	gpsConfig_Init();
 #endif
 	barometerConfig_Init();
+#ifdef USE_MAG
 	compassConfig_Init();
+#endif
 	adcConfig_Init();
 	voltageSensorADCConfig_Init();
 	currentSensorADCConfig_Init();

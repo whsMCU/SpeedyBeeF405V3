@@ -124,7 +124,6 @@ typedef struct gyro_s {
 #ifdef USE_GYRO_OVERFLOW_CHECK
     uint8_t overflowAxisMask;
 #endif
-
 } gyro_t;
 
 extern gyro_t gyro;
@@ -193,6 +192,8 @@ typedef struct gyroConfig_s {
     uint8_t gyro_lpf1_dyn_expo; // set the curve for dynamic gyro lowpass filter
     uint8_t simplified_gyro_filter;
     uint8_t simplified_gyro_filter_multiplier;
+    sensor_align_e alignment;
+    sensorAlignment_t customAlignment;
 } gyroConfig_t;
 
 extern gyroConfig_t gyroConfig;

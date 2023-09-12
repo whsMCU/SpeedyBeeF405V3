@@ -58,7 +58,7 @@
 #define USE_YAW_SPIN_RECOVERY
 #define USE_ACC
 #define USE_BARO
-#define USE_MAG
+//#define USE_MAG
 #define USE_DYN_LPF
 #define USE_D_MIN
 #define USE_LATE_TASK_STATISTICS
