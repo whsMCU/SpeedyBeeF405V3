@@ -37,6 +37,7 @@
 
 #include "flight/imu.h"
 #include "flight/position.h"
+#include "flight/mixer.h"
 
 #include "drivers/accgyro/accgyro.h"
 #include "drivers/compass/compass.h"
@@ -98,6 +99,13 @@ static void debugPrint(uint32_t currentTimeUs)
     cliPrintf("IMU R: %d, P: %d, Y: %d\n\r",    attitude.values.roll,
                                                 attitude.values.pitch,
                                                 attitude.values.yaw);
+
+//    cliPrintf("Motor 1: %.f, 2: %.f, 3: %.f, 4: %.f, 5: %.f, 6: %.f\n\r",    motor[0],
+//														motor[1],
+//														motor[2],
+//														motor[3],
+//														motor[4],
+//														motor[5]);
 
     //p_adc_pg->vrefIntCalibration = 50;
     //cliPrintf("IMU R: %d, P: %d\n\r",    p_pid_pg->dyn_idle_p_gain, p_adc_pg->vrefIntCalibration);
