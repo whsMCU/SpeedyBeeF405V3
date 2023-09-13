@@ -160,8 +160,8 @@ void processRcStickPositions()
             // Arming via ARM BOX
             tryArm();
         } else {
-            resetTryingToArm();
             // Disarming via ARM BOX
+            resetTryingToArm();
             resetArmingDisabled();
             if (ARMING_FLAG(ARMED) && rxIsReceivingSignal() && !failsafeIsActive()  ) {
                 rcDisarmTicks++;
