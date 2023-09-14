@@ -367,19 +367,19 @@ max7456InitStatus_e max7456Init(const max7456Config_t *max7456Config, const vcdP
 
     max7456HardwareReset();
 
-    if (!max7456Config.csTag) { //|| !spiSetBusInstance(dev, max7456Config->spiDevice)
-        return MAX7456_INIT_NOT_CONFIGURED;
-    }
+//    if (!max7456Config.csTag || !spiSetBusInstance(dev, max7456Config->spiDevice)) {
+//        return MAX7456_INIT_NOT_CONFIGURED;
+//    }
 
-    dev->busType_u.spi.csnPin = IOGetByTag(max7456Config->csTag);
+    //dev->busType_u.spi.csnPin = IOGetByTag(max7456Config->csTag);
 
-    if (!IOIsFreeOrPreinit(dev->busType_u.spi.csnPin)) {
-        return MAX7456_INIT_NOT_CONFIGURED;
-    }
+//    if (!IOIsFreeOrPreinit(dev->busType_u.spi.csnPin)) {
+//        return MAX7456_INIT_NOT_CONFIGURED;
+//    }
 
-    IOInit(dev->busType_u.spi.csnPin, OWNER_OSD_CS, 0);
-    IOConfigGPIO(dev->busType_u.spi.csnPin, SPI_IO_CS_CFG);
-    IOHi(dev->busType_u.spi.csnPin);
+    //IOInit(dev->busType_u.spi.csnPin, OWNER_OSD_CS, 0);
+    //IOConfigGPIO(dev->busType_u.spi.csnPin, SPI_IO_CS_CFG);
+    //IOHi(dev->busType_u.spi.csnPin);
 
     // Detect MAX7456 existence and device type. Do this at half the speed for safety.
 
@@ -389,25 +389,29 @@ max7456InitStatus_e max7456Init(const max7456Config_t *max7456Config, const vcdP
     spiSetClkDivisor(dev, spiCalculateDivider(MAX7456_INIT_MAX_SPI_CLK_HZ));
 
     // Write 0xff to conclude any current SPI transaction the MAX7456 is expecting
-    spiWrite(dev, END_STRING);
+    //spiWrite(dev, END_STRING);
+    SPI_ByteWrite_single(_DEF_SPI2, END_STRING);
 
-    uint8_t osdm = spiReadRegMsk(dev, MAX7456ADD_OSDM);
-
+    uint8_t osdm = 0;//spiReadRegMsk(dev, MAX7456ADD_OSDM);
+    SPI_ByteRead(_DEF_SPI2, MAX7456ADD_OSDM | 0x80, &osdm, 1);
     if (osdm != 0x1B) {
-        IOConfigGPIO(dev->busType_u.spi.csnPin, IOCFG_IPU);
+        //IOConfigGPIO(dev->busType_u.spi.csnPin, IOCFG_IPU);
         return MAX7456_INIT_NOT_FOUND;
     }
 
     // At this point, we can claim the ownership of the CS pin
     max7456DeviceDetected = true;
-    IOInit(dev->busType_u.spi.csnPin, OWNER_OSD_CS, 0);
+    //IOInit(dev->busType_u.spi.csnPin, OWNER_OSD_CS, 0);
 
     // Detect device type by writing and reading CA[8] bit at CMAL[6].
     // This is a bit for accessing second half of character glyph storage, supported only by AT variant.
 
-    spiWriteReg(dev, MAX7456ADD_CMAL, (1 << 6)); // CA[8] bit
+    //spiWriteReg(dev, MAX7456ADD_CMAL, (1 << 6)); // CA[8] bit
+    SPI_RegisterWrite(_DEF_SPI2, MAX7456ADD_CMAL, (1 << 6), 1);
 
-    if (spiReadRegMsk(dev, MAX7456ADD_CMAL) & (1 << 6)) {
+    uint8_t temp = 0;
+    SPI_ByteRead(_DEF_SPI2, MAX7456ADD_CMAL | 0x80, &temp, 1);
+    if (temp & (1 << 6)) {
         max7456DeviceType = MAX7456_DEVICE_TYPE_AT;
     } else {
         max7456DeviceType = MAX7456_DEVICE_TYPE_MAX;
@@ -444,13 +448,15 @@ max7456InitStatus_e max7456Init(const max7456Config_t *max7456Config, const vcdP
     spiSetClkDivisor(dev, max7456SpiClockDiv);
 
     // force soft reset on Max7456
-    spiWriteReg(dev, MAX7456ADD_VM0, MAX7456_RESET);
+    //spiWriteReg(dev, MAX7456ADD_VM0, MAX7456_RESET);
+    SPI_RegisterWrite(_DEF_SPI2, MAX7456ADD_VM0, MAX7456_RESET, 1);
 
     // Wait for 200us before polling for completion of reset
     delayMicroseconds(200);
 
     // Wait for reset to complete
-    while ((spiReadRegMsk(dev, MAX7456ADD_VM0) & MAX7456_RESET) != 0x00);
+    SPI_ByteRead(_DEF_SPI2, MAX7456ADD_VM0 | 0x80, &temp, 1);
+    while ((temp & MAX7456_RESET) != 0x00);
 
     // Setup values to write to registers
     videoSignalCfg = pVcdProfile->video_system;
@@ -477,7 +483,8 @@ void max7456Invert(bool invert)
         // redrawn with the proper invert state
         max7456ClearShadowBuffer();
         previousInvertRegister = displayMemoryModeReg;
-        spiWriteReg(dev, MAX7456ADD_DMM, displayMemoryModeReg);
+        //spiWriteReg(dev, MAX7456ADD_DMM, displayMemoryModeReg);
+        SPI_RegisterWrite(_DEF_SPI2, MAX7456ADD_DMM, displayMemoryModeReg, 1);
     }
 }
 
@@ -498,7 +505,8 @@ void max7456Brightness(uint8_t black, uint8_t white)
             buf[j++] = i;
             buf[j++] = reg;
         }
-        spiReadWriteBuf(dev, buf, NULL, sizeof(buf));
+        //spiReadWriteBuf(dev, buf, NULL, sizeof(buf));
+        SPI_ByteWrite_multi(_DEF_SPI2, buf, sizeof(buf));
     }
 }
 
@@ -583,9 +591,12 @@ bool max7456ReInitIfRequired(bool forceStallCheck)
         lastStallCheckMs = nowMs;
 
         // Write 0xff to conclude any current SPI transaction the MAX7456 is expecting
-        spiWrite(dev, END_STRING);
+        //spiWrite(dev, END_STRING);
+        SPI_ByteWrite_single(_DEF_SPI2, END_STRING);
 
-        stalled = (spiReadRegMsk(dev, MAX7456ADD_VM0) != videoSignalReg);
+        //stalled = (spiReadRegMsk(dev, MAX7456ADD_VM0) != videoSignalReg);
+        SPI_ByteRead(_DEF_SPI2, MAX7456ADD_VM0 | 0x80, &stalled, 1);
+        stalled != videoSignalReg;
     }
 
     if (stalled) {
@@ -594,7 +605,8 @@ bool max7456ReInitIfRequired(bool forceStallCheck)
               && ((nowMs - lastSigCheckMs) > MAX7456_SIGNAL_CHECK_INTERVAL_MS)) {
 
         // Write 0xff to conclude any current SPI transaction the MAX7456 is expecting
-        spiWrite(dev, END_STRING);
+        //spiWrite(dev, END_STRING);
+        SPI_ByteWrite_single(_DEF_SPI2, END_STRING);
 
         // Adjust output format based on the current input format.
 
