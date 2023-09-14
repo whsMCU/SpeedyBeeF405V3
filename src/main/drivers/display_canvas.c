@@ -26,7 +26,7 @@
 
 //#include "platform.h"
 
-#include "drivers/display/display_canvas.h"
+#include "drivers/display_canvas.h"
 
 void displayCanvasSetStrokeColor(displayCanvas_t *displayCanvas, displayCanvasColor_e color)
 {

@@ -50,10 +50,10 @@
 
 #include "config/feature.h"
 
-#include "drivers/display/display.h"
+#include "drivers/display.h"
 //#include "drivers/dshot.h"
 //#include "drivers/flash.h"
-#include "drivers/display/osd_symbols.h"
+#include "drivers/osd_symbols.h"
 //#include "drivers/sdcard.h"
 //#include "drivers/time.h"
 
@@ -375,6 +375,15 @@ void osdConfig_Init(void)
     osdConfig.stat_show_cell_value = false;
     osdConfig.framerate_hz = OSD_FRAMERATE_DEFAULT_HZ;
     osdConfig.cms_background_type = DISPLAY_BACKGROUND_TRANSPARENT;
+}
+
+vcdProfile_t vcdProfile;
+
+void vcdProfile_Init(void)
+{
+	vcdProfile.video_system = 0;
+	vcdProfile.h_offset = 0;
+	vcdProfile.v_offset = 0;
 }
 
 void osdElementConfig_Init(void)

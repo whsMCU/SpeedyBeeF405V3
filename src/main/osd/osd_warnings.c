@@ -37,8 +37,8 @@
 #include "common/maths.h"
 #include "common/printf.h"
 
-#include "drivers/display/display.h"
-#include "drivers/display/osd_symbols.h"
+#include "drivers/display.h"
+#include "drivers/osd_symbols.h"
 //#include "drivers/display/time.h"
 
 #include "fc/core.h"

@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "drivers/display/display.h"
+#include "drivers/display.h"
 
 #include "osd/osd.h"
 

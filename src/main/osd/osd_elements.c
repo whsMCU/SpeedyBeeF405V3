@@ -124,9 +124,9 @@
 #include "config/config.h"
 #include "config/feature.h"
 
-#include "drivers/display/display.h"
+#include "drivers/display.h"
 //#include "drivers/dshot.h"
-#include "drivers/display/osd_symbols.h"
+#include "drivers/osd_symbols.h"
 //#include "drivers/time.h"
 //#include "drivers/vtx_common.h"
 

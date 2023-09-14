@@ -26,9 +26,9 @@
 
 #include "common/utils.h"
 
-#include "drivers/display/display_canvas.h"
-#include "drivers/display/display.h"
-#include "drivers/display/osd.h"
+#include "drivers/display_canvas.h"
+#include "drivers/display.h"
+#include "drivers/osd.h"
 
 void displayClearScreen(displayPort_t *instance, displayClearOption_e options)
 {

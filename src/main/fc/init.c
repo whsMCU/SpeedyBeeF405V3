@@ -45,6 +45,8 @@
 //#include "drivers/vtx_rtc6705.h"
 //#include "drivers/vtx_table.h"
 
+#include "io/displayport_max7456.h"
+
 #include "fc/board_info.h"
 #include "fc/dispatch.h"
 #include "fc/init.h"
@@ -99,6 +101,8 @@
 #include "drivers/gps/gps.h"
 #include "drivers/motor.h"
 #include "drivers/pwm_output.h"
+#include "drivers/osd.h"
+#include "drivers/max7456.h"
 
 #include "fc/stats.h"
 
@@ -233,6 +237,7 @@ void Param_Config_Init(void)
 	systemConfig_Init();
 	pilotConfig_Init();
 	boardConfig_Init();
+
 	boardAlignment_Init(0, 0, 0);
 	failsafeConfig_Init();
 	accelerometerConfig_init();
@@ -266,6 +271,63 @@ void Param_Config_Init(void)
 	rcControlsConfig_Init();
 	armingConfig_Init();
 	flight3DConfig_Init();
+#ifdef USE_OSD
+	vcdProfile_Init();
 	osdConfig_Init();
 	osdElementConfig_Init();
+	max7456Config_Init();
+#if defined(USE_MSP_DISPLAYPORT)
+	displayPortProfileMsp_Init();
+#endif
+#if defined(USE_MAX7456)
+	displayPortProfileMax7456_Init();
+#endif
+    //The OSD need to be initialised after GYRO to avoid GYRO initialisation failure on some targets
+#if (defined(USE_OSD) || (defined(USE_MSP_DISPLAYPORT) && defined(USE_CMS)))
+    displayPort_t *osdDisplayPort = NULL;
+    osdDisplayPortDevice_e osdDisplayPortDevice = OSD_DISPLAYPORT_DEVICE_NONE;
+#endif
+    if (featureIsEnabled(FEATURE_OSD)) {
+        osdDisplayPortDevice_e device = osdConfig.displayPortDevice;
+
+        switch(device) {
+
+        case OSD_DISPLAYPORT_DEVICE_AUTO:
+            FALLTHROUGH;
+
+#if defined(USE_MAX7456)
+        case OSD_DISPLAYPORT_DEVICE_MAX7456:
+            // If there is a max7456 chip for the OSD configured and detected then use it.
+            if (max7456DisplayPortInit(&vcdProfile, &osdDisplayPort) || device == OSD_DISPLAYPORT_DEVICE_MAX7456) {
+                osdDisplayPortDevice = OSD_DISPLAYPORT_DEVICE_MAX7456;
+                break;
+            }
+            FALLTHROUGH;
+#endif
+
+#if defined(USE_CMS) && defined(USE_MSP_DISPLAYPORT) && defined(USE_OSD_OVER_MSP_DISPLAYPORT)
+        case OSD_DISPLAYPORT_DEVICE_MSP:
+            osdDisplayPort = displayPortMspInit();
+            if (osdDisplayPort || device == OSD_DISPLAYPORT_DEVICE_MSP) {
+                osdDisplayPortDevice = OSD_DISPLAYPORT_DEVICE_MSP;
+                break;
+            }
+            FALLTHROUGH;
+#endif
+
+        // Other device cases can be added here
+
+        case OSD_DISPLAYPORT_DEVICE_NONE:
+        default:
+            break;
+        }
+
+        // osdInit will register with CMS by itself.
+        osdInit(osdDisplayPort, osdDisplayPortDevice);
+
+        if (osdDisplayPortDevice == OSD_DISPLAYPORT_DEVICE_NONE) {
+            featureDisableImmediate(FEATURE_OSD);
+        }
+    }
+#endif
 }

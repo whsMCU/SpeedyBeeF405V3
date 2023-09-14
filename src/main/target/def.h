@@ -53,18 +53,23 @@
 
 #define USE_HAL_DRIVER
 
+#define USE_ACC
+#define USE_BARO
+#define USE_ADC
+#define USE_OSD
+#define USE_MAX7456
+#define USE_MOTOR
+
 
 #define USE_GYRO_OVERFLOW_CHECK
 #define USE_YAW_SPIN_RECOVERY
-#define USE_ACC
-#define USE_BARO
+
 //#define USE_MAG
 #define USE_DYN_LPF
 #define USE_D_MIN
 #define USE_LATE_TASK_STATISTICS
 #define USE_DYN_NOTCH_FILTER
 #define USE_SERIAL_RX
-#define USE_ADC
 #define CONFIG_IN_FLASH
 //#define USE_TELEMETRY
 #define USE_MSP_OVER_TELEMETRY
@@ -77,10 +82,8 @@
 #define USE_ADC_INTERNAL
 #define USE_RC_SMOOTHING_FILTER
 #define USE_FEEDFORWARD
-#define USE_OSD
 #define USE_BOARD_INFO
 #define USE_SIGNATURE
-#define USE_MOTOR
 #define USE_PWM_OUTPUT
 
 

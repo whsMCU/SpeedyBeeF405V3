@@ -23,7 +23,7 @@
 #include "common/time.h"
 #include "common/unit.h"
 
-#include "drivers/display/display.h"
+#include "drivers/display.h"
 
 
 //#include "sensors/esc_sensor.h"
@@ -254,6 +254,16 @@ typedef enum {
     OSD_DISPLAYPORT_DEVICE_MSP,
     OSD_DISPLAYPORT_DEVICE_FRSKYOSD,
 } osdDisplayPortDevice_e;
+
+typedef struct vcdProfile_s {
+    uint8_t video_system;
+    int8_t h_offset;
+    int8_t v_offset;
+} vcdProfile_t;
+
+extern vcdProfile_t vcdProfile;
+
+extern void vcdProfile_Init(void);
 
 // Make sure the number of warnings do not exceed the available 32bit storage
 STATIC_ASSERT(OSD_WARNING_COUNT <= 32, osdwarnings_overflow);
