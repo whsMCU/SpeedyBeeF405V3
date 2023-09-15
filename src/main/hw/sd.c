@@ -64,7 +64,7 @@ bool sdInit(void)
 
   if (spiIsBegin(spi_ch) != true)
   {
-    spiBegin(spi_ch);
+	  spiBegin(SDCARD);
   }
 
   is_detected = true;

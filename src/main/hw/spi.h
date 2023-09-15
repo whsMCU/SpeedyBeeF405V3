@@ -29,19 +29,28 @@ typedef enum {
 
 
 bool spiInit(void);
-bool spiBegin(uint8_t ch);
+bool spiDev_Init(void);
+bool spiBegin(uint8_t dev);
 bool spiIsBegin(uint8_t ch);
 void spiSetDataMode(uint8_t ch, uint8_t dataMode);
 void spiSetBitWidth(uint8_t ch, uint8_t bit_width);
 uint32_t SPI_Get_Speed(uint8_t ch);
 bool SPI_Set_Speed(uint8_t ch, uint32_t prescaler);
+uint16_t spiCalculateDivider(uint32_t freq);
+
+uint8_t spiReadReg(uint8_t ch, uint8_t reg);
+uint8_t spiReadRegMsk(uint8_t ch, uint8_t reg);
+void spiWriteReg(uint8_t ch, uint8_t reg, uint8_t data);
 
 HAL_StatusTypeDef SPI_ByteRead(uint8_t ch, uint8_t MemAddress, uint8_t *data, uint8_t length);
+bool SPI_IsBusy(uint8_t ch);
+void SPI_Wait(uint8_t ch);
+uint8_t SPI_ByteRead_return(uint8_t ch, uint8_t MemAddress, uint8_t length);
 HAL_StatusTypeDef SPI_ByteRead_Poll(uint8_t ch, uint8_t *MemAddress, uint8_t *data, uint8_t length);
 HAL_StatusTypeDef SPI_ByteRead_DMA(uint8_t ch, uint8_t *MemAddress, uint8_t *data, uint8_t length);
 HAL_StatusTypeDef SPI_ByteReadWrite_DMA(uint8_t ch, uint8_t *MemAddress, uint8_t *data, uint8_t length);
+HAL_StatusTypeDef SPI_ByteWrite_DMA(uint8_t ch, uint8_t *data, uint8_t length);
 HAL_StatusTypeDef SPI_ByteWrite(uint8_t ch, uint8_t MemAddress, uint8_t *data, uint32_t length);
-HAL_StatusTypeDef SPI_ByteWrite_single(uint8_t ch, uint8_t data);
 HAL_StatusTypeDef SPI_ByteWrite_multi(uint8_t ch, uint8_t *data, uint32_t length);
 void SPI_RegisterWrite(uint8_t ch, uint8_t MemAddress, uint8_t data, uint8_t delayMs);
 

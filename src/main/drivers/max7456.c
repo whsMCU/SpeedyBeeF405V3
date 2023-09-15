@@ -271,8 +271,7 @@ static void max7456SetRegisterVM1(void)
         }
     }
     vm1Register |= (backgroundGray << 4);
-    SPI_ByteWrite(_DEF_SPI2, MAX7456ADD_VM1, &vm1Register, 1);
-    //spiWriteReg(dev, MAX7456ADD_VM1, vm1Register);
+    spiWriteReg(MAX7456, MAX7456ADD_VM1, vm1Register);
 }
 
 uint8_t max7456GetRowsCount(void)
@@ -307,8 +306,7 @@ void max7456ReInit(void)
         break;
 
     case VIDEO_SYSTEM_AUTO:
-    	srdata = SPI_ByteRead(_DEF_SPI2, MAX7456ADD_STAT | 0x80, &srdata, 1);
-        //srdata = spiReadRegMsk(dev, MAX7456ADD_STAT);
+    	srdata = spiReadRegMsk(MAX7456, MAX7456ADD_STAT);
 
         if (VIN_IS_NTSC(srdata)) {
             videoSignalReg = VIDEO_MODE_NTSC | OSD_ENABLE;
@@ -333,12 +331,9 @@ void max7456ReInit(void)
     // Re-enable MAX7456 (last function call disables it)
 
     // Make sure the Max7456 is enabled
-    SPI_RegisterWrite(_DEF_SPI2, MAX7456ADD_VM0, videoSignalReg, 1);
-    SPI_RegisterWrite(_DEF_SPI2, MAX7456ADD_VM0, hosRegValue, 1);
-    SPI_RegisterWrite(_DEF_SPI2, MAX7456ADD_VOS, vosRegValue, 1);
-    //spiWriteReg(dev, MAX7456ADD_VM0, videoSignalReg);
-    //spiWriteReg(dev, MAX7456ADD_VM0, hosRegValue);
-    //spiWriteReg(dev, MAX7456ADD_VOS, vosRegValue);
+    spiWriteReg(MAX7456, MAX7456ADD_VM0, videoSignalReg);
+    spiWriteReg(MAX7456, MAX7456ADD_VM0, hosRegValue);
+    spiWriteReg(MAX7456, MAX7456ADD_VOS, vosRegValue);
 
     max7456SetRegisterVM1();
 
@@ -386,14 +381,14 @@ max7456InitStatus_e max7456Init(const max7456Config_t *max7456Config, const vcdP
     // Detect MAX7456 and compatible device by reading OSDM (OSD Insertion MUX) register.
     // This register is not modified in this driver, therefore ensured to remain at its default value (0x1B).
 
-    spiSetClkDivisor(dev, spiCalculateDivider(MAX7456_INIT_MAX_SPI_CLK_HZ));
+    SPI_Set_Speed(MAX7456, spiCalculateDivider(MAX7456_INIT_MAX_SPI_CLK_HZ));
+    //spiSetClkDivisor(dev, spiCalculateDivider(MAX7456_INIT_MAX_SPI_CLK_HZ));
 
     // Write 0xff to conclude any current SPI transaction the MAX7456 is expecting
-    //spiWrite(dev, END_STRING);
-    SPI_ByteWrite_single(_DEF_SPI2, END_STRING);
+    spiWrite(MAX7456, END_STRING);
 
-    uint8_t osdm = 0;//spiReadRegMsk(dev, MAX7456ADD_OSDM);
-    SPI_ByteRead(_DEF_SPI2, MAX7456ADD_OSDM | 0x80, &osdm, 1);
+    uint8_t osdm = spiReadRegMsk(dev, MAX7456ADD_OSDM);
+
     if (osdm != 0x1B) {
         //IOConfigGPIO(dev->busType_u.spi.csnPin, IOCFG_IPU);
         return MAX7456_INIT_NOT_FOUND;
@@ -406,12 +401,10 @@ max7456InitStatus_e max7456Init(const max7456Config_t *max7456Config, const vcdP
     // Detect device type by writing and reading CA[8] bit at CMAL[6].
     // This is a bit for accessing second half of character glyph storage, supported only by AT variant.
 
-    //spiWriteReg(dev, MAX7456ADD_CMAL, (1 << 6)); // CA[8] bit
-    SPI_RegisterWrite(_DEF_SPI2, MAX7456ADD_CMAL, (1 << 6), 1);
+    spiWriteReg(MAX7456, MAX7456ADD_CMAL, (1 << 6)); // CA[8] bit
 
     uint8_t temp = 0;
-    SPI_ByteRead(_DEF_SPI2, MAX7456ADD_CMAL | 0x80, &temp, 1);
-    if (temp & (1 << 6)) {
+    if (spiReadRegMsk(dev, MAX7456ADD_CMAL) & (1 << 6)) {
         max7456DeviceType = MAX7456_DEVICE_TYPE_AT;
     } else {
         max7456DeviceType = MAX7456_DEVICE_TYPE_MAX;
@@ -445,11 +438,11 @@ max7456InitStatus_e max7456Init(const max7456Config_t *max7456Config, const vcdP
     max7456SpiClockDiv = spiCalculateDivider(MAX7456_MAX_SPI_CLK_HZ);
 #endif
 
-    spiSetClkDivisor(dev, max7456SpiClockDiv);
+    SPI_Set_Speed(MAX7456, max7456SpiClockDiv);
+    //spiSetClkDivisor(dev, max7456SpiClockDiv);
 
     // force soft reset on Max7456
-    //spiWriteReg(dev, MAX7456ADD_VM0, MAX7456_RESET);
-    SPI_RegisterWrite(_DEF_SPI2, MAX7456ADD_VM0, MAX7456_RESET, 1);
+    spiWriteReg(MAX7456, MAX7456ADD_VM0, MAX7456_RESET);
 
     // Wait for 200us before polling for completion of reset
     delayMicroseconds(200);
@@ -564,7 +557,7 @@ bool max7456LayerCopy(displayPortLayer_e destLayer, displayPortLayer_e sourceLay
 
 bool max7456DmaInProgress(void)
 {
-    return spiIsBusy(dev);
+    return SPI_IsBusy(_DEF_SPI2);
 }
 
 bool max7456BuffersSynced(void)
@@ -594,9 +587,14 @@ bool max7456ReInitIfRequired(bool forceStallCheck)
         //spiWrite(dev, END_STRING);
         SPI_ByteWrite_single(_DEF_SPI2, END_STRING);
 
+        uint8_t temp = 0;
         //stalled = (spiReadRegMsk(dev, MAX7456ADD_VM0) != videoSignalReg);
-        SPI_ByteRead(_DEF_SPI2, MAX7456ADD_VM0 | 0x80, &stalled, 1);
-        stalled != videoSignalReg;
+        SPI_ByteRead(_DEF_SPI2, MAX7456ADD_VM0 | 0x80, &temp, 1);
+
+        if(temp != videoSignalReg)
+        {
+        	stalled = true;
+        }
     }
 
     if (stalled) {
@@ -610,7 +608,7 @@ bool max7456ReInitIfRequired(bool forceStallCheck)
 
         // Adjust output format based on the current input format.
 
-        const uint8_t videoSense = spiReadRegMsk(dev, MAX7456ADD_STAT);
+        const uint8_t videoSense = SPI_ByteRead_return(_DEF_SPI2, MAX7456ADD_STAT | 0x80, 1);
 
         DEBUG_SET(DEBUG_MAX7456_SIGNAL, DEBUG_MAX7456_SIGNAL_MODEREG, videoSignalReg & VIDEO_MODE_MASK);
         DEBUG_SET(DEBUG_MAX7456_SIGNAL, DEBUG_MAX7456_SIGNAL_SENSE, videoSense & 0x7);
@@ -644,10 +642,10 @@ bool max7456DrawScreen(void)
 {
     static uint16_t pos = 0;
     // This routine doesn't block so need to use static data
-    static busSegment_t segments[] = {
-            {.u.link = {NULL, NULL}, 0, true, NULL},
-            {.u.link = {NULL, NULL}, 0, true, NULL},
-    };
+//    static busSegment_t segments[] = {
+//            {.u.link = {NULL, NULL}, 0, true, NULL},
+//            {.u.link = {NULL, NULL}, 0, true, NULL},
+//    };
 
     if (!fontIsLoading) {
         uint8_t *buffer = getActiveLayerBuffer();
@@ -658,11 +656,13 @@ bool max7456DrawScreen(void)
         bool autoInc = false;
         int posLimit = pos + (maxScreenSize / 2);
 
-        maxSpiBufStartIndex = spiUseMOSI_DMA(dev) ? MAX_BYTES2SEND : MAX_BYTES2SEND_POLLED;
-        maxEncodeTime = spiUseMOSI_DMA(dev) ? MAX_ENCODE_US : MAX_ENCODE_US_POLLED;
+        maxSpiBufStartIndex = MAX_BYTES2SEND;
+        //maxSpiBufStartIndex = spiUseMOSI_DMA(dev) ? MAX_BYTES2SEND : MAX_BYTES2SEND_POLLED;
+        maxEncodeTime = MAX_ENCODE_US;
+        //maxEncodeTime = spiUseMOSI_DMA(dev) ? MAX_ENCODE_US : MAX_ENCODE_US_POLLED;
 
         // Abort for now if the bus is still busy
-        if (spiIsBusy(dev)) {
+        if (SPI_IsBusy(_DEF_SPI2)) {
             // Not finished yet
             return true;
         }
@@ -731,10 +731,11 @@ bool max7456DrawScreen(void)
         }
 
         if (spiBufIndex) {
-            segments[0].u.buffers.txData = spiBuf;
-            segments[0].len = spiBufIndex;
+            //segments[0].u.buffers.txData = spiBuf;
+            //segments[0].len = spiBufIndex;
 
-            spiSequence(dev, &segments[0]);
+            SPI_ByteWrite_DMA(_DEF_SPI2, spiBuf, spiBufIndex);
+            //spiSequence(dev, &segments[0]);
 
             // Non-blocking, so transfer still in progress if using DMA
         }
@@ -757,31 +758,34 @@ bool max7456WriteNvm(uint8_t char_address, const uint8_t *font_data)
     }
 
     // Block pending completion of any prior SPI access
-    spiWait(dev);
+    SPI_Wait(_DEF_SPI2);
 
     // disable display
     fontIsLoading = true;
-    spiWriteReg(dev, MAX7456ADD_VM0, 0);
+    //spiWriteReg(dev, MAX7456ADD_VM0, 0);
+    SPI_RegisterWrite(_DEF_SPI2, MAX7456ADD_VM0, 0, 1);
 
-    spiWriteReg(dev, MAX7456ADD_CMAH, char_address); // set start address high
-
+    //spiWriteReg(dev, MAX7456ADD_CMAH, char_address); // set start address high
+    SPI_RegisterWrite(_DEF_SPI2, MAX7456ADD_CMAH, char_address, 1);
     for (int x = 0; x < 54; x++) {
-        spiWriteReg(dev, MAX7456ADD_CMAL, x); //set start address low
-        spiWriteReg(dev, MAX7456ADD_CMDI, font_data[x]);
+    	SPI_RegisterWrite(_DEF_SPI2, MAX7456ADD_CMAL, x, 1);
+        //spiWriteReg(dev, MAX7456ADD_CMAL, x); //set start address low
+    	SPI_RegisterWrite(_DEF_SPI2, MAX7456ADD_CMDI, font_data[x], 1);
+        //spiWriteReg(dev, MAX7456ADD_CMDI, font_data[x]);
 #ifdef LED0_TOGGLE
         LED0_TOGGLE;
 #else
-        LED1_TOGGLE;
+        //LED1_TOGGLE;
 #endif
     }
 
     // Transfer 54 bytes from shadow ram to NVM
-
-    spiWriteReg(dev, MAX7456ADD_CMM, WRITE_NVR);
+    SPI_RegisterWrite(_DEF_SPI2, MAX7456ADD_CMM, WRITE_NVR, 1);
+    //spiWriteReg(dev, MAX7456ADD_CMM, WRITE_NVR);
 
     // Wait until bit 5 in the status register returns to 0 (12ms)
-
-    while ((spiReadRegMsk(dev, MAX7456ADD_STAT) & STAT_NVR_BUSY) != 0x00);
+    while ((SPI_ByteRead_return(_DEF_SPI2, MAX7456ADD_STAT, 1) & STAT_NVR_BUSY) != 0x00);
+    //while ((spiReadRegMsk(dev, MAX7456ADD_STAT) & STAT_NVR_BUSY) != 0x00);
 
     return true;
 }

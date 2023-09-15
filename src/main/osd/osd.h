@@ -22,6 +22,7 @@
 
 #include "common/time.h"
 #include "common/unit.h"
+#include "common/utils.h"
 
 #include "drivers/display.h"
 

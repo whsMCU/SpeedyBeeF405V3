@@ -135,9 +135,9 @@ static void cliBmi270(cli_args_t *args);
 // Device switches initializes as I2C and switches to SPI on a low to high CS transition
 static void bmi270EnableSPI(uint8_t ch)
 {
-    gpioPinWrite(_PIN_DEF_CS, _DEF_LOW);
+    gpioPinWrite(_PIN_BMI270_CS, _DEF_LOW);
     delay(1);
-    gpioPinWrite(_PIN_DEF_CS, _DEF_HIGH);
+    gpioPinWrite(_PIN_BMI270_CS, _DEF_HIGH);
     delay(10);
 }
 

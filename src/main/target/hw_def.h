@@ -17,8 +17,17 @@
 //#define USE_SDCARD_SPI
 
 #define USE_ACCGYRO_BMI270
-#define _PIN_DEF_CS 0
+
+//SPI-------
+#define BMI270  0
+#define SDCARD  1
+#define MAX7456 2
+
+#define _PIN_BMI270_CS 0
 #define _PIN_SDCARD_CS 3
+#define _PIN_MAX7456_CS 4
+//----------
+
 #define USE_BARO_DPS310
 #define USE_MAG_QMC5883
 
@@ -28,7 +37,7 @@
 #define _USE_HW_TIMER
 
 #define _USE_HW_SPI
-#define      HW_SPI_MAX_CH          2
+#define      HW_SPI_MAX_CH          3
 
 #define _USE_HW_GPIO
 #define      HW_GPIO_MAX_CH         5
