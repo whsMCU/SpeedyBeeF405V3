@@ -31,7 +31,7 @@
 static bool is_init = false;
 static bool is_detected = false;
 static bool is_cli_init = false;
-static uint8_t spi_ch = _DEF_SPI2;
+static uint8_t dev = SDCARD;
 static volatile bool is_rx_done = false;
 static volatile bool is_tx_done = false;
 static sd_info_t sd_info;
@@ -62,7 +62,7 @@ bool sdInit(void)
 {
   bool ret = false;
 
-  if (spiIsBegin(spi_ch) != true)
+  if (spiIsBegin(SDCARD) != true)
   {
 	  spiBegin(SDCARD);
   }
@@ -305,7 +305,7 @@ bool sdSpiTxByte(uint8_t data)
 {
   bool ret;
 
-  ret = spiTransfer(spi_ch, &data, NULL, 1, 100);
+  ret = spiTransfer(SDCARD, &data, NULL, 1, 100);
 
   return ret;
 }
@@ -315,7 +315,7 @@ uint8_t sdSpiRxByte(void)
   uint8_t data = 0xFF;
 
 
-  spiTransfer(spi_ch, NULL, &data, 1, 100);
+  spiTransfer(SDCARD, NULL, &data, 1, 100);
 
   return data;
 }
@@ -535,7 +535,7 @@ bool sdSpiInitialize(void)
   uint32_t csize;
 
   //spiSetClockDivider(spi_ch, SPI_CLOCK_DIV_16);
-  SPI_Set_Speed(spi_ch, SPI_BAUDRATEPRESCALER_16);
+  spiSetClkDivisor(dev, SPI_BAUDRATEPRESCALER_16);
 
   /* SD카드 Power On */
   sdSpiPowerOn();
@@ -658,7 +658,7 @@ bool sdSpiInitialize(void)
     sdSpiPowerOff();
   }
 
-  SPI_Set_Speed(spi_ch, SPI_BAUDRATEPRESCALER_2);
+  spiSetClkDivisor(dev, SPI_BAUDRATEPRESCALER_2);
 
   return ret;
 }

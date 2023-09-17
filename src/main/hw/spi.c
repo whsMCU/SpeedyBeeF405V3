@@ -170,14 +170,14 @@ bool spiBegin(uint8_t dev)
   return ret;
 }
 
-bool spiIsBegin(uint8_t ch)
+bool spiIsBegin(uint8_t dev)
 {
-  return spi_dev_tbl[ch].dev.is_open;
+  return spi_dev_tbl[dev].dev.is_open;
 }
 
-void spiSetDataMode(uint8_t ch, uint8_t dataMode)
+void spiSetDataMode(uint8_t dev, uint8_t dataMode)
 {
-	spi_t  *p_spi = &spi_dev_tbl[ch].dev;
+	spi_t  *p_spi = &spi_dev_tbl[dev].dev;
 
 
   if (p_spi->is_open == false) return;
@@ -215,182 +215,186 @@ void spiSetDataMode(uint8_t ch, uint8_t dataMode)
   }
 }
 
-uint32_t SPI_Get_Speed(uint8_t ch)
+uint32_t SPI_Get_Speed(uint8_t dev)
 {
-  spi_t  *p_spi = &spi_dev_tbl[ch].dev;
+  spi_t  *p_spi = &spi_dev_tbl[dev].dev;
   return p_spi->h_spi->Init.BaudRatePrescaler;
 }
 
-bool SPI_Set_Speed(uint8_t ch, uint32_t prescaler)
+void spiSetClkDivisor(uint8_t dev, uint32_t prescaler)
 {
-  spi_t  *p_spi = &spi_dev_tbl[ch].dev;
+  spi_t  *p_spi = &spi_dev_tbl[dev].dev;
   p_spi->h_spi->Init.BaudRatePrescaler = prescaler;
   HAL_SPI_Init(p_spi->h_spi);
-  return true;
 }
 
- HAL_StatusTypeDef SPI_ByteRead(uint8_t ch, uint8_t MemAddress, uint8_t *data, uint8_t length)
+ HAL_StatusTypeDef SPI_ByteRead(uint8_t dev, uint8_t MemAddress, uint8_t *data, uint8_t length)
 {
-  spi_t  *p_spi = &spi_dev_tbl[ch].dev;
+  spi_t  *p_spi = &spi_dev_tbl[dev].dev;
   HAL_StatusTypeDef status;
-    gpioPinWrite(spi_dev_tbl[ch].csTag, _DEF_LOW);
+    gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_LOW);
     HAL_SPI_Transmit(p_spi->h_spi, &MemAddress, 1, 10);
     status = HAL_SPI_Receive(p_spi->h_spi, data, length, 10);
     //status = HAL_SPI_TransmitReceive(p_spi->h_spi, &MemAddress, data, length, 10);
-    gpioPinWrite(spi_dev_tbl[ch].csTag, _DEF_HIGH);
+    gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_HIGH);
   return status;
 }
 
- uint8_t SPI_ByteRead_return(uint8_t ch, uint8_t MemAddress, uint8_t length)
+HAL_StatusTypeDef SPI_ByteRead_DMA(uint8_t dev, uint8_t *MemAddress, uint8_t *data, uint8_t length)
 {
-  spi_t  *p_spi = &spi_dev_tbl[ch].dev;
-  uint8_t temp;
-  gpioPinWrite(spi_dev_tbl[ch].csTag, _DEF_LOW);
-  HAL_SPI_Transmit(p_spi->h_spi, &MemAddress, 1, 10);
-  HAL_SPI_Receive(p_spi->h_spi, &temp, length, 10);
-  //status = HAL_SPI_TransmitReceive(p_spi->h_spi, &MemAddress, data, length, 10);
-  gpioPinWrite(spi_dev_tbl[ch].csTag, _DEF_HIGH);
-  return temp;
-}
-
-HAL_StatusTypeDef SPI_ByteRead_Poll(uint8_t ch, uint8_t *MemAddress, uint8_t *data, uint8_t length)
-{
-	spi_t  *p_spi = &spi_dev_tbl[ch].dev;
-	HAL_StatusTypeDef status;
-	gpioPinWrite(spi_dev_tbl[ch].csTag, _DEF_LOW);
-	HAL_SPI_Transmit(p_spi->h_spi, MemAddress, 1, 10);
-	status = HAL_SPI_Receive(p_spi->h_spi, data, length, 10);
-	gpioPinWrite(spi_dev_tbl[ch].csTag, _DEF_HIGH);
-
-    // Wait for completion
-	while(HAL_SPI_GetState(p_spi->h_spi) != HAL_SPI_STATE_READY);
-	return status;
-}
-
-HAL_StatusTypeDef SPI_ByteRead_DMA(uint8_t ch, uint8_t *MemAddress, uint8_t *data, uint8_t length)
-{
-  spi_t  *p_spi = &spi_dev_tbl[ch].dev;
+  spi_t  *p_spi = &spi_dev_tbl[dev].dev;
   HAL_StatusTypeDef status;
-    gpioPinWrite(spi_dev_tbl[ch].csTag, _DEF_LOW);
+    gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_LOW);
     HAL_SPI_Transmit_DMA(p_spi->h_spi, MemAddress, 1);
     status = HAL_SPI_Receive_DMA(p_spi->h_spi, data, length);
-    gpioPinWrite(spi_dev_tbl[ch].csTag, _DEF_HIGH);
+    gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_HIGH);
   return status;
 }
 
-HAL_StatusTypeDef SPI_ByteReadWrite_DMA(uint8_t ch, uint8_t *MemAddress, uint8_t *data, uint8_t length)
+HAL_StatusTypeDef SPI_ByteReadWrite_DMA(uint8_t dev, uint8_t *MemAddress, uint8_t *data, uint8_t length)
 {
-  spi_t  *p_spi = &spi_dev_tbl[ch].dev;
+  spi_t  *p_spi = &spi_dev_tbl[dev].dev;
   HAL_StatusTypeDef status;
-    gpioPinWrite(spi_dev_tbl[ch].csTag, _DEF_LOW);
+    gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_LOW);
     status = HAL_SPI_TransmitReceive_DMA(p_spi->h_spi, MemAddress, data, length);
-    gpioPinWrite(spi_dev_tbl[ch].csTag, _DEF_HIGH);
+    gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_HIGH);
   return status;
 }
 
-HAL_StatusTypeDef SPI_ByteWrite_DMA(uint8_t ch, uint8_t *data, uint8_t length)
+HAL_StatusTypeDef SPI_ByteWrite_DMA(uint8_t dev, uint8_t *data, uint8_t length)
 {
-	spi_t  *p_spi = &spi_dev_tbl[ch].dev;
+	spi_t  *p_spi = &spi_dev_tbl[dev].dev;
 	HAL_StatusTypeDef status;
-	gpioPinWrite(spi_dev_tbl[ch].csTag, _DEF_LOW);
+	gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_LOW);
 	status = HAL_SPI_Transmit_DMA(p_spi->h_spi, data, length);
-	gpioPinWrite(spi_dev_tbl[ch].csTag, _DEF_HIGH);
+	gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_HIGH);
   return status;
 }
 
-HAL_StatusTypeDef SPI_ByteWrite(uint8_t ch, uint8_t MemAddress, uint8_t *data, uint32_t length)
+HAL_StatusTypeDef SPI_ByteWrite(uint8_t dev, uint8_t MemAddress, uint8_t *data, uint32_t length)
 {
-  spi_t  *p_spi = &spi_dev_tbl[ch].dev;
+  spi_t  *p_spi = &spi_dev_tbl[dev].dev;
   HAL_StatusTypeDef status;
-    gpioPinWrite(spi_dev_tbl[ch].csTag, _DEF_LOW);
+    gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_LOW);
     HAL_SPI_Transmit(p_spi->h_spi, &MemAddress, 1, 10);
     status = HAL_SPI_Transmit(p_spi->h_spi, data, length, 10);
-    gpioPinWrite(spi_dev_tbl[ch].csTag, _DEF_HIGH);
+    gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_HIGH);
   return status;
 }
 
 // Wait for bus to become free, then read a byte from a register
-uint8_t spiReadReg(uint8_t ch, uint8_t reg)
+uint8_t spiReadReg(uint8_t dev, uint8_t reg)
 {
-	spi_t  *p_spi = &spi_dev_tbl[ch].dev;
+	spi_t  *p_spi = &spi_dev_tbl[dev].dev;
 	uint8_t data;
-	gpioPinWrite(spi_dev_tbl[ch].csTag, _DEF_LOW);
+	gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_LOW);
 	HAL_SPI_Transmit(p_spi->h_spi, &reg, sizeof(reg), 10);
 	HAL_SPI_Receive(p_spi->h_spi, &data, sizeof(data), 10);
-	gpioPinWrite(spi_dev_tbl[ch].csTag, _DEF_HIGH);
+	gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_HIGH);
 
     // Wait for completion
-	while(HAL_SPI_GetState(p_spi->h_spi) != HAL_SPI_STATE_READY);
+	spiWait(dev);
 	return data;
 }
 // Wait for bus to become free, then read a byte of data where the register is ORed with 0x80
-uint8_t spiReadRegMsk(uint8_t ch, uint8_t reg)
+uint8_t spiReadRegMsk(uint8_t dev, uint8_t reg)
 {
-    return spiReadReg(ch, reg | 0x80);
+    return spiReadReg(dev, reg | 0x80);
 }
 
-void spiWriteReg(uint8_t ch, uint8_t reg, uint8_t data)
+void spiWriteReg(uint8_t dev, uint8_t reg, uint8_t data)
 {
-	spi_t  *p_spi = &spi_dev_tbl[ch].dev;
-    gpioPinWrite(spi_dev_tbl[ch].csTag, _DEF_LOW);
+	spi_t  *p_spi = &spi_dev_tbl[dev].dev;
+    gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_LOW);
     HAL_SPI_Transmit(p_spi->h_spi, &reg, sizeof(reg), 10);
     HAL_SPI_Transmit(p_spi->h_spi, &data, sizeof(data), 10);
-    gpioPinWrite(spi_dev_tbl[ch].csTag, _DEF_HIGH);
+    gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_HIGH);
 }
 
-bool SPI_IsBusy(uint8_t ch)
+// Wait for bus to become free, then read/write block of data
+void spiReadWriteBuf(uint8_t dev, uint8_t *txData, uint8_t *rxData, int len)
 {
-	spi_t  *p_spi = &spi_dev_tbl[ch].dev;
+	spi_t  *p_spi = &spi_dev_tbl[dev].dev;
 	HAL_StatusTypeDef status;
-	bool temp = false;
-	status = p_spi->h_spi->State;
-	if(status == HAL_BUSY)
-	{
-		temp = true;
-	}
-	return temp;
+	gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_LOW);
+	HAL_SPI_Transmit(p_spi->h_spi, txData, 1, 10);
+	status = HAL_SPI_Receive(p_spi->h_spi, rxData, len, 10);
+	gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_HIGH);
+
+	spiWait(dev);
 }
 
-void spiWrite(uint8_t ch, uint8_t data)
+// Read a block of data from a register
+void spiReadRegBuf(uint8_t dev, uint8_t reg, uint8_t *data, uint8_t length)
 {
-	spi_t  *p_spi = &spi_dev_tbl[ch].dev;
-	gpioPinWrite(spi_dev_tbl[ch].csTag, _DEF_LOW);
-	HAL_SPI_Transmit(p_spi->h_spi, &data, sizeof(data), 10);
-	gpioPinWrite(spi_dev_tbl[ch].csTag, _DEF_HIGH);
+	spi_t  *p_spi = &spi_dev_tbl[dev].dev;
+	gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_LOW);
+	HAL_SPI_Transmit(p_spi->h_spi, &reg, sizeof(reg), 10);
+	HAL_SPI_Receive(p_spi->h_spi, data, length, 10);
+	gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_HIGH);
 
-    // Wait for completion
+    spiWait(dev);
+}
+
+// Read a block of data from a register, returning false if the bus is busy
+bool spiReadRegBufRB(uint8_t dev, uint8_t reg, uint8_t *data, uint8_t length)
+{
+    // Ensure any prior DMA has completed before continuing
+    if (spiIsBusy(dev)) {
+        return false;
+    }
+
+    spiReadRegBuf(dev, reg, data, length);
+
+    return true;
+}
+
+// Read a block of data where the register is ORed with 0x80, returning false if the bus is busy
+bool spiReadRegMskBufRB(uint8_t dev, uint8_t reg, uint8_t *data, uint8_t length)
+{
+    return spiReadRegBufRB(dev, reg | 0x80, data, length);
+}
+
+void spiWrite(uint8_t dev, uint8_t data)
+{
+	spi_t  *p_spi = &spi_dev_tbl[dev].dev;
+	gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_LOW);
+	HAL_SPI_Transmit(p_spi->h_spi, &data, sizeof(data), 10);
+	gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_HIGH);
+
+	spiWait(dev);
+}
+
+// Wait for bus to become free, then write a block of data to a register
+void spiWriteRegBuf(uint8_t dev, uint8_t reg, uint8_t *data, uint32_t length)
+{
+	spi_t  *p_spi = &spi_dev_tbl[dev].dev;
+	gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_LOW);
+	HAL_SPI_Transmit(p_spi->h_spi, &reg, sizeof(reg), 10);
+	HAL_SPI_Receive(p_spi->h_spi, data, length, 10);
+	gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_HIGH);
+    spiWait(dev);
+}
+
+// Wait for DMA completion
+void spiWait(uint8_t dev)
+{
+	spi_t  *p_spi = &spi_dev_tbl[dev].dev;
+	// Wait for completion
 	while(HAL_SPI_GetState(p_spi->h_spi) != HAL_SPI_STATE_READY);
 }
 
-void SPI_Wait(uint8_t ch)
+// Return true if DMA engine is busy
+bool spiIsBusy(uint8_t dev)
 {
-	spi_t  *p_spi = &spi_dev_tbl[ch].dev;
-	HAL_StatusTypeDef status;
-	status = p_spi->h_spi->State;
-	while(status == HAL_BUSY);
+	spi_t  *p_spi = &spi_dev_tbl[dev].dev;
+    return (HAL_SPI_GetState(p_spi->h_spi) != HAL_SPI_STATE_READY);
 }
 
-HAL_StatusTypeDef SPI_ByteWrite_multi(uint8_t ch, uint8_t *data, uint32_t length)
-{
-  spi_t  *p_spi = &spi_dev_tbl[ch].dev;
-  HAL_StatusTypeDef status;
-    gpioPinWrite(spi_dev_tbl[ch].csTag, _DEF_LOW);
-    status = HAL_SPI_Transmit(p_spi->h_spi, data, length, 10);
-    gpioPinWrite(spi_dev_tbl[ch].csTag, _DEF_HIGH);
-  return status;
-}
 
-void SPI_RegisterWrite(uint8_t ch, uint8_t MemAddress, uint8_t data, uint8_t delayMs)
+void spiSetBitWidth(uint8_t dev, uint8_t bit_width)
 {
-    SPI_ByteWrite(ch, MemAddress, &data, 1);
-    if (delayMs) {
-        delay(delayMs);
-    }
-}
-
-void spiSetBitWidth(uint8_t ch, uint8_t bit_width)
-{
-  spi_t  *p_spi = &spi_dev_tbl[ch].dev;
+  spi_t  *p_spi = &spi_dev_tbl[dev].dev;
 
   if (p_spi->is_open == false) return;
 
@@ -422,52 +426,11 @@ uint16_t spiCalculateDivider(uint32_t freq)
     return divisor;
 }
 
-uint8_t spiTransfer8(uint8_t ch, uint8_t data)
-{
-  uint8_t ret;
-  spi_t  *p_spi = &spi_dev_tbl[ch].dev;
-
-
-  if (p_spi->is_open == false) return 0;
-
-  HAL_SPI_TransmitReceive(p_spi->h_spi, &data, &ret, 1, 10);
-
-  return ret;
-}
-
-uint16_t spiTransfer16(uint8_t ch, uint16_t data)
-{
-  uint8_t tBuf[2];
-  uint8_t rBuf[2];
-  uint16_t ret;
-  spi_t  *p_spi = &spi_dev_tbl[ch].dev;
-
-
-  if (p_spi->is_open == false) return 0;
-
-  if (p_spi->h_spi->Init.DataSize == SPI_DATASIZE_8BIT)
-  {
-    tBuf[1] = (uint8_t)data;
-    tBuf[0] = (uint8_t)(data>>8);
-    HAL_SPI_TransmitReceive(p_spi->h_spi, (uint8_t *)&tBuf, (uint8_t *)&rBuf, 2, 10);
-
-    ret = rBuf[0];
-    ret <<= 8;
-    ret += rBuf[1];
-  }
-  else
-  {
-    HAL_SPI_TransmitReceive(p_spi->h_spi, (uint8_t *)&data, (uint8_t *)&ret, 1, 10);
-  }
-
-  return ret;
-}
-
-bool spiTransfer(uint8_t ch, uint8_t *tx_buf, uint8_t *rx_buf, uint32_t length, uint32_t timeout)
+bool spiTransfer(uint8_t dev, uint8_t *tx_buf, uint8_t *rx_buf, uint32_t length, uint32_t timeout)
 {
   bool ret = true;
   HAL_StatusTypeDef status;
-  spi_t  *p_spi = &spi_dev_tbl[ch].dev;
+  spi_t  *p_spi = &spi_dev_tbl[dev].dev;
 
   if (p_spi->is_open == false) return false;
 
@@ -491,65 +454,6 @@ bool spiTransfer(uint8_t ch, uint8_t *tx_buf, uint8_t *rx_buf, uint32_t length, 
 
   return ret;
 }
-
-void spiDmaTxStart(uint8_t ch, uint8_t *p_buf, uint32_t length)
-{
-  spi_t  *p_spi = &spi_dev_tbl[ch].dev;
-
-  if (p_spi->is_open == false) return;
-
-  p_spi->is_tx_done = false;
-  HAL_SPI_Transmit_DMA(p_spi->h_spi, p_buf, length);
-}
-
-bool spiDmaTxTransfer(uint8_t ch, void *buf, uint32_t length, uint32_t timeout)
-{
-  bool ret = true;
-  uint32_t t_time;
-
-
-  spiDmaTxStart(ch, (uint8_t *)buf, length);
-
-  t_time = millis();
-
-  if (timeout == 0) return true;
-
-  while(1)
-  {
-    if(spiDmaTxIsDone(ch))
-    {
-      break;
-    }
-    if((millis()-t_time) > timeout)
-    {
-      ret = false;
-      break;
-    }
-  }
-
-  return ret;
-}
-
-bool spiDmaTxIsDone(uint8_t ch)
-{
-  spi_t  *p_spi = &spi_dev_tbl[ch].dev;
-
-  if (p_spi->is_open == false)     return true;
-
-  return p_spi->is_tx_done;
-}
-
-void spiAttachTxInterrupt(uint8_t ch, void (*func)())
-{
-  spi_t  *p_spi = &spi_dev_tbl[ch].dev;
-
-
-  if (p_spi->is_open == false)     return;
-
-  p_spi->func_tx = func;
-}
-
-
 
 void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi)
 {
