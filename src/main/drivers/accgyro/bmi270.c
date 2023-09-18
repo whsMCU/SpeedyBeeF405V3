@@ -142,7 +142,7 @@ static uint8_t bmi270RegisterRead(uint8_t dev, bmi270Register_e registerId)
     }
 }
 
-static void bmi270RegisterWrite(uint8_t dev, bmi270Register_e registerId, uint8_t value, unsigned delayMs)
+static void bmi270RegisterWrite(uint8_t dev, bmi270Register_e registerId, uint8_t value, uint8_t delayMs)
 {
     spiWriteReg(dev, registerId, value);
     if (delayMs) {
@@ -294,6 +294,7 @@ bool bmi270_Init(void)
 
 bool bmi270Detect(uint8_t ch)
 {
+	UNUSED(ch);
 	bmi270EnableSPI(dev);
 	if (bmi270RegisterRead(dev, BMI270_REG_CHIP_ID) == BMI270_CHIP_ID)
 	{

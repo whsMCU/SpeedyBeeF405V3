@@ -353,7 +353,7 @@ static bool gyroDetectSensor(gyroSensor_t *gyroSensor)
 	{
 		if (bmi270Detect(_DEF_SPI1))
 		{
-			bmi270Config();
+			//bmi270Config();
 
 			break;
 		}
