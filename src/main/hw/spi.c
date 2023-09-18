@@ -221,10 +221,45 @@ uint32_t SPI_Get_Speed(uint8_t dev)
   return p_spi->h_spi->Init.BaudRatePrescaler;
 }
 
-void spiSetClkDivisor(uint8_t dev, uint32_t prescaler)
+static uint32_t spiDivisorToBRbits(uint8_t dev, uint16_t divisor)
 {
+#if !defined(STM32H7)
+    // SPI2 and SPI3 are on APB1/AHB1 which PCLK is half that of APB2/AHB2.
+	spi_t  *p_spi = &spi_dev_tbl[dev].dev;
+    if (p_spi->h_spi->Instance == SPI2 || p_spi->h_spi->Instance == SPI3) {
+        divisor /= 2; // Safe for divisor == 0 or 1
+    }
+#else
+    UNUSED(dev);
+#endif
+
+    divisor = constrain(divisor, 2, 256);
+
+#if defined(STM32H7)
+    const uint32_t baudRatePrescaler[8] = {
+        LL_SPI_BAUDRATEPRESCALER_DIV2,
+        LL_SPI_BAUDRATEPRESCALER_DIV4,
+        LL_SPI_BAUDRATEPRESCALER_DIV8,
+        LL_SPI_BAUDRATEPRESCALER_DIV16,
+        LL_SPI_BAUDRATEPRESCALER_DIV32,
+        LL_SPI_BAUDRATEPRESCALER_DIV64,
+        LL_SPI_BAUDRATEPRESCALER_DIV128,
+        LL_SPI_BAUDRATEPRESCALER_DIV256,
+    };
+    int prescalerIndex = ffs(divisor) - 2; // prescaler begins at "/2"
+
+    return baudRatePrescaler[prescalerIndex];
+#else
+    return (ffs(divisor) - 2) << SPI_CR1_BR_Pos;
+#endif
+}
+
+void spiSetClkDivisor(uint8_t dev, uint32_t divisor)
+{
+  uint16_t Prescaler;
   spi_t  *p_spi = &spi_dev_tbl[dev].dev;
-  p_spi->h_spi->Init.BaudRatePrescaler = prescaler;
+  Prescaler = spiDivisorToBRbits(dev, divisor);
+  p_spi->h_spi->Init.BaudRatePrescaler = Prescaler;
   HAL_SPI_Init(p_spi->h_spi);
 }
 
@@ -315,12 +350,10 @@ void spiWriteReg(uint8_t dev, uint8_t reg, uint8_t data)
 void spiReadWriteBuf(uint8_t dev, uint8_t *txData, uint8_t *rxData, int len)
 {
 	spi_t  *p_spi = &spi_dev_tbl[dev].dev;
-	HAL_StatusTypeDef status;
 	gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_LOW);
 	HAL_SPI_Transmit(p_spi->h_spi, txData, 1, 10);
-	status = HAL_SPI_Receive(p_spi->h_spi, rxData, len, 10);
+	HAL_SPI_Receive(p_spi->h_spi, rxData, len, 10);
 	gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_HIGH);
-
 	spiWait(dev);
 }
 
