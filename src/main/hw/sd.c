@@ -535,7 +535,8 @@ bool sdSpiInitialize(void)
   uint32_t csize;
 
   //spiSetClockDivider(spi_ch, SPI_CLOCK_DIV_16);
-  spiSetClkDivisor(dev, SPI_BAUDRATEPRESCALER_16);
+  //spiSetClkDivisor(dev, SPI_BAUDRATEPRESCALER_16);
+  SPI_Set_Speed(dev, SPI_BAUDRATEPRESCALER_16);
 
   /* SD카드 Power On */
   sdSpiPowerOn();
@@ -658,7 +659,8 @@ bool sdSpiInitialize(void)
     sdSpiPowerOff();
   }
 
-  spiSetClkDivisor(dev, SPI_BAUDRATEPRESCALER_2);
+  //spiSetClkDivisor(dev, SPI_BAUDRATEPRESCALER_2);
+  SPI_Set_Speed(dev, SPI_BAUDRATEPRESCALER_2);
 
   return ret;
 }

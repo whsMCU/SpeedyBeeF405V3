@@ -254,6 +254,14 @@ static uint32_t spiDivisorToBRbits(uint8_t dev, uint16_t divisor)
 #endif
 }
 
+bool SPI_Set_Speed(uint8_t dev, uint32_t prescaler)
+{
+  spi_t  *p_spi = &spi_dev_tbl[dev].dev;
+  p_spi->h_spi->Init.BaudRatePrescaler = prescaler;
+  HAL_SPI_Init(p_spi->h_spi);
+  return true;
+}
+
 void spiSetClkDivisor(uint8_t dev, uint32_t divisor)
 {
   uint16_t Prescaler;

@@ -35,6 +35,7 @@ bool spiIsBegin(uint8_t dev);
 void spiSetDataMode(uint8_t dev, uint8_t dataMode);
 void spiSetBitWidth(uint8_t dev, uint8_t bit_width);
 uint32_t SPI_Get_Speed(uint8_t dev);
+bool SPI_Set_Speed(uint8_t dev, uint32_t prescaler);
 void spiSetClkDivisor(uint8_t dev, uint32_t prescaler);
 uint16_t spiCalculateDivider(uint32_t freq);
 
