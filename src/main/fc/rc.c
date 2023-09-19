@@ -89,7 +89,7 @@ static rcSmoothingFilter_t rcSmoothingData;
 static float rcDeflectionSmoothed[3];
 #endif // USE_RC_SMOOTHING_FILTER
 
-#define RC_RX_RATE_MIN_US                       950   // 0.950ms to fit 1kHz without an issue
+#define RC_RX_RATE_MIN_US                       1000   // 0.950ms to fit 1kHz without an issue
 #define RC_RX_RATE_MAX_US                       65500 // 65.5ms or 15.26hz
 
 bool getShouldUpdateFeedforward()

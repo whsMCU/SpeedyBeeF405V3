@@ -114,23 +114,6 @@ static void Param_Config_Init(void);
 
 void init(void)
 {
-	/////////////// LED //////////////////
-		ledOn(ST1);
-		for (int i = 0; i < 10; i++)
-		{
-			ledToggle(ST1);
-			#if defined(USE_BEEPER)
-				HAL_Delay(25);
-				BEEP_ON;
-				HAL_Delay(25);
-				BEEP_OFF;
-			#else
-				HAL_Delay(50);
-			#endif
-		}
-		ledOff(ST1);
-	////////////////////////////////////////
-
     // Initialize task data as soon as possible. Has to be done before tasksInit(),
     // and any init code that may try to modify task behaviour before tasksInit().
 	tasksInitData();
@@ -181,6 +164,25 @@ void init(void)
 	gyroInitFilters();
 	pidInit(currentPidProfile);
 	mixerInitProfile();
+
+	/////////////// LED //////////////////
+		ledOn(ST1);
+		for (int i = 0; i < 10; i++)
+		{
+			ledToggle(ST1);
+			#if defined(USE_BEEPER)
+			delay(25);
+	        if (!(beeperConfig.beeper_off_flags & BEEPER_GET_FLAG(BEEPER_SYSTEM_INIT))) {
+	            BEEP_ON;
+	        }
+				delay(25);
+				BEEP_OFF;
+			#else
+				delay(50);
+			#endif
+		}
+		ledOff(ST1);
+	////////////////////////////////////////
 
 	imuInit();
     failsafeInit();

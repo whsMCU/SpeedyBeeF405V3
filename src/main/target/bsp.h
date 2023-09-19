@@ -28,6 +28,7 @@ uint32_t clockMicrosToCycles(uint32_t micros);
 
 void delay(uint32_t ms);
 uint32_t millis(void);
+uint32_t microsISR(void);
 uint32_t micros(void);
 void delayMicroseconds(uint32_t us);
 
