@@ -382,7 +382,8 @@ max7456InitStatus_e max7456Init(const max7456Config_t *max7456Config, const vcdP
     // Detect MAX7456 and compatible device by reading OSDM (OSD Insertion MUX) register.
     // This register is not modified in this driver, therefore ensured to remain at its default value (0x1B).
 
-    spiSetClkDivisor(dev, spiCalculateDivider(MAX7456_INIT_MAX_SPI_CLK_HZ));
+    //spiSetClkDivisor(dev, spiCalculateDivider(MAX7456_INIT_MAX_SPI_CLK_HZ));
+    SPI_Set_Speed(dev, SPI_BAUDRATEPRESCALER_16);
 
     // Write 0xff to conclude any current SPI transaction the MAX7456 is expecting
     spiWrite(dev, END_STRING);
@@ -437,7 +438,8 @@ max7456InitStatus_e max7456Init(const max7456Config_t *max7456Config, const vcdP
     max7456SpiClockDiv = spiCalculateDivider(MAX7456_MAX_SPI_CLK_HZ);
 #endif
 
-    spiSetClkDivisor(dev, max7456SpiClockDiv);
+    SPI_Set_Speed(dev, SPI_BAUDRATEPRESCALER_8);
+    //spiSetClkDivisor(dev, max7456SpiClockDiv);
 
     // force soft reset on Max7456
     spiWriteReg(dev, MAX7456ADD_VM0, MAX7456_RESET);

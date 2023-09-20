@@ -285,8 +285,8 @@ void spiSetClkDivisor(uint8_t dev, uint32_t divisor)
 
 HAL_StatusTypeDef SPI_ByteRead_DMA(uint8_t dev, uint8_t *MemAddress, uint8_t *data, uint8_t length)
 {
-  spi_t  *p_spi = &spi_dev_tbl[dev].dev;
-  HAL_StatusTypeDef status;
+    spi_t  *p_spi = &spi_dev_tbl[dev].dev;
+    HAL_StatusTypeDef status;
     gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_LOW);
     HAL_SPI_Transmit_DMA(p_spi->h_spi, MemAddress, 1);
     status = HAL_SPI_Receive_DMA(p_spi->h_spi, data, length);
@@ -296,8 +296,8 @@ HAL_StatusTypeDef SPI_ByteRead_DMA(uint8_t dev, uint8_t *MemAddress, uint8_t *da
 
 HAL_StatusTypeDef SPI_ByteReadWrite_DMA(uint8_t dev, uint8_t *MemAddress, uint8_t *data, uint8_t length)
 {
-  spi_t  *p_spi = &spi_dev_tbl[dev].dev;
-  HAL_StatusTypeDef status;
+    spi_t  *p_spi = &spi_dev_tbl[dev].dev;
+    HAL_StatusTypeDef status;
     gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_LOW);
     status = HAL_SPI_TransmitReceive_DMA(p_spi->h_spi, MemAddress, data, length);
     gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_HIGH);

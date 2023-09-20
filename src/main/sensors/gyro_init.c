@@ -370,6 +370,7 @@ static bool gyroDetectSensor(gyroSensor_t *gyroSensor)
 	 return gyroHardware != GYRO_NONE;
 }
 
+static uint8_t gyroBuf1[GYRO_BUF_SIZE];
 bool gyroInit(void)
 {
 #ifdef USE_GYRO_OVERFLOW_CHECK
@@ -411,7 +412,7 @@ bool gyroInit(void)
     }
 
      if (gyro.gyroToUse == GYRO_CONFIG_USE_GYRO_1 || gyro.gyroToUse == GYRO_CONFIG_USE_GYRO_BOTH) {
-         static uint8_t gyroBuf1[GYRO_BUF_SIZE];
+
          // SPI DMA buffer required per device
          gyro.gyroSensor1.gyroDev.txBuf = gyroBuf1;
          gyro.gyroSensor1.gyroDev.rxBuf = &gyroBuf1[GYRO_BUF_SIZE / 2];

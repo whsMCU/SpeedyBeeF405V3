@@ -330,7 +330,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     {
         //gyro.rawSensorDev->dataReady = true;
         //gyro_instace->imuDev.InterruptStatus = bmi270InterruptStatus(gyro_instace);
-        gyroDev_t *gyro_temp = gyro.rawSensorDev;
+        gyroDev_t *gyro_temp = &gyro.gyroSensor1.gyroDev;
         gyro_temp->exit_callback_dt = micros() - pre_time;
         pre_time = micros();
         // Ideally we'd use a timer to capture such information, but unfortunately the port used for EXTI interrupt does
@@ -340,7 +340,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
         gyro_temp->gyroLastEXTI = nowCycles;
 
         if (gyro_temp->gyroModeSPI == GYRO_EXTI_INT_DMA) {
-        	SPI_ByteReadWrite_DMA(dev, gyro_temp->txBuf, gyro_temp->rxBuf, 14);
+        	//SPI_ByteReadWrite_DMA(dev, gyro_temp->txBuf, gyro_temp->rxBuf, 14);
+        	spiReadWriteBuf(dev, gyro_temp->txBuf, gyro_temp->rxBuf, 14);
             //spiSequence(&gyro_temp->dev, gyro_temp->segments);
         }
         gyro_temp->detectedEXTI++;
