@@ -166,22 +166,22 @@ void init(void)
 	mixerInitProfile();
 
 	/////////////// LED //////////////////
-		ledOn(ST1);
-		for (int i = 0; i < 10; i++)
-		{
-			ledToggle(ST1);
-			#if defined(USE_BEEPER)
-			delay(25);
-	        if (!(beeperConfig.beeper_off_flags & BEEPER_GET_FLAG(BEEPER_SYSTEM_INIT))) {
-	            BEEP_ON;
-	        }
-				delay(25);
-				BEEP_OFF;
-			#else
-				delay(50);
-			#endif
+	LED1_ON;
+	for (int i = 0; i < 10; i++)
+	{
+		LED0_TOGGLE;
+		#if defined(USE_BEEPER)
+		delay(25);
+		if (!(beeperConfig.beeper_off_flags & BEEPER_GET_FLAG(BEEPER_SYSTEM_INIT))) {
+			BEEP_ON;
 		}
-		ledOff(ST1);
+			delay(25);
+			BEEP_OFF;
+		#else
+			delay(50);
+		#endif
+	}
+	LED0_OFF;
 	////////////////////////////////////////
 
 	imuInit();
