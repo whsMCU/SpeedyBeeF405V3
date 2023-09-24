@@ -264,7 +264,7 @@ bool SPI_Set_Speed(uint8_t dev, uint32_t prescaler)
 
 void spiSetClkDivisor(uint8_t dev, uint32_t divisor)
 {
-  uint16_t Prescaler;
+  uint32_t Prescaler;
   spi_t  *p_spi = &spi_dev_tbl[dev].dev;
   Prescaler = spiDivisorToBRbits(dev, divisor);
   p_spi->h_spi->Init.BaudRatePrescaler = Prescaler;

@@ -539,7 +539,8 @@ static void bmi270SpiGyroInit(gyroDev_t *gyro)
 
     bmi270Config();
 
-    //spiSetClkDivisor(dev, spiCalculateDivider(BMI270_MAX_SPI_CLK_HZ));
+    //uint16_t spiDivider = spiCalculateDivider(BMI270_MAX_SPI_CLK_HZ);
+    //spiSetClkDivisor(dev, spiDivider);
 }
 
 bool bmi270SpiGyroDetect(gyroDev_t *gyro)

@@ -88,14 +88,14 @@ void Baro_Init(void)
 
 	baroSensor_e baroHardware = BARO_DPS310;
 
-  dps310Detect(&baro.dev);
+	dps310Detect(&baro.dev);
 
-  detectedSensors[SENSOR_INDEX_BARO] = baroHardware;
-  sensorsSet(SENSOR_BARO);
+	detectedSensors[SENSOR_INDEX_BARO] = baroHardware;
+	sensorsSet(SENSOR_BARO);
 
-  #ifdef _USE_HW_CLI
+  	#ifdef _USE_HW_CLI
 		cliAdd("dps310", cliDps310);
-  #endif
+	#endif
 }
 
 bool baroIsCalibrationComplete(void)
