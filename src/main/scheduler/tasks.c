@@ -104,6 +104,7 @@ static void debugPrint(uint32_t currentTimeUs)
 //														motor[1],
 //														motor[2],
 //														motor[3]);
+    //cliPrintf("main: %d, ISR: %d, clock : %d\n\r",    time_main, time_main_ISR, SystemCoreClock);
 
     //p_adc_pg->vrefIntCalibration = 50;
     //cliPrintf("IMU R: %d, P: %d\n\r",    p_pid_pg->dyn_idle_p_gain, p_adc_pg->vrefIntCalibration);

@@ -28,6 +28,7 @@ void cycleCounterInit(void)
 
   CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
 
+#define DWT_LAR
   __O uint32_t *DWTLAR = (uint32_t *)(DWT_BASE + 0x0FB0);
   *(DWTLAR) = DWT_LAR_UNLOCK_VALUE;
 
@@ -108,14 +109,14 @@ uint32_t micros(void)
 {
 	register uint32_t ms, cycle_cnt;
 
-	if ((SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) || (__get_BASEPRI())) {
-		return microsISR();
-	}
+//	if ((SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) || (__get_BASEPRI())) {
+//		return microsISR();
+//	}
 
 	do {
 		ms = sysTickUptime;
 		cycle_cnt = SysTick->VAL;
-	} while (ms != sysTickUptime || cycle_cnt > sysTickValStamp);
+	} while (ms != sysTickUptime);// || cycle_cnt > sysTickValStamp
 	return (ms * 1000) + (usTicks * 1000 - cycle_cnt) / usTicks; //168
 }
 

@@ -628,7 +628,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 //  	 	//rxRuntimeState.rx_count = 0;
 //   }
 }
-uint32_t test_time = 0;
+
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
 	static uint32_t pre_time = 0;
@@ -636,12 +636,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 
   if(huart->Instance == USART2)
   {
-	  	test_time = micros();
- 	 	rxRuntimeState.callbackTime = test_time - pre_time;
- 	 	if(rxRuntimeState.callbackTime >= 10000)
- 	 	{
- 	 		LED0_TOGGLE;
- 	 	}
+ 	 	rxRuntimeState.callbackTime = micros() - pre_time;
  	 	pre_time = micros();
  	 	pre_time1 = micros();
  	 	qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_buf2[0], (uint32_t)Size);
