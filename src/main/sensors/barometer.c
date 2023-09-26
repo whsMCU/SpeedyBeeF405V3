@@ -72,7 +72,6 @@ void barometerConfig_Init(void)
 static uint16_t calibratingB = 0;      // baro calibration = get new ground pressure value
 static int32_t baroPressure = 0;
 static int32_t baroTemperature = 0;
-
 static int32_t baroGroundAltitude = 0;
 static int32_t baroGroundPressure = 8*101325;
 static uint32_t baroPressureSum = 0;
