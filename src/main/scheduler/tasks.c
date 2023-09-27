@@ -100,11 +100,11 @@ static void debugPrint(uint32_t currentTimeUs)
 //                                                attitude.values.pitch,
 //                                                attitude.values.yaw);
 
-//    cliPrintf("Motor 1: %.f, 2: %.f, 3: %.f, 4: %.f, 5: %.f, 6: %.f\n\r",    motor[0],
+//    cliPrintf("Motor 1: %.f, 2: %.f, 3: %.f, 4: %.f\n\r",    motor[0],
 //														motor[1],
 //														motor[2],
 //														motor[3]);
-    //cliPrintf("main: %d, ISR: %d, clock : %d\n\r",    time_main, time_main_ISR, SystemCoreClock);
+//    cliPrintf("main: %d\n\r", micros());
 
     //p_adc_pg->vrefIntCalibration = 50;
     //cliPrintf("IMU R: %d, P: %d\n\r",    p_pid_pg->dyn_idle_p_gain, p_adc_pg->vrefIntCalibration);

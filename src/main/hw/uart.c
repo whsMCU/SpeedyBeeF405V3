@@ -634,9 +634,15 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 	static uint32_t pre_time = 0;
 	static uint32_t pre_time1 = 0;
 
+	uint32_t time = 0;
+
   if(huart->Instance == USART2)
   {
- 	 	rxRuntimeState.callbackTime = micros() - pre_time;
+	  time = micros();
+ 	 	rxRuntimeState.callbackTime = time - pre_time;
+ 	 	if(rxRuntimeState.callbackTime >= 10000){
+ 	 		LED0_TOGGLE;
+ 	 	};
  	 	pre_time = micros();
  	 	pre_time1 = micros();
  	 	qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_buf2[0], (uint32_t)Size);

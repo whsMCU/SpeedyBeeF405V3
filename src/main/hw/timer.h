@@ -15,6 +15,7 @@
 #include "drivers/pwm_output.h"
 
 extern TIM_HandleTypeDef htim4;
+extern TIM_HandleTypeDef htim5;
 
 typedef enum {
     TIMER_OUTPUT_NONE      = 0,
