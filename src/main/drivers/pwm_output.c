@@ -158,10 +158,10 @@ motorDevice_t *motorPwmDevInit(const motorDevConfig_t *motorConfig, uint16_t idl
     motorPwmDevice.vTable.updateStart = motorUpdateStartNull;
 
     motorPwmDevice.vTable.updateComplete = useUnsyncedPwm ? motorUpdateCompleteNull : pwmCompleteOneshotMotorUpdate;
-    motors[0].channel.ccr = &htim4.Instance->CCR1;
-    motors[1].channel.ccr = &htim4.Instance->CCR2;
-    motors[2].channel.ccr = &htim4.Instance->CCR3;
-    motors[3].channel.ccr = &htim4.Instance->CCR4;
+    motors[0].channel.ccr = (volatile uint32_t*)((volatile char*)&htim4.Instance->CCR1);
+    motors[1].channel.ccr = (volatile uint32_t*)((volatile char*)&htim4.Instance->CCR2);
+    motors[2].channel.ccr = (volatile uint32_t*)((volatile char*)&htim4.Instance->CCR3);
+    motors[3].channel.ccr = (volatile uint32_t*)((volatile char*)&htim4.Instance->CCR4);
 
     for (int motorIndex = 0; motorIndex < MAX_SUPPORTED_MOTORS && motorIndex < motorCount; motorIndex++) {
         //const unsigned reorderedMotorIndex = motorConfig->motorOutputReordering[motorIndex];
@@ -190,6 +190,7 @@ motorDevice_t *motorPwmDevInit(const motorDevConfig_t *motorConfig, uint16_t idl
         motors[motorIndex].pulseOffset = (sMin * hz) - (motors[motorIndex].pulseScale * 1000);
 
         pwmOutConfig(&motors[motorIndex], hz, period, idlePulse, motorConfig->motorPwmInversion);
+
 
         bool timerAlreadyUsed = false;
         for (int i = 0; i < motorIndex; i++) {

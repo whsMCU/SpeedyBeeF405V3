@@ -100,10 +100,10 @@ static void debugPrint(uint32_t currentTimeUs)
 //                                                attitude.values.pitch,
 //                                                attitude.values.yaw);
 
-//    cliPrintf("Motor 1: %.f, 2: %.f, 3: %.f, 4: %.f\n\r",    motor[0],
-//														motor[1],
-//														motor[2],
-//														motor[3]);
+    cliPrintf("Motor 1: %.f, 2: %.f, 3: %.f, 4: %.f\n\r",    motor[0],
+														motor[1],
+														motor[2],
+														motor[3]);
 //    cliPrintf("main: %d\n\r", micros());
 
     //p_adc_pg->vrefIntCalibration = 50;
