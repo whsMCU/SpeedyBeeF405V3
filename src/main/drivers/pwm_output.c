@@ -163,10 +163,10 @@ motorDevice_t *motorPwmDevInit(const motorDevConfig_t *motorConfig, uint16_t idl
 //    motors[1].channel.ccr = (volatile uint32_t*)((volatile char*)&htim4.Instance->CCR2);
 //    motors[2].channel.ccr = (volatile uint32_t*)((volatile char*)&htim4.Instance->CCR3);
 //    motors[3].channel.ccr = (volatile uint32_t*)((volatile char*)&htim4.Instance->CCR4);
-    motors[0].channel.ccr = (volatile uint32_t*)TIM4->CCR1;
-    motors[1].channel.ccr = (volatile uint32_t*)TIM4->CCR2;
-    motors[2].channel.ccr = (volatile uint32_t*)TIM4->CCR3;
-    motors[3].channel.ccr = (volatile uint32_t*)TIM4->CCR4;
+    motors[0].channel.ccr = (volatile uint32_t*)&TIM4->CCR1;
+    motors[1].channel.ccr = (volatile uint32_t*)&TIM4->CCR2;
+    motors[2].channel.ccr = (volatile uint32_t*)&TIM4->CCR3;
+    motors[3].channel.ccr = (volatile uint32_t*)&TIM4->CCR4;
 
     for (int motorIndex = 0; motorIndex < MAX_SUPPORTED_MOTORS && motorIndex < motorCount; motorIndex++) {
         //const unsigned reorderedMotorIndex = motorConfig->motorOutputReordering[motorIndex];
