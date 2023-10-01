@@ -27,7 +27,7 @@ bool timerInit(pwmOutputPort_t *motors, uint32_t hz, uint16_t period, uint16_t v
 	TIM_OC_InitTypeDef sConfigOC = {0};
 
 	htim4.Instance = TIM4;
-	htim4.Init.Prescaler = ((SystemCoreClock / 2) / hz) - 1;
+	htim4.Init.Prescaler = lrintf((((float)SystemCoreClock / 2) / hz)+0.01f) - 1;
 	htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
 	htim4.Init.Period = (period - 1) & 0xffff; // AKA TIMx_ARR
 
