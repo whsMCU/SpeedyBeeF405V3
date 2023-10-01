@@ -109,12 +109,20 @@ static void debugPrint(uint32_t currentTimeUs)
     //p_adc_pg->vrefIntCalibration = 50;
     //cliPrintf("IMU R: %d, P: %d\n\r",    p_pid_pg->dyn_idle_p_gain, p_adc_pg->vrefIntCalibration);
 
-    // cliPrintf("ACC R: %d, P: %d, Y: %d\n\r",    sensor.imuSensor1.imuDev.accADCRaw[X],
-    //                                             sensor.imuSensor1.imuDev.accADCRaw[Y],
-    //                                             sensor.imuSensor1.imuDev.accADCRaw[Z]);
-    // cliPrintf("GYRO R: %d, P: %d, Y: %d\n\r",    sensor.imuSensor1.imuDev.gyroADCRaw[X],
-    //                                             sensor.imuSensor1.imuDev.gyroADCRaw[Y],
-    //                                             sensor.imuSensor1.imuDev.gyroADCRaw[Z]);
+//     cliPrintf("ACC R: %.1f, P: %.1f, Y: %.1f\n\r",    acc.accADC[X],
+//												 acc.accADC[Y],
+//												 acc.accADC[Z]);
+
+//	     cliPrintf("ACC R: %d, P: %d, Y: %d\n\r",    acc.dev.ADCRaw[X],
+//													 acc.dev.ADCRaw[Y],
+//													 acc.dev.ADCRaw[Z]);
+//     cliPrintf("GYRO R: %.f, P: %.f, Y: %.f\n\r",    gyro.gyroADCf[X],
+//												 gyro.gyroADCf[Y],
+//												 gyro.gyroADCf[Z]);
+
+//     cliPrintf("GYRO R: %d, P: %d, Y: %d\n\r",    gyro.gyroSensor1.gyroDev.gyroADCRaw[X],
+//													 gyro.gyroSensor1.gyroDev.gyroADCRaw[Y],
+//													 gyro.gyroSensor1.gyroDev.gyroADCRaw[Z]);
 }
 
 static void taskHandleSerial(uint32_t currentTimeUs)

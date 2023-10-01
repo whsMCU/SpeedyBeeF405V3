@@ -441,9 +441,9 @@ static bool bmi270GyroReadRegister(gyroDev_t *gyro)
     {
         // If read was triggered in interrupt don't bother waiting. The worst that could happen is that we pick
         // up an old value.
-        gyro->gyroADCRaw[X] = gyroData[4];
-        gyro->gyroADCRaw[Y] = gyroData[5];
-        gyro->gyroADCRaw[Z] = gyroData[6];
+        gyro->gyroADCRaw[X] = gyroData[3];
+        gyro->gyroADCRaw[Y] = gyroData[4];
+        gyro->gyroADCRaw[Z] = gyroData[5];
         break;
     }
 
