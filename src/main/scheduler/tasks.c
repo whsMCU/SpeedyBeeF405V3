@@ -129,7 +129,7 @@ static void debugPrint(uint32_t currentTimeUs)
 	  for(int i=0;i<19;i++) telemetry_tx_buf[19] = telemetry_tx_buf[19] - telemetry_tx_buf[i];
 
 	  uartWrite(0, &telemetry_tx_buf[0], 20);
-    //cliPrintf("BARO : %d cm, Load : %d, count : %d \n\r", baro.BaroAlt, getAverageSystemLoadPercent(), getCycleCounter());
+//    cliPrintf("BARO : %d cm, Load : %d, count : %d \n\r", baro.BaroAlt, getAverageSystemLoadPercent(), getCycleCounter());
 //    cliPrintf("IMU R: %d, P: %d, Y: %d\n\r",    attitude.values.roll,
 //                                                attitude.values.pitch,
 //                                                attitude.values.yaw);

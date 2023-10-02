@@ -71,11 +71,11 @@ pidAxisData_t pidData[XYZ_AXIS_COUNT];
 pidRuntime_t pidRuntime;
 
 #if defined(USE_ABSOLUTE_CONTROL)
-float FAST_DATA_ZERO_INIT axisError[XYZ_AXIS_COUNT];
+float axisError[XYZ_AXIS_COUNT];
 #endif
 
 #if defined(USE_THROTTLE_BOOST)
-FAST_DATA_ZERO_INIT float throttleBoost;
+float throttleBoost;
 pt1Filter_t throttleLpf;
 #endif
 
@@ -694,7 +694,7 @@ float applyRcSmoothingFeedforwardFilter(int axis, float pidSetpointDelta)
 
 #if defined(USE_ITERM_RELAX)
 #if defined(USE_ABSOLUTE_CONTROL)
-STATIC_UNIT_TESTED void applyAbsoluteControl(const int axis, const float gyroRate, float *currentPidSetpoint, float *itermErrorRate)
+static void applyAbsoluteControl(const int axis, const float gyroRate, float *currentPidSetpoint, float *itermErrorRate)
 {
     if (pidRuntime.acGain > 0 || debugMode == DEBUG_AC_ERROR) {
         const float setpointLpf = pt1FilterApply(&pidRuntime.acLpf[axis], *currentPidSetpoint);
@@ -733,7 +733,7 @@ STATIC_UNIT_TESTED void applyAbsoluteControl(const int axis, const float gyroRat
 }
 #endif
 
-STATIC_UNIT_TESTED void applyItermRelax(const int axis, const float iterm,
+static void applyItermRelax(const int axis, const float iterm,
     const float gyroRate, float *itermErrorRate, float *currentPidSetpoint)
 {
     const float setpointLpf = pt1FilterApply(&pidRuntime.windupLpf[axis], *currentPidSetpoint);

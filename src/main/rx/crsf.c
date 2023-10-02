@@ -218,7 +218,7 @@ static void handleCrsfLinkStatisticsFrame(const crsfLinkStatistics_t* statsPtr, 
     lastLinkStatisticsFrameUs = currentTimeUs;
     int16_t rssiDbm = -1 * (stats.active_antenna ? stats.uplink_RSSI_2 : stats.uplink_RSSI_1);
     if (rssiSource == RSSI_SOURCE_RX_PROTOCOL_CRSF) {
-        if (rxConfig()->crsf_use_rx_snr) {
+        if (rxConfig.crsf_use_rx_snr) {
             // -10dB of SNR mapped to 0 RSSI (fail safe is likely to happen at this measure)
             //   0dB of SNR mapped to 20 RSSI (default alarm)
             //  41dB of SNR mapped to 99 RSSI (SNR can climb to around 60, but showing that is not very meaningful)
