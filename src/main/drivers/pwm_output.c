@@ -97,7 +97,7 @@ static void pwmCompleteOneshotMotorUpdate(void)
         }
         // Set the compare register to 0, which stops the output pulsing if the timer overflows before the main loop completes again.
         // This compare register will be set to the output value on the next main loop.
-        *motors[index].channel.ccr = 0;
+        //*motors[index].channel.ccr = 0;
     }
 }
 
@@ -157,7 +157,7 @@ motorDevice_t *motorPwmDevInit(const motorDevConfig_t *motorConfig, uint16_t idl
     motorPwmDevice.vTable.write = pwmWriteStandard;
     motorPwmDevice.vTable.updateStart = motorUpdateStartNull;
 
-    motorPwmDevice.vTable.updateComplete = useUnsyncedPwm ? motorUpdateCompleteNull : pwmCompleteOneshotMotorUpdate;
+    motorPwmDevice.vTable.updateComplete = motorUpdateCompleteNull;//useUnsyncedPwm ? motorUpdateCompleteNull : pwmCompleteOneshotMotorUpdate;
 //    motors[0].channel.ccr =TIM4->CCR1;
 //    		//(volatile uint32_t*)((volatile char*)&htim4.Instance->CCR1);
 //    motors[1].channel.ccr = (volatile uint32_t*)((volatile char*)&htim4.Instance->CCR2);
@@ -184,7 +184,7 @@ motorDevice_t *motorPwmDevInit(const motorDevConfig_t *motorConfig, uint16_t idl
         /* used to find the desired timer frequency for max resolution */
         const unsigned prescaler = ((clock / pwmRateHz) + 0xffff) / 0x10000; /* rounding up */
         const uint32_t hz = clock / prescaler;
-        const unsigned period = useUnsyncedPwm ? hz / pwmRateHz : 0xffff;
+        const unsigned period = 26250;//useUnsyncedPwm ? hz / pwmRateHz : 0xffff;
 
         /*
             if brushed then it is the entire length of the period.
