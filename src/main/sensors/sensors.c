@@ -5,7 +5,6 @@
  *      Author: WANG
  */
 
-//#include "driver/accgyro/bmi270.h"
 #include "filter.h"
 #include "gyro_init.h"
 #include "gyro.h"
@@ -13,8 +12,7 @@
 #include "common/time.h"
 
 #include "drivers/accgyro/accgyro.h"
-#include "drivers/accgyro/bmi270.h"
-
+#include "drivers/accgyro/accgyro_spi_bmi270.h"
 #include "sensors/sensors.h"
 #include "sensors/acceleration.h"
 

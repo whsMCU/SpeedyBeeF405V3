@@ -786,7 +786,7 @@ void cliTaskList(cli_args_t *args)
             if (taskId != TASK_SERIAL) {
                 averageLoadSum += averageLoad;
             }
-            if (true) { // systemConfig()->task_statistics
+            if (systemConfig.task_statistics) {
               cliPrintf("%6d %7d %7d %4d.%1d%% %4d.%1d%% %9d %6d %6d %7d\r\n",
                       taskFrequency, taskInfo.maxExecutionTimeUs, taskInfo.averageExecutionTime10thUs / 10,
                       maxLoad/10, maxLoad%10, averageLoad/10, averageLoad%10,
@@ -796,7 +796,7 @@ void cliTaskList(cli_args_t *args)
             }
     }
     }
-    if (true) { // systemConfig()->task_statistics
+    if (systemConfig.task_statistics) {
         cfCheckFuncInfo_t checkFuncInfo;
         getCheckFuncInfo(&checkFuncInfo);
         cliPrintf("RX Check Function %19d %7d %25d\r\n", checkFuncInfo.maxExecutionTimeUs, checkFuncInfo.averageExecutionTimeUs, checkFuncInfo.totalExecutionTimeUs / 1000);

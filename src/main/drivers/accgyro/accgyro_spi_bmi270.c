@@ -18,6 +18,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <accgyro_spi_bmi270.h>
 #include "hw.h"
 
 #include "common/axis.h"
@@ -26,7 +27,6 @@
 #include "sensors/gyro.h"
 
 #include "drivers/accgyro/accgyro.h"
-#include "drivers/accgyro/bmi270.h"
 #include "drivers/sensor.h"
 
 

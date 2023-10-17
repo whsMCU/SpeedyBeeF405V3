@@ -135,13 +135,12 @@ static void debugPrint(uint32_t currentTimeUs)
 //                                                attitude.values.yaw);
 
 //    cliPrintf("Motor 1: %.f, 2: %.f, 3: %.f, 4: %.f\n\r",    motor[0],
-//														motor[1],
-//														motor[2],
-//														motor[3]);
+//															motor[1],
+//															motor[2],
+//															motor[3]);
+//    cliPrintf("rx: %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n\r", rcData[0], rcData[1], rcData[2], rcData[3], rcData[4],
+//    		rcData[5], rcData[6], rcData[7], rcData[8], rcData[9]);
 //    cliPrintf("main: %d\n\r", micros());
-
-    //p_adc_pg->vrefIntCalibration = 50;
-    //cliPrintf("IMU R: %d, P: %d\n\r",    p_pid_pg->dyn_idle_p_gain, p_adc_pg->vrefIntCalibration);
 
 //     cliPrintf("ACC R: %.1f, P: %.1f, Y: %.1f\n\r",    acc.accADC[X],
 //												 acc.accADC[Y],

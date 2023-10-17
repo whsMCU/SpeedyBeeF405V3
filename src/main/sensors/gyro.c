@@ -50,7 +50,7 @@
 #include "sensors/gyro_init.h"
 #include "sensors/acceleration.h"
 
-#include "drivers/accgyro/bmi270.h"
+#include "drivers/accgyro/accgyro_spi_bmi270.h"
 
 #if ((TARGET_FLASH_SIZE > 128) && (defined(USE_GYRO_SPI_ICM20601) || defined(USE_GYRO_SPI_ICM20689) || defined(USE_GYRO_SPI_MPU6500)))
 #define USE_GYRO_SLEW_LIMITER

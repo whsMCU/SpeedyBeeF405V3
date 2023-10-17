@@ -570,63 +570,9 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
   if (huart->Instance == USART2)
   {
-  	//HAL_UART_Receive_DMA(&huart2, (uint8_t *)&rx_buf[1][0], MAX_SIZE);
+		HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *)&rx_buf2[0], MAX_SIZE);
+		__HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
   }
-
-  if(huart->ErrorCode == HAL_UART_ERROR_FE) //current USART
-  {
-  	//HAL_UART_Receive_DMA(&huart2, (uint8_t *)&rx_buf[1][0], MAX_SIZE);
-  }
-  if(huart->ErrorCode == HAL_UART_ERROR_NE) //current USART
-  {
-  	//HAL_UART_Receive_DMA(&huart2, (uint8_t *)&rx_buf[1][0], MAX_SIZE);
-  }
-}
-void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart)
-{
-//	static uint32_t pre_time = 0;
-//	static uint32_t pre_time1 = 0;
-//
-//   if(huart->Instance == USART2)
-//   {
-//  	 	rxRuntimeState.callbackTime = micros() - pre_time;
-//  	 	pre_time = micros();
-//  	 	rxRuntimeState.micros = micros();
-//  	 	pre_time1 = micros();
-//  	 	rxRuntimeState.uartAvailable = uartAvailable(_DEF_UART2);
-//  	 	while(uartAvailable(_DEF_UART2) > 0){
-//				crsfDataReceive(uartRead(_DEF_UART2), (void*) &rxRuntimeState);
-//				rxRuntimeState.rx_count++;
-//  	 	}
-//
-//  	 	rxRuntimeState.callbackExeTime = micros() - pre_time1;
-//  	 	//rxRuntimeState.rx_count = 0;
-//   }
-}
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-  //  if (huart->Instance == USART1)
-  //  {
-  //  	Q_write(&ring_buffer[_DEF_UART1], &rx_data[_DEF_UART1], 1);
-  //  }
-//	static uint32_t pre_time = 0;
-//	static uint32_t pre_time1 = 0;
-//
-//   if(huart->Instance == USART2)
-//   {
-//  	 	rxRuntimeState.callbackTime = micros() - pre_time;
-//  	 	pre_time = micros();
-//  	 	pre_time1 = micros();
-//  	 	rxRuntimeState.uartAvailable = uartAvailable(_DEF_UART2);
-//  	 	while(uartAvailable(_DEF_UART2) > 0){
-//				crsfDataReceive(uartRead(_DEF_UART2), (void*) &rxRuntimeState);
-//				rxRuntimeState.rx_count++;
-//  	 	}
-//
-//  	 	rxRuntimeState.callbackExeTime = micros() - pre_time1;
-//  	 	//rxRuntimeState.rx_count = 0;
-//   }
 }
 
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)

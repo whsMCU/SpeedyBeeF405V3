@@ -36,8 +36,7 @@
 
 #include "fc/runtime_config.h"
 
-#include "drivers/accgyro/bmi270.h"
-
+#include "drivers/accgyro/accgyro_spi_bmi270.h"
 #include "drivers/accgyro/gyro_sync.h"
 
 
