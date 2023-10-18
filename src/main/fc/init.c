@@ -123,6 +123,10 @@ void init(void)
 
 	readEEPROM();
 
+#if defined(USE_BOARD_INFO)
+    initBoardInformation();
+#endif
+
 	mixerInit(mixerConfig.mixerMode);
 
   uint16_t idlePulse = motorConfig.mincommand;
@@ -143,14 +147,18 @@ void init(void)
 #ifdef USE_ACC
 	Sensor_Init();
 #endif
-#ifdef USE_BARO
-	Baro_Init();
-#endif
+
 #ifdef USE_MAG
 	compassInit();
 #endif
-	adcInternalInit();
 
+#ifdef USE_BARO
+	Baro_Init();
+#endif
+
+#ifdef USE_ADC_INTERNAL
+	adcInternalInit();
+#endif
     // Set the targetLooptime based on the detected gyro sampleRateHz and pid_process_denom
     gyroSetTargetLooptime(pidConfig.pid_process_denom);
 
@@ -200,11 +208,24 @@ void init(void)
         accStartCalibration();
     }
 #endif
-
     gyroStartCalibration(false);
+#ifdef USE_BARO
     baroStartCalibration();
+#endif
 
 	batteryInit(); // always needs doing, regardless of features.
+
+#ifdef USE_PERSISTENT_STATS
+    statsInit();
+#endif
+
+
+/*
+ * CMS, display devices and OSD
+ */
+#ifdef USE_CMS
+	cmsInit();
+#endif
 
 #if (defined(USE_OSD) || (defined(USE_MSP_DISPLAYPORT) && defined(USE_CMS)))
     displayPort_t *osdDisplayPort = NULL;
@@ -270,10 +291,6 @@ void init(void)
         }
     }
 #endif // USE_OSD
-
-#ifdef USE_PERSISTENT_STATS
-    statsInit();
-#endif
 
 #ifdef USE_TELEMETRY
     // Telemetry will initialise displayport and register with CMS by itself.

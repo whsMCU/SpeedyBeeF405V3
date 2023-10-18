@@ -158,8 +158,7 @@ motorDevice_t *motorPwmDevInit(const motorDevConfig_t *motorConfig, uint16_t idl
     motorPwmDevice.vTable.updateStart = motorUpdateStartNull;
 
     motorPwmDevice.vTable.updateComplete = motorUpdateCompleteNull;//useUnsyncedPwm ? motorUpdateCompleteNull : pwmCompleteOneshotMotorUpdate;
-//    motors[0].channel.ccr =TIM4->CCR1;
-//    		//(volatile uint32_t*)((volatile char*)&htim4.Instance->CCR1);
+//    motors[0].channel.ccr =TIM4->CCR1; //(volatile uint32_t*)((volatile char*)&htim4.Instance->CCR1);
 //    motors[1].channel.ccr = (volatile uint32_t*)((volatile char*)&htim4.Instance->CCR2);
 //    motors[2].channel.ccr = (volatile uint32_t*)((volatile char*)&htim4.Instance->CCR3);
 //    motors[3].channel.ccr = (volatile uint32_t*)((volatile char*)&htim4.Instance->CCR4);

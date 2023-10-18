@@ -81,13 +81,13 @@ void I2C_BitWrite(uint8_t DevAddress, uint8_t MemAddress, uint8_t bitNum, uint8_
 
 bool I2C_ByteRead(uint16_t DevAddress, uint16_t MemAddress, uint16_t MemAddSize, uint8_t *pData, uint16_t Size)
 {
-  HAL_I2C_Mem_Read(&hi2c2, DevAddress<<1, MemAddress, MemAddSize, pData, Size, 1);
+  HAL_I2C_Mem_Read(&hi2c2, DevAddress<<1, MemAddress, MemAddSize, pData, Size, 10);
   return true;
 }
 
 bool I2C_ByteWrite_HAL(uint16_t DevAddress, uint16_t MemAddress, uint16_t MemAddSize, uint8_t *pData, uint16_t Size)
 {
-  HAL_I2C_Mem_Write(&hi2c2, DevAddress<<1, MemAddress, MemAddSize, pData, Size, 1);
+  HAL_I2C_Mem_Write(&hi2c2, DevAddress<<1, MemAddress, MemAddSize, pData, Size, 10);
   return true;
 }
 
