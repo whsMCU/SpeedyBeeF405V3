@@ -127,6 +127,16 @@ void init(void)
     initBoardInformation();
 #endif
 
+//#if defined(STM32F4) || defined(STM32G4)
+//    // F4 has non-8MHz boards
+//    // G4 for Betaflight allow 24 or 27MHz oscillator
+//    systemClockSetHSEValue(systemConfig.hseMhz * 1000000U);
+//#endif
+
+#ifdef USE_OVERCLOCK
+    OverclockRebootIfNecessary(systemConfig.cpu_overclock);
+#endif
+
 	mixerInit(mixerConfig.mixerMode);
 
   uint16_t idlePulse = motorConfig.mincommand;

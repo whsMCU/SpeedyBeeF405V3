@@ -104,7 +104,6 @@ uint16_t enableFlightMode(flightModeFlags_e mask)
 uint16_t disableFlightMode(flightModeFlags_e mask)
 {
     uint16_t oldVal = flightModeFlags;
-
     flightModeFlags &= ~(mask);
     //if (flightModeFlags != oldVal)
         //beeperConfirmationBeeps(1);

@@ -5,11 +5,7 @@
  *      Author: baram
  */
 
-
-#include "bsp.h"
-#include "uart.h"
-
-
+#include "hw.h"
 
 #define DWT_LAR_UNLOCK_VALUE 0xC5ACCE55
 

@@ -10,6 +10,7 @@
 
 #ifdef _USE_HW_RTC
 
+#define PERSISTENT_OBJECT_MAGIC_VALUE (('B' << 24)|('e' << 16)|('f' << 8)|('1' << 0))
 
 static RTC_HandleTypeDef hrtc;
 
@@ -33,17 +34,32 @@ bool rtcInit(void)
     Error_Handler();
   }
 
+  uint32_t wasSoftReset;
+
+#ifdef STM32H7
+  wasSoftReset = RCC->RSR & RCC_RSR_SFTRSTF;
+#else
+  wasSoftReset = RCC->CSR & RCC_CSR_SFTRSTF;
+#endif
+
+  if (!wasSoftReset || (rtcBackupRegRead(PERSISTENT_OBJECT_MAGIC) != PERSISTENT_OBJECT_MAGIC_VALUE)) {
+      for (int i = 1; i < PERSISTENT_OBJECT_COUNT; i++) {
+    	  rtcBackupRegWrite(i, 0);
+      }
+      rtcBackupRegWrite(PERSISTENT_OBJECT_MAGIC, PERSISTENT_OBJECT_MAGIC_VALUE);
+  }
+
   return ret;
 }
 
-uint32_t rtcBackupRegRead(uint32_t index)
+uint32_t rtcBackupRegRead(persistentObjectId_e id)
 {
-  return HAL_RTCEx_BKUPRead(&hrtc, index);
+  return HAL_RTCEx_BKUPRead(&hrtc, id);
 }
 
-void rtcBackupRegWrite(uint32_t index, uint32_t data)
+void rtcBackupRegWrite(persistentObjectId_e id, uint32_t data)
 {
-  HAL_RTCEx_BKUPWrite(&hrtc, index, data);
+  HAL_RTCEx_BKUPWrite(&hrtc, id, data);
 }
 
 void RTC_WriteProtectionCmd(FunctionalState NewState)

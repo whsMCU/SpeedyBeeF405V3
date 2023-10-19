@@ -50,8 +50,8 @@ typedef enum {
 bool rtcInit(void);
 void RTC_WriteProtectionCmd(FunctionalState NewState);
 
-uint32_t rtcBackupRegRead(uint32_t index);
-void     rtcBackupRegWrite(uint32_t index, uint32_t data);
+uint32_t rtcBackupRegRead(persistentObjectId_e id);
+void     rtcBackupRegWrite(persistentObjectId_e id, uint32_t data);
 
 
 #endif
