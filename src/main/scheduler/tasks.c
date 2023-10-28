@@ -131,9 +131,9 @@ static void debugPrint(uint32_t currentTimeUs)
 //	  uartWrite(0, &telemetry_tx_buf[0], 20);
 
 //    cliPrintf("BARO : %d cm, Load : %d, count : %d \n\r", baro.BaroAlt, getAverageSystemLoadPercent(), getCycleCounter());
-//    cliPrintf("IMU R: %d, P: %d, Y: %d\n\r",    attitude.values.roll,
-//                                                attitude.values.pitch,
-//                                                attitude.values.yaw);
+    cliPrintf("IMU R: %d, P: %d, Y: %d\n\r",    attitude.values.roll,
+                                                attitude.values.pitch,
+                                                attitude.values.yaw);
 
 //    cliPrintf("Motor 1: %.f, 2: %.f, 3: %.f, 4: %.f\n\r",    motor[0],
 //															motor[1],

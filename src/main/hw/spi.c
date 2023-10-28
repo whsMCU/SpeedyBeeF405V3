@@ -300,6 +300,7 @@ HAL_StatusTypeDef SPI_ByteReadWrite_DMA(uint8_t dev, uint8_t *MemAddress, uint8_
     gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_LOW);
     status = HAL_SPI_TransmitReceive_DMA(p_spi->h_spi, MemAddress, data, length);
     gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_HIGH);
+	//spiWait(dev);
   return status;
 }
 
