@@ -339,8 +339,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
         gyro_temp->gyroSyncEXTI = gyro_temp->gyroLastEXTI + gyro_temp->gyroDmaMaxDuration;
         gyro_temp->gyroLastEXTI = nowCycles;
 
-        if (gyro_temp->gyroModeSPI == GYRO_EXTI_INT_DMA) {
-        	//SPI_ByteRead_DMA(dev, gyro_temp->txBuf, gyro_temp->rxBuf, 14);
+        if (gyro_temp->gyroModeSPI == GYRO_EXTI_INT_DMA) {// && spiRx_flag(dev)
+        	//SPI_ByteReadWrite_DMA(dev, gyro_temp->txBuf, gyro_temp->rxBuf, 14);
         	spiReadWriteBuf(dev, gyro_temp->txBuf, gyro_temp->rxBuf, 14);
             //spiSequence(&gyro_temp->dev, gyro_temp->segments);
         }

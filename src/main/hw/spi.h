@@ -44,6 +44,7 @@ uint8_t spiReadRegMsk(uint8_t dev, uint8_t reg);
 void spiWriteReg(uint8_t dev, uint8_t reg, uint8_t data);
 void spiWrite(uint8_t dev, uint8_t data);
 void spiWait(uint8_t dev);
+bool spiRx_flag(uint8_t dev);
 bool spiIsBusy(uint8_t dev);
 void spiReadWriteBuf(uint8_t dev, uint8_t *txData, uint8_t *rxData, int len);
 void spiWriteRegBuf(uint8_t dev, uint8_t reg, uint8_t *data, uint32_t length);

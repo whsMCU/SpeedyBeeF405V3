@@ -424,6 +424,17 @@ void spiWait(uint8_t dev)
 	// Wait for completion
 	while(HAL_SPI_GetState(p_spi->h_spi) != HAL_SPI_STATE_READY);
 }
+// Wait for DMA completion
+bool spiRx_flag(uint8_t dev)
+{
+	spi_t  *p_spi = &spi_dev_tbl[dev].dev;
+	if(p_spi->is_rx_done == true)
+	{
+		p_spi->is_rx_done = false;
+		return true;
+	}
+	return false;
+}
 
 // Return true if DMA engine is busy
 bool spiIsBusy(uint8_t dev)
