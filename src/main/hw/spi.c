@@ -289,7 +289,7 @@ HAL_StatusTypeDef SPI_ByteRead_DMA(uint8_t dev, uint8_t *MemAddress, uint8_t *da
     gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_LOW);
     HAL_SPI_Transmit_DMA(p_spi->h_spi, MemAddress, 1);
     status = HAL_SPI_Receive_DMA(p_spi->h_spi, data, length);
-    gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_HIGH);
+    //gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_HIGH);
   return status;
 }
 
@@ -299,8 +299,8 @@ HAL_StatusTypeDef SPI_ByteReadWrite_DMA(uint8_t dev, uint8_t *MemAddress, uint8_
     HAL_StatusTypeDef status;
     gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_LOW);
     status = HAL_SPI_TransmitReceive_DMA(p_spi->h_spi, MemAddress, data, length);
-    gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_HIGH);
-	//spiWait(dev);
+    //gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_HIGH);
+
   return status;
 }
 
@@ -310,7 +310,7 @@ HAL_StatusTypeDef SPI_ByteWrite_DMA(uint8_t dev, uint8_t *data, uint8_t length)
 	HAL_StatusTypeDef status;
 	gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_LOW);
 	status = HAL_SPI_Transmit_DMA(p_spi->h_spi, data, length);
-	gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_HIGH);
+	//gpioPinWrite(spi_dev_tbl[dev].csTag, _DEF_HIGH);
   return status;
 }
 
@@ -561,7 +561,11 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 	{
 		  if (hspi->Instance == spi_dev_tbl[i].dev.h_spi->Instance)
 		  {
-			  if(i == BMI270) bmi270Intcallback();
+			  if(i == BMI270)
+			  {
+				  gpioPinWrite(spi_dev_tbl[i].csTag, _DEF_HIGH);
+				  bmi270Intcallback();
+			  }
 			  p_spi = &spi_dev_tbl[i].dev;
 			  p_spi->is_tx_done = true;
 
