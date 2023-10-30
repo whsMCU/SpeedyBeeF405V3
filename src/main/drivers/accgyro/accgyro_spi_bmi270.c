@@ -370,7 +370,7 @@ bool bmi270SpiAccRead(accDev_t *acc)
       // up an old value.
 
       // This data was read from the gyro, which is the same SPI device as the acc
-      uint16_t *accData = (uint16_t *)(acc->gyro->rxBuf+1);
+      uint16_t *accData = (uint16_t *)(acc->gyro->rxBuf+2);
       acc->ADCRaw[X] = accData[0];
       acc->ADCRaw[Y] = accData[1];
       acc->ADCRaw[Z] = accData[2];
@@ -391,7 +391,7 @@ bool bmi270SpiAccRead(accDev_t *acc)
 
 static bool bmi270GyroReadRegister(gyroDev_t *gyro)
 {
-    uint16_t *gyroData = (uint16_t *)(gyro->rxBuf+1);
+    uint16_t *gyroData = (uint16_t *)(gyro->rxBuf+2);
     switch (gyro->gyroModeSPI) {
     case GYRO_EXTI_INIT:
     {

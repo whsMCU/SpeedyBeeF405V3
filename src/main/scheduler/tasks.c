@@ -44,6 +44,9 @@
 #include "drivers/sensor.h"
 #include "drivers/gps/gps.h"
 
+#include "scheduler/scheduler.h"
+#include "scheduler/tasks.h"
+
 #include "sensors/acceleration_init.h"
 #include "sensors/acceleration.h"
 #include "sensors/adcinternal.h"
@@ -93,6 +96,7 @@ static void ledUpdate(uint32_t currentTimeUs)
 }
 
 uint8_t telemetry_tx_buf[20];
+int filter_load, pid_load;
 static void debugPrint(uint32_t currentTimeUs)
 {
 //	  telemetry_tx_buf[0] = 0x46;
@@ -131,9 +135,27 @@ static void debugPrint(uint32_t currentTimeUs)
 //	  uartWrite(0, &telemetry_tx_buf[0], 20);
 
 //    cliPrintf("BARO : %d cm, Load : %d, count : %d \n\r", baro.BaroAlt, getAverageSystemLoadPercent(), getCycleCounter());
-    cliPrintf("IMU R: %d, P: %d, Y: %d\n\r",    attitude.values.roll,
-                                                attitude.values.pitch,
-                                                attitude.values.yaw);
+
+//    for (taskId_e taskId = 0; taskId < TASK_COUNT; taskId++) {
+//        taskInfo_t taskInfo;
+//        getTaskInfo(taskId, &taskInfo);
+//        if (taskInfo.isEnabled) {
+//            int taskFrequency = taskInfo.averageDeltaTime10thUs == 0 ? 0 : lrintf(1e7f / taskInfo.averageDeltaTime10thUs);
+//            const int maxLoad = taskInfo.maxExecutionTimeUs == 0 ? 0 : (taskInfo.maxExecutionTimeUs * taskFrequency) / 1000;
+//            const int averageLoad = taskInfo.averageExecutionTime10thUs == 0 ? 0 : (taskInfo.averageExecutionTime10thUs * taskFrequency) / 10000;
+//            if(taskId == TASK_FILTER)
+//            {
+//            	filter_load = averageLoad/10;
+//            }
+//            if(taskId == TASK_PID)
+//            {
+//            	pid_load = averageLoad/10;
+//            }
+//    }
+//    }
+//    cliPrintf("IMU R: %d, P: %d, Y: %d\n\r",    attitude.values.roll,
+//                                                attitude.values.pitch,
+//                                                attitude.values.yaw);
 
 //    cliPrintf("Motor 1: %.f, 2: %.f, 3: %.f, 4: %.f\n\r",    motor[0],
 //															motor[1],
