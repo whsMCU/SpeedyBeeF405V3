@@ -24,6 +24,9 @@
 #include <stdint.h>
 #include <string.h>
 
+
+#include "build/debug.h"
+
 #include "drivers/accgyro/accgyro.h"
 
 #include "common/maths.h"
@@ -429,7 +432,9 @@ void scheduler(void)
 {
     static uint32_t checkCycles = 0;
     static uint32_t scheduleCount = 0;
-
+#if !defined(UNIT_TEST)
+    const timeUs_t schedulerStartTimeUs = micros();
+#endif
     uint32_t currentTimeUs;
     uint32_t nowCycles;
     uint32_t taskExecutionTimeUs = 0;
@@ -481,7 +486,7 @@ void scheduler(void)
                 nowCycles = getCycleCounter();
                 schedLoopRemainingCycles = cmpTimeCycles(nextTargetCycles, nowCycles);
             }
-            // DEBUG_SET(DEBUG_SCHEDULER_DETERMINISM, 0, clockCyclesTo10thMicros(cmpTimeCycles(nowCycles, lastTargetCycles)));
+            DEBUG_SET(DEBUG_SCHEDULER_DETERMINISM, 0, clockCyclesTo10thMicros(cmpTimeCycles(nowCycles, lastTargetCycles)));
 #endif
             currentTimeUs = micros();
             taskExecutionTimeUs += schedulerExecuteTask(gyroTask, currentTimeUs);
@@ -508,17 +513,17 @@ void scheduler(void)
 
 #if defined(USE_LATE_TASK_STATISTICS)
             // % CPU busy
-            //DEBUG_SET(DEBUG_TIMING_ACCURACY, 0, getAverageSystemLoadPercent());
+            DEBUG_SET(DEBUG_TIMING_ACCURACY, 0, getAverageSystemLoadPercent());
 
             if (cmpTimeCycles(nextTimingCycles, nowCycles) < 0) {
                 nextTimingCycles += clockMicrosToCycles(1000000);
 
                 // Tasks late in last second
-                //DEBUG_SET(DEBUG_TIMING_ACCURACY, 1, lateTaskCount);
+                DEBUG_SET(DEBUG_TIMING_ACCURACY, 1, lateTaskCount);
                 // Total lateness in last second in us
-                //DEBUG_SET(DEBUG_TIMING_ACCURACY, 2, clockCyclesTo10thMicros(lateTaskTotal));
+                DEBUG_SET(DEBUG_TIMING_ACCURACY, 2, clockCyclesTo10thMicros(lateTaskTotal));
                 // Total tasks run in last second
-                //DEBUG_SET(DEBUG_TIMING_ACCURACY, 3, taskCount);
+                DEBUG_SET(DEBUG_TIMING_ACCURACY, 3, taskCount);
 
                 lateTaskCount = 0;
                 lateTaskTotal = 0;
@@ -568,7 +573,7 @@ void scheduler(void)
 
                     // Move the desired start time of the gyroTask
                     lastTargetCycles -= (accGyroSkew/GYRO_LOCK_COUNT);
-                    //DEBUG_SET(DEBUG_SCHEDULER_DETERMINISM, 3, clockCyclesTo10thMicros(accGyroSkew/GYRO_LOCK_COUNT));
+                    DEBUG_SET(DEBUG_SCHEDULER_DETERMINISM, 3, clockCyclesTo10thMicros(accGyroSkew/GYRO_LOCK_COUNT));
                     accGyroSkew = 0;
                 }
             }
@@ -578,7 +583,7 @@ void scheduler(void)
     nowCycles = getCycleCounter();
     schedLoopRemainingCycles = cmpTimeCycles(nextTargetCycles, nowCycles);
 
-    if (!gyroEnabled || (schedLoopRemainingCycles > (int32_t)(CHECK_GUARD_MARGIN_US * 168))) {
+    if (!gyroEnabled || (schedLoopRemainingCycles > (int32_t)clockMicrosToCycles(CHECK_GUARD_MARGIN_US))) {
         currentTimeUs = micros();
 
         // Update task dynamic priorities
@@ -613,7 +618,7 @@ void scheduler(void)
 
                 if (task->dynamicPriority > selectedTaskDynamicPriority) {
                     int32_t taskRequiredTimeUs = task->anticipatedExecutionTime >> TASK_EXEC_TIME_SHIFT;
-                    int32_t taskRequiredTimeCycles = (int32_t)((uint32_t)taskRequiredTimeUs * 168);
+                    int32_t taskRequiredTimeCycles = (int32_t)clockMicrosToCycles((uint32_t)taskRequiredTimeUs);
                     // Allow a little extra time
                     taskRequiredTimeCycles += checkCycles + taskGuardCycles;
 
@@ -640,24 +645,25 @@ void scheduler(void)
 #if defined(USE_LATE_TASK_STATISTICS)
             selectedTask->execTime = taskRequiredTimeUs;
 #endif
-            int32_t taskRequiredTimeCycles = (int32_t)((uint32_t)taskRequiredTimeUs) * 168;
+            int32_t taskRequiredTimeCycles = (int32_t)clockMicrosToCycles((uint32_t)taskRequiredTimeUs);
 
             nowCycles = getCycleCounter();
             schedLoopRemainingCycles = cmpTimeCycles(nextTargetCycles, nowCycles);
 
             // Allow a little extra time
             taskRequiredTimeCycles += taskGuardCycles;
-#if defined(USE_LATE_TASK_STATISTICS)
+
             if (!gyroEnabled || (taskRequiredTimeCycles < schedLoopRemainingCycles)) {
                 uint32_t antipatedEndCycles = nowCycles + taskRequiredTimeCycles;
                 taskExecutionTimeUs += schedulerExecuteTask(selectedTask, currentTimeUs);
                 nowCycles = getCycleCounter();
                 int32_t cyclesOverdue = cmpTimeCycles(nowCycles, antipatedEndCycles);
 
+#if defined(USE_LATE_TASK_STATISTICS)
                 if (cyclesOverdue > 0) {
                     if ((currentTask - tasks) != TASK_SERIAL) {
-                        // DEBUG_SET(DEBUG_SCHEDULER_DETERMINISM, 1, currentTask - tasks);
-                        // DEBUG_SET(DEBUG_SCHEDULER_DETERMINISM, 2, clockCyclesTo10thMicros(cyclesOverdue));
+                        DEBUG_SET(DEBUG_SCHEDULER_DETERMINISM, 1, currentTask - tasks);
+                        DEBUG_SET(DEBUG_SCHEDULER_DETERMINISM, 2, clockCyclesTo10thMicros(cyclesOverdue));
                         currentTask->lateCount++;
                         lateTaskCount++;
                         lateTaskTotal += cyclesOverdue;
@@ -687,7 +693,7 @@ void scheduler(void)
 #ifdef USE_OSD
                        (((selectedTask - tasks) == TASK_OSD) && (TASK_AGE_EXPEDITE_OSD != 0) && (++skippedOSDAttempts > TASK_AGE_EXPEDITE_OSD)) ||
 #endif
-                       ((TASK_AGE_EXPEDITE_RX != 0) && (++skippedRxAttempts > TASK_AGE_EXPEDITE_RX))) {
+					   (((selectedTask - tasks) == TASK_RX) && (TASK_AGE_EXPEDITE_RX != 0) && (++skippedRxAttempts > TASK_AGE_EXPEDITE_RX))) {
                 // If a task has been unable to run, then reduce it's recorded estimated run time to ensure
                 // it's ultimate scheduling
                 selectedTask->anticipatedExecutionTime *= TASK_AGE_EXPEDITE_SCALE;
@@ -696,7 +702,7 @@ void scheduler(void)
     }
 
 #if !defined(UNIT_TEST)
-    // DEBUG_SET(DEBUG_SCHEDULER, 2, micros() - schedulerStartTimeUs - taskExecutionTimeUs); // time spent in scheduler
+    DEBUG_SET(DEBUG_SCHEDULER, 2, micros() - schedulerStartTimeUs - taskExecutionTimeUs); // time spent in scheduler
 #endif
 
 #if defined(UNIT_TEST)

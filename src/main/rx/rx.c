@@ -450,7 +450,7 @@ void rxFrameCheck(uint32_t currentTimeUs, int32_t currentDeltaTimeUs)
     bool useDataDrivenProcessing = true;
     int32_t needRxSignalMaxDelayUs = DELAY_100_MS;
 
-    //DEBUG_SET(DEBUG_RX_SIGNAL_LOSS, 2, MIN(2000, currentDeltaTimeUs / 100));
+    DEBUG_SET(DEBUG_RX_SIGNAL_LOSS, 2, MIN(2000, currentDeltaTimeUs / 100));
 
     if (taskUpdateRxMainInProgress()) {
         //  no need to check for new data as a packet is being processed already
@@ -482,7 +482,7 @@ void rxFrameCheck(uint32_t currentTimeUs, int32_t currentDeltaTimeUs)
     case RX_PROVIDER_SPI:
         {
             const uint8_t frameStatus = rxRuntimeState.rcFrameStatusFn(&rxRuntimeState);
-            //DEBUG_SET(DEBUG_RX_SIGNAL_LOSS, 1, (frameStatus & RX_FRAME_FAILSAFE));
+            DEBUG_SET(DEBUG_RX_SIGNAL_LOSS, 1, (frameStatus & RX_FRAME_FAILSAFE));
             signalReceived = (frameStatus & RX_FRAME_COMPLETE) && !(frameStatus & (RX_FRAME_FAILSAFE | RX_FRAME_DROPPED));
             setLinkQuality(signalReceived, currentDeltaTimeUs);
             auxiliaryProcessingRequired |= (frameStatus & RX_FRAME_PROCESSING_REQUIRED);
@@ -510,7 +510,7 @@ void rxFrameCheck(uint32_t currentTimeUs, int32_t currentDeltaTimeUs)
         }
     }
 
-    //DEBUG_SET(DEBUG_RX_SIGNAL_LOSS, 0, rxSignalReceived);
+    DEBUG_SET(DEBUG_RX_SIGNAL_LOSS, 0, rxSignalReceived);
 }
 
 #if defined(USE_PWM) || defined(USE_PPM)

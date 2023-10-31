@@ -927,21 +927,11 @@ static float applyLaunchControl(int axis, const rollAndPitchTrims_t *angleTrim)
          // This is done to avoid DTerm spikes that occur with dynamically
          // calculated deltaT whenever another task causes the PID
          // loop execution to be delayed.
-         excute_temp = micros();
+
          const float delta =
              - (gyroRateDterm[axis] - previousRawGyroRateDterm[axis]) * pidRuntime.pidFrequency / D_LPF_RAW_SCALE;
          previousRawGyroRateDterm[axis] = gyroRateDterm[axis];
-         {excute_time = (micros()-excute_temp);
-         if(excute_time >= excute_max)
-         {
-        	 excute_max = excute_time;
-         }
-         if(excute_count > 10000)
-         {
-        	 excute_count = 0;
-        	 excute_max = 0;
-         }
-         excute_count++;}
+
          // Log the unfiltered D
           if (axis == FD_ROLL) {
               DEBUG_SET(DEBUG_D_LPF, 0, lrintf(delta));
