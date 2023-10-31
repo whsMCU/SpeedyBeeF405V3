@@ -23,6 +23,8 @@
 #include "common/time.h"
 #include "hw.h"
 
+extern uint32_t excute_time, excute_temp, excute_max, excute_count;
+
 #if defined(USE_GPS) || defined(USE_MAG)
 extern int16_t magHold;
 #endif

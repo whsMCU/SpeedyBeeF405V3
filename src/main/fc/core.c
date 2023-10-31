@@ -1008,7 +1008,9 @@ static void subTaskPidController(uint32_t currentTimeUs)
     uint32_t startTime = 0;
     if (debugMode == DEBUG_PIDLOOP) {startTime = micros();}
     // PID - note this is function pointer set by setPIDController()
+
     pidController(currentPidProfile, currentTimeUs);
+
     DEBUG_SET(DEBUG_PIDLOOP, 1, micros() - startTime);
 
 #ifdef USE_RUNAWAY_TAKEOFF
@@ -1187,7 +1189,10 @@ void taskFiltering(timeUs_t currentTimeUs)
 {
     gyroFiltering(currentTimeUs);
 }
-
+uint32_t excute_time = 0;
+uint32_t excute_temp = 0;
+uint32_t excute_max = 0;
+uint32_t excute_count = 0;
 // Function for loop trigger
 void taskMainPidLoop(timeUs_t currentTimeUs)
 {
@@ -1201,12 +1206,12 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     // 1 - subTaskPidController()
     // 2 - subTaskMotorUpdate()
     // 3 - subTaskPidSubprocesses()
-    //DEBUG_SET(DEBUG_PIDLOOP, 0, micros() - currentTimeUs);
+    DEBUG_SET(DEBUG_PIDLOOP, 0, micros() - currentTimeUs);
 
-    subTaskRcCommand(currentTimeUs);
-    subTaskPidController(currentTimeUs);
-    subTaskMotorUpdate(currentTimeUs);
-    subTaskPidSubprocesses(currentTimeUs);
+    subTaskRcCommand(currentTimeUs); //4us
+    subTaskPidController(currentTimeUs); //50us
+    subTaskMotorUpdate(currentTimeUs); //24us
+    subTaskPidSubprocesses(currentTimeUs); //1us
 
     DEBUG_SET(DEBUG_CYCLETIME, 0, getTaskDeltaTimeUs(TASK_SELF));
     DEBUG_SET(DEBUG_CYCLETIME, 1, getAverageSystemLoadPercent());

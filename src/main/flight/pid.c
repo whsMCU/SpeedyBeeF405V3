@@ -922,28 +922,36 @@ static float applyLaunchControl(int axis, const rollAndPitchTrims_t *angleTrim)
      for (int axis = FD_ROLL; axis <= FD_YAW; ++axis) {
          gyroRateDterm[axis] = gyro.gyroADCf[axis];
          // -----calculate raw, unfiltered D component
-
          // Divide rate change by dT to get differential (ie dr/dt).
          // dT is fixed and calculated from the target PID loop time
          // This is done to avoid DTerm spikes that occur with dynamically
          // calculated deltaT whenever another task causes the PID
          // loop execution to be delayed.
+         excute_temp = micros();
          const float delta =
              - (gyroRateDterm[axis] - previousRawGyroRateDterm[axis]) * pidRuntime.pidFrequency / D_LPF_RAW_SCALE;
          previousRawGyroRateDterm[axis] = gyroRateDterm[axis];
-
+         {excute_time = (micros()-excute_temp);
+         if(excute_time >= excute_max)
+         {
+        	 excute_max = excute_time;
+         }
+         if(excute_count > 10000)
+         {
+        	 excute_count = 0;
+        	 excute_max = 0;
+         }
+         excute_count++;}
          // Log the unfiltered D
           if (axis == FD_ROLL) {
               DEBUG_SET(DEBUG_D_LPF, 0, lrintf(delta));
           } else if (axis == FD_PITCH) {
               DEBUG_SET(DEBUG_D_LPF, 1, lrintf(delta));
           }
-
          gyroRateDterm[axis] = pidRuntime.dtermNotchApplyFn((filter_t *) &pidRuntime.dtermNotch[axis], gyroRateDterm[axis]);
          gyroRateDterm[axis] = pidRuntime.dtermLowpassApplyFn((filter_t *) &pidRuntime.dtermLowpass[axis], gyroRateDterm[axis]);
          gyroRateDterm[axis] = pidRuntime.dtermLowpass2ApplyFn((filter_t *) &pidRuntime.dtermLowpass2[axis], gyroRateDterm[axis]);
      }
-
      rotateItermAndAxisError();
 
  #ifdef USE_RPM_FILTER
@@ -964,6 +972,7 @@ static float applyLaunchControl(int axis, const rollAndPitchTrims_t *angleTrim)
          if (pidRuntime.maxVelocity[axis]) {
              currentPidSetpoint = accelerationLimit(axis, currentPidSetpoint);
          }
+
          // Yaw control is GYRO based, direct sticks control is applied to rate PID
          // When Race Mode is active PITCH control is also GYRO based in level or horizon mode
  #if defined(USE_ACC)
@@ -1058,7 +1067,6 @@ static float applyLaunchControl(int axis, const rollAndPitchTrims_t *angleTrim)
              Ki = pidRuntime.pidCoefficient[axis].Ki;
              axisDynCi = (axis == FD_YAW) ? dynCi : pidRuntime.dT; // only apply windup protection to yaw
          }
-
          pidData[axis].I = constrainf(previousIterm + (Ki * axisDynCi + agGain) * itermErrorRate, -pidRuntime.itermLimit, pidRuntime.itermLimit);
 
          // -----calculate pidSetpointDelta

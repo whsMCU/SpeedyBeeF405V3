@@ -349,7 +349,9 @@ void Param_Config_Init(void)
 	adcConfig_Init();
 	voltageSensorADCConfig_Init();
 	currentSensorADCConfig_Init();
+#ifdef USE_DYN_NOTCH_FILTER
 	dynNotchConfig_Init();
+#endif
 	imuConfig_Init();
 	pidConfig_Init();
 	pidProfiles_Init();
