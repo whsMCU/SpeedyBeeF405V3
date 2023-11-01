@@ -135,7 +135,7 @@ static void debugPrint(uint32_t currentTimeUs)
 //	  uartWrite(0, &telemetry_tx_buf[0], 20);
 
 //    cliPrintf("BARO : %d cm, Load : %d, count : %d \n\r", baro.BaroAlt, getAverageSystemLoadPercent(), getCycleCounter());
-	  //cliPrintf("excute_time : %4.d us, max : %4.d us, callback : %4.d us \n\r", excute_time, excute_max, rxRuntimeState.callbackTime);
+	  //cliPrintf("excute_time : %4.d us, max : %4.d us, callback : %4.d us, uartAvalavle : %4.d \n\r", excute_time, excute_max, rxRuntimeState.callbackTime, rxRuntimeState.uartAvalable);
 
 //    for (taskId_e taskId = 0; taskId < TASK_COUNT; taskId++) {
 //        taskInfo_t taskInfo;

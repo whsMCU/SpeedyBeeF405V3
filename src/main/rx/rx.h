@@ -196,9 +196,12 @@ typedef struct rxRuntimeState_s {
     uint16_t            *channelData;
     void                *frameData;
     uint32_t            lastRcFrameTimeUs;
-    uint32_t 						FrameTime;
+    uint32_t 			FrameTime;
     uint32_t            callbackTime;
-    bool            	RxCallback_flag;
+    uint32_t            uartAvalable;
+    bool            	RxCallback_Flag;
+    bool            	FILTER_Excute_Flag;
+    bool            	PID_Excute_Flag;
 } rxRuntimeState_t;
 
 typedef enum {

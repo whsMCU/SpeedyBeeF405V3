@@ -1187,7 +1187,9 @@ bool pidLoopReady(void)
 
 void taskFiltering(timeUs_t currentTimeUs)
 {
+	rxRuntimeState.FILTER_Excute_Flag = true;
     gyroFiltering(currentTimeUs);
+    rxRuntimeState.FILTER_Excute_Flag = false;
 }
 uint32_t excute_time = 0;
 uint32_t excute_temp = 0;
@@ -1196,11 +1198,10 @@ uint32_t excute_count = 0;
 // Function for loop trigger
 void taskMainPidLoop(timeUs_t currentTimeUs)
 {
-
 #if defined(SIMULATOR_BUILD) && defined(SIMULATOR_GYROPID_SYNC)
     if (lockMainPID() != 0) return;
 #endif
-
+    rxRuntimeState.PID_Excute_Flag = true;
     // DEBUG_PIDLOOP, timings for:
     // 0 - gyroUpdate()
     // 1 - subTaskPidController()
@@ -1215,6 +1216,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
     DEBUG_SET(DEBUG_CYCLETIME, 0, getTaskDeltaTimeUs(TASK_SELF));
     DEBUG_SET(DEBUG_CYCLETIME, 1, getAverageSystemLoadPercent());
+    rxRuntimeState.PID_Excute_Flag = false;
 }
 
 bool isFlipOverAfterCrashActive(void)

@@ -28,6 +28,7 @@
 #include "fc/init.h"
 #include "fc/rc_modes.h"
 #include "fc/rc_controls.h"
+#include "fc/core.h"
 
 #include "flight/imu.h"
 #include "flight/pid_init.h"
@@ -43,6 +44,7 @@
 #include "drivers/gps/gps.h"
 
 #include "rx/rx.h"
+#include "rx/crsf.h"
 
 
 /* USER CODE END Includes */
@@ -77,6 +79,7 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 void hwInit(void);
+void RC_Parse(void);
 /* USER CODE END 0 */
 
 /**
@@ -134,6 +137,7 @@ int main(void)
   {
     /* USER CODE END WHILE */
 	  scheduler();
+	  RC_Parse();
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -158,6 +162,28 @@ void hwInit(void)
   if (sdInit() == true)
   {
     fatfsInit();
+  }
+}
+
+void RC_Parse(void)
+{
+  if(uartAvailable(_DEF_UART2) > 0
+	 && !rxRuntimeState.FILTER_Excute_Flag
+	 && !rxRuntimeState.PID_Excute_Flag)
+  {
+	excute_temp = micros();
+	crsfDataReceive(uartRead(_DEF_UART2), (void*) &rxRuntimeState);
+	{excute_time = (micros()-excute_temp);
+	if(excute_time >= excute_max)
+	{
+	 excute_max = excute_time;
+	}
+	if(excute_count > 10000)
+	{
+	 excute_count = 0;
+	 excute_max = 0;
+	}
+	excute_count++;}
   }
 }
 

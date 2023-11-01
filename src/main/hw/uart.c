@@ -580,22 +580,18 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
 	static uint32_t pre_time = 0;
-	static uint32_t pre_time1 = 0;
 
   if(huart->Instance == USART2)
   {
 		rxRuntimeState.callbackTime = micros() - pre_time;
 		pre_time = micros();
 		qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_buf2[0], (uint32_t)Size);
-		rxRuntimeState.RxCallback_flag = true;
+		rxRuntimeState.RxCallback_Flag = true;
 
 		HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *)&rx_buf2[0], MAX_SIZE);
 		__HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
-
-		while(uartAvailable(_DEF_UART2) > 0){
-			crsfDataReceive(uartRead(_DEF_UART2), (void*) &rxRuntimeState);
-		}
-		rxRuntimeState.RxCallback_flag = false;
+		rxRuntimeState.uartAvalable = uartAvailable(_DEF_UART2);
+		rxRuntimeState.RxCallback_Flag = false;
   }
 
 }
