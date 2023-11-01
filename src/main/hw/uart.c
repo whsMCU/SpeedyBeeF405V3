@@ -586,30 +586,16 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
   {
 		rxRuntimeState.callbackTime = micros() - pre_time;
 		pre_time = micros();
-		pre_time1 = micros();
 		qbufferWrite(&ring_buffer[_DEF_UART2], (uint8_t *)&rx_buf2[0], (uint32_t)Size);
-		rxRuntimeState.uartAvailable = uartAvailable(_DEF_UART2);
+		rxRuntimeState.RxCallback_flag = true;
 
-		while(uartAvailable(_DEF_UART2) > 0){
-		      excute_temp = micros();
-				crsfDataReceive(uartRead(_DEF_UART2), (void*) &rxRuntimeState);
-		        {excute_time = (micros()-excute_temp);
-		        if(excute_time >= excute_max)
-		        {
-		       	 excute_max = excute_time;
-		        }
-		        if(excute_count > 10000)
-		        {
-		       	 excute_count = 0;
-		       	 excute_max = 0;
-		        }
-		        excute_count++;}
-				rxRuntimeState.rx_count++;
-		}
-		rxRuntimeState.callbackExeTime = micros() - pre_time1;
-		rxRuntimeState.rx_count = 0;
 		HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *)&rx_buf2[0], MAX_SIZE);
 		__HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
+
+		while(uartAvailable(_DEF_UART2) > 0){
+			crsfDataReceive(uartRead(_DEF_UART2), (void*) &rxRuntimeState);
+		}
+		rxRuntimeState.RxCallback_flag = false;
   }
 
 }
