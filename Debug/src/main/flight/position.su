@@ -1,4 +1,0 @@
-../src/main/flight/position.c:54:6:positionConfig_Init	4	static
-../src/main/flight/position.c:93:6:calculateEstimatedAltitude	48	static
-../src/main/flight/position.c:210:6:isAltitudeOffset	4	static
-../src/main/flight/position.c:216:9:getEstimatedAltitudeCm	4	static

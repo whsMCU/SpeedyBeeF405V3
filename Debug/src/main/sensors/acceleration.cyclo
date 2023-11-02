@@ -1,3 +1,0 @@
-acceleration.c:43:13:applyAccelerationTrims	1
-acceleration.c:52:6:accUpdate	10
-acceleration.c:95:6:accGetAccumulationAverage	4

@@ -1,2 +1,0 @@
-sensor_alignment.c:31:6:buildRotationMatrixFromAlignment	1
-sensor_alignment.c:42:6:buildAlignmentFromStandardAlignment	4

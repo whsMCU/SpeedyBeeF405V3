@@ -1,9 +1,0 @@
-../src/main/fc/rc_controls.c:59:6:rcControlsConfig_Init	4	static
-../src/main/fc/rc_controls.c:69:6:armingConfig_Init	4	static
-../src/main/fc/rc_controls.c:76:6:flight3DConfig_Init	4	static
-../src/main/fc/rc_controls.c:88:6:isUsingSticksForArming	4	static
-../src/main/fc/rc_controls.c:93:6:areSticksInApModePosition	16	static
-../src/main/fc/rc_controls.c:98:18:calculateThrottleStatus	8	static
-../src/main/fc/rc_controls.c:124:6:processRcStickPositions	32	static
-../src/main/fc/rc_controls.c:398:9:getRcStickDeflection	32	static
-../src/main/fc/rc_controls.c:402:6:rcControlsInit	8	static

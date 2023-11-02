@@ -1,5 +1,0 @@
-../src/main/hw/led.c:31:6:ledInit	40	static
-../src/main/hw/led.c:58:6:ledOn	16	static
-../src/main/hw/led.c:65:6:ledOff	16	static
-../src/main/hw/led.c:72:6:ledToggle	16	static
-../src/main/hw/led.c:80:6:cliLed	32	static

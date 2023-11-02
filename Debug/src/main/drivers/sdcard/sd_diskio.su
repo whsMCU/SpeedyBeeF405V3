@@ -1,6 +1,0 @@
-../src/main/drivers/sdcard/sd_diskio.c:79:16:SD_CheckStatus	16	static
-../src/main/drivers/sdcard/sd_diskio.c:99:9:SD_initialize	16	static
-../src/main/drivers/sdcard/sd_diskio.c:119:9:SD_status	16	static
-../src/main/drivers/sdcard/sd_diskio.c:137:9:SD_read	32	static
-../src/main/drivers/sdcard/sd_diskio.c:165:9:SD_write	32	static
-../src/main/drivers/sdcard/sd_diskio.c:194:9:SD_ioctl	56	static

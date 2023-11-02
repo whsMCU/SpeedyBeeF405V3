@@ -1,5 +1,0 @@
-bitarray.c:29:6:bitArrayGet	1
-bitarray.c:34:6:bitArraySet	1
-bitarray.c:39:6:bitArrayClr	1
-bitarray.c:44:6:bitArrayXor	2
-bitarray.c:51:6:bitArrayCopy	2

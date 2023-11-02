@@ -1,7 +1,0 @@
-flash.c:52:6:flashInit	1
-flash.c:62:19:flashErase	3
-flash.c:91:6:flashWrite	3
-flash.c:118:19:FLASH_ProgramWord	1
-flash.c:127:6:flashRead	2
-flash.c:141:6:flashInSector	9
-flash.c:181:6:cliFlash	14

@@ -1,8 +1,0 @@
-bmi2_ois.c:99:8:bmi2_ois_get_regs	5
-bmi2_ois.c:150:8:bmi2_ois_set_regs	4
-bmi2_ois.c:184:8:bmi2_ois_set_config	3
-bmi2_ois.c:226:8:bmi2_ois_get_config	3
-bmi2_ois.c:264:8:bmi2_ois_read_data	7
-bmi2_ois.c:336:15:get_ois_acc_gyr_data	2
-bmi2_ois.c:391:15:null_ptr_check	5
-bmi2_ois.c:410:13:comp_gyro_cross_axis_sensitivity	2

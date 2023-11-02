@@ -1,8 +1,0 @@
-current.c:71:6:currentMeterReset	1
-current.c:95:6:currentSensorADCConfig_Init	1
-current.c:101:16:currentMeterADCToCentiamps	4
-current.c:117:13:updateCurrentmAhDrawnState	1
-current.c:130:6:currentMeterADCInit	1
-current.c:136:6:currentMeterADCRefresh	1
-current.c:153:6:currentMeterADCRead	3
-current.c:289:6:currentMeterRead	2

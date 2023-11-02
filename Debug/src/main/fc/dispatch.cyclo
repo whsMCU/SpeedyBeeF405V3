@@ -1,5 +1,0 @@
-utils.h:101:23:cmp32	1
-dispatch.c:36:6:dispatchIsEnabled	1
-dispatch.c:41:6:dispatchEnable	1
-dispatch.c:46:6:dispatchProcess	3
-dispatch.c:59:6:dispatchAdd	4

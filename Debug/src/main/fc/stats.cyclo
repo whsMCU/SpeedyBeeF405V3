@@ -1,5 +1,0 @@
-stats.c:45:6:statsConfig_Init	1
-stats.c:59:6:statsInit	1
-stats.c:64:6:writeStats	3
-stats.c:87:6:statsOnArm	1
-stats.c:93:6:statsOnDisarm	4

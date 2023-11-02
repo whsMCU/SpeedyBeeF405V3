@@ -1,9 +1,0 @@
-C:/Users/jjins/Documents/Project/SpeedyBeeF405V3/src/main/common/maths.h:156:19:constrain	24	static
-../src/main/common/sdft.c:36:6:sdftInit	72	static
-../src/main/common/sdft.c:69:6:sdftPush	24	static
-../src/main/common/sdft.c:83:6:sdftPushBatch	40	static
-../src/main/common/sdft.c:105:6:sdftMagSq	32	static
-../src/main/common/sdft.c:119:6:sdftMagnitude	16	static
-../src/main/common/sdft.c:128:6:sdftWinSq	48	static
-../src/main/common/sdft.c:144:6:sdftWindow	16	static
-../src/main/common/sdft.c:152:13:applySqrt	32	static

@@ -1,4 +1,0 @@
-../src/main/main.c:86:5:main	8	static
-../src/main/main.c:142:6:hwInit	8	static
-../src/main/main.c:168:6:SystemClock_Config	88	static
-../src/main/main.c:218:6:Error_Handler	4	static,ignoring_inline_asm

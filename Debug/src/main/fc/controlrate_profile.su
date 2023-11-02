@@ -1,4 +1,0 @@
-../src/main/fc/controlrate_profile.c:39:6:controlRateProfiles_Init	16	static
-../src/main/fc/controlrate_profile.c:77:6:loadControlRateProfile	4	static
-../src/main/fc/controlrate_profile.c:82:6:changeControlRateProfile	16	static
-../src/main/fc/controlrate_profile.c:92:6:copyControlRateProfile	16	static

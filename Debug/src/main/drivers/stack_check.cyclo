@@ -1,2 +1,0 @@
-stack_check.c:95:10:stackTotalSize	1
-stack_check.c:100:10:stackHighMem	1

@@ -1,4 +1,0 @@
-controlrate_profile.c:39:6:controlRateProfiles_Init	2
-controlrate_profile.c:77:6:loadControlRateProfile	1
-controlrate_profile.c:82:6:changeControlRateProfile	2
-controlrate_profile.c:92:6:copyControlRateProfile	4

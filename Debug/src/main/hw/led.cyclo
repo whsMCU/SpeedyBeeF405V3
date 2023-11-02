@@ -1,5 +1,0 @@
-led.c:31:6:ledInit	2
-led.c:58:6:ledOn	2
-led.c:65:6:ledOff	2
-led.c:72:6:ledToggle	2
-led.c:80:6:cliLed	7

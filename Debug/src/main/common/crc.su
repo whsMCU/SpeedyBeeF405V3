@@ -1,9 +1,0 @@
-../src/main/common/crc.c:28:10:crc16_ccitt	24	static
-../src/main/common/crc.c:41:10:crc16_ccitt_update	32	static
-../src/main/common/crc.c:52:6:crc16_ccitt_sbuf_append	32	static
-../src/main/common/crc.c:62:9:crc8_calc	24	static
-../src/main/common/crc.c:75:9:crc8_update	32	static
-../src/main/common/crc.c:86:6:crc8_sbuf_append	40	static
-../src/main/common/crc.c:96:9:crc8_xor_update	32	static
-../src/main/common/crc.c:107:6:crc8_xor_sbuf_append	32	static
-../src/main/common/crc.c:118:10:fnv_update	32	static

@@ -1,2 +1,0 @@
-../src/main/common/sensor_alignment.c:31:6:buildRotationMatrixFromAlignment	32	static
-../src/main/common/sensor_alignment.c:42:6:buildAlignmentFromStandardAlignment	24	static

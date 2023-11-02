@@ -1,3 +1,0 @@
-../src/main/common/explog_approx.c:42:7:exp_approx	48	static
-../src/main/common/explog_approx.c:73:7:log_approx	32	static
-../src/main/common/explog_approx.c:98:7:pow_approx	16	static

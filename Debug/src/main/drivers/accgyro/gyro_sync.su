@@ -1,2 +1,0 @@
-../src/main/drivers/accgyro/gyro_sync.c:36:6:gyroSyncCheckUpdate	24	static
-../src/main/drivers/accgyro/gyro_sync.c:48:10:gyroSetSampleRate	24	static

@@ -1,4 +1,0 @@
-../src/main/hw/timer.c:16:6:timerInit	112	static
-../src/main/hw/timer.c:119:6:HAL_TIM_Base_MspInit	24	static
-../src/main/hw/timer.c:154:6:HAL_TIM_MspPostInit	40	static
-../src/main/hw/timer.c:185:6:HAL_TIM_Base_MspDeInit	16	static

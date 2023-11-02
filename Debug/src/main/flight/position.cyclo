@@ -1,4 +1,0 @@
-position.c:54:6:positionConfig_Init	1
-position.c:93:6:calculateEstimatedAltitude	29
-position.c:210:6:isAltitudeOffset	3
-position.c:216:9:getEstimatedAltitudeCm	1

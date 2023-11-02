@@ -1,9 +1,0 @@
-adc.c:38:6:adcConfig_Init	1
-adc.c:92:10:adcInternalReadVrefint	1
-adc.c:97:10:adcInternalReadTempsensor	1
-adc.c:103:6:adcInit	7
-adc.c:183:10:adcGetChannel	1
-adc.c:211:10:adcInternalCompensateVref	1
-adc.c:218:9:adcInternalComputeTemperature	1
-adc.c:227:6:HAL_ADC_MspInit	3
-adc.c:277:6:HAL_ADC_MspDeInit	2

@@ -1,9 +1,0 @@
-crc.c:28:10:crc16_ccitt	3
-crc.c:41:10:crc16_ccitt_update	2
-crc.c:52:6:crc16_ccitt_sbuf_append	2
-crc.c:62:9:crc8_calc	3
-crc.c:75:9:crc8_update	2
-crc.c:86:6:crc8_sbuf_append	2
-crc.c:96:9:crc8_xor_update	2
-crc.c:107:6:crc8_xor_sbuf_append	2
-crc.c:118:10:fnv_update	2

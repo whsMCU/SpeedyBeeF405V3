@@ -1,2 +1,0 @@
-../src/main/sensors/sensors.c:30:6:Sensor_Init	16	static
-../src/main/sensors/sensors.c:49:6:cliSensor	24	static

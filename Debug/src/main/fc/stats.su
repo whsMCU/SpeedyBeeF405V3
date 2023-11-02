@@ -1,5 +1,0 @@
-../src/main/fc/stats.c:45:6:statsConfig_Init	4	static
-../src/main/fc/stats.c:59:6:statsInit	8	static
-../src/main/fc/stats.c:64:6:writeStats	16	static
-../src/main/fc/stats.c:87:6:statsOnArm	8	static
-../src/main/fc/stats.c:93:6:statsOnDisarm	16	static

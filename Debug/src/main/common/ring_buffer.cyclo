@@ -1,9 +1,0 @@
-ring_buffer.c:10:6:qbufferInit	1
-ring_buffer.c:15:6:qbufferCreate	1
-ring_buffer.c:28:6:qbufferCreateBySize	1
-ring_buffer.c:41:6:qbufferWrite	6
-ring_buffer.c:76:6:qbufferRead	6
-ring_buffer.c:110:10:qbufferPeekWrite	1
-ring_buffer.c:115:10:qbufferPeekRead	1
-ring_buffer.c:121:10:qbufferAvailable	1
-ring_buffer.c:131:6:qbufferFlush	1

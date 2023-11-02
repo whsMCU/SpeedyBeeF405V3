@@ -1,3 +1,0 @@
-buf_writer.c:27:6:bufWriterInit	1
-buf_writer.c:37:6:bufWriterAppend	2
-buf_writer.c:45:6:bufWriterFlush	2
