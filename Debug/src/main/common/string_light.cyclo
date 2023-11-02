@@ -1,0 +1,3 @@
+strings.h:67:6:strcasecmp	1
+strings.h:68:6:strncasecmp	6
+string_light.c:87:7:strcasestr	3

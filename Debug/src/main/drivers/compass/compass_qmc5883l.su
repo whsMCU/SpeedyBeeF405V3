@@ -1,0 +1,3 @@
+../src/main/drivers/compass/compass_qmc5883l.c:72:13:qmc5883lInit	32	static
+../src/main/drivers/compass/compass_qmc5883l.c:89:13:qmc5883lRead	24	static
+../src/main/drivers/compass/compass_qmc5883l.c:129:6:qmc5883lDetect	32	static

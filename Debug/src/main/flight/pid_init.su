@@ -1,0 +1,7 @@
+../src/main/flight/pid_init.c:55:13:pidSetTargetLooptime	16	static
+../src/main/flight/pid_init.c:65:7:pidInitFilters	88	static
+../src/main/flight/pid_init.c:240:6:pidInit	16	static
+../src/main/flight/pid_init.c:251:6:pidInitFeedforwardLpf	32	static
+../src/main/flight/pid_init.c:262:6:pidUpdateFeedforwardLpf	32	static
+../src/main/flight/pid_init.c:272:6:pidInitConfig	56	static
+../src/main/flight/pid_init.c:433:7:pidCopyProfile	16	static

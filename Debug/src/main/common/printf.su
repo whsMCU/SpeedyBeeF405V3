@@ -1,0 +1,5 @@
+../src/main/common/printf.c:53:12:putchw	40	static
+../src/main/common/printf.c:71:5:tfp_format	56	static
+../src/main/common/printf.c:154:6:init_printf	16	static
+../src/main/common/printf.c:160:13:putcp	16	static
+../src/main/common/printf.c:165:5:tfp_sprintf	28	static

@@ -1,0 +1,9 @@
+../src/main/hw/adc.c:38:6:adcConfig_Init	4	static
+../src/main/hw/adc.c:92:10:adcInternalReadVrefint	4	static
+../src/main/hw/adc.c:97:10:adcInternalReadTempsensor	4	static
+../src/main/hw/adc.c:103:6:adcInit	32	static
+../src/main/hw/adc.c:183:10:adcGetChannel	16	static
+../src/main/hw/adc.c:211:10:adcInternalCompensateVref	16	static
+../src/main/hw/adc.c:218:9:adcInternalComputeTemperature	16	static
+../src/main/hw/adc.c:227:6:HAL_ADC_MspInit	48	static
+../src/main/hw/adc.c:277:6:HAL_ADC_MspDeInit	16	static

@@ -1,0 +1,12 @@
+C:/Users/jjins/Documents/Project/SpeedyBeeF405V3/src/main/common/maths.h:156:19:constrain	24	static
+C:/Users/jjins/Documents/Project/SpeedyBeeF405V3/src/main/common/utils.h:101:23:cmp32	16	static
+../src/main/fc/rc_adjustments.c:86:13:blackboxLogInflightAdjustmentEvent	16	static
+../src/main/fc/rc_adjustments.c:268:12:applyStepAdjustment	32	static
+../src/main/fc/rc_adjustments.c:431:12:applyAbsoluteAdjustment	32	static
+../src/main/fc/rc_adjustments.c:594:16:applySelectAdjustment	24	static
+../src/main/fc/rc_adjustments.c:655:13:calcActiveAdjustmentRanges	40	static
+../src/main/fc/rc_adjustments.c:711:13:processStepwiseAdjustments	48	static
+../src/main/fc/rc_adjustments.c:772:13:setConfigDirtyIfNotPermanent	16	static
+../src/main/fc/rc_adjustments.c:780:13:processContinuosAdjustments	56	static
+../src/main/fc/rc_adjustments.c:831:6:processRcAdjustments	24	static
+../src/main/fc/rc_adjustments.c:870:6:activeAdjustmentRangeReset	4	static

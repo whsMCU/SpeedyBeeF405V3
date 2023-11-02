@@ -1,0 +1,9 @@
+../src/main/sensors/compass.c:61:6:compassConfig_Init	8	static
+../src/main/sensors/compass.c:108:6:compassPreInit	4	static
+../src/main/sensors/compass.c:118:6:compassDetect	24	static
+../src/main/sensors/compass.c:142:6:compassInit	16	static
+../src/main/sensors/compass.c:172:6:compassIsHealthy	4	static
+../src/main/sensors/compass.c:177:6:compassStartCalibration	16	static
+../src/main/sensors/compass.c:188:6:compassIsCalibrationComplete	4	static
+../src/main/sensors/compass.c:193:10:compassUpdate	32	static
+../src/main/sensors/compass.c:240:6:cliQmc5883l	32	static

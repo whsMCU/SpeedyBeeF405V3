@@ -1,0 +1,10 @@
+../src/main/fc/runtime_config.c:66:6:setArmingDisabled	16	static
+../src/main/fc/runtime_config.c:71:6:unsetArmingDisabled	16	static
+../src/main/fc/runtime_config.c:76:6:isArmingDisabled	4	static
+../src/main/fc/runtime_config.c:81:22:getArmingDisableFlags	4	static
+../src/main/fc/runtime_config.c:90:10:enableFlightMode	24	static
+../src/main/fc/runtime_config.c:104:10:disableFlightMode	24	static
+../src/main/fc/runtime_config.c:113:6:sensors	16	static
+../src/main/fc/runtime_config.c:118:6:sensorsSet	16	static
+../src/main/fc/runtime_config.c:123:6:sensorsClear	16	static
+../src/main/fc/runtime_config.c:128:10:sensorsMask	4	static

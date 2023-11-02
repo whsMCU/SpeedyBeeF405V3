@@ -1,0 +1,14 @@
+../src/main/sensors/barometer.c:50:6:barometerConfig_Init	4	static
+../src/main/sensors/barometer.c:85:6:Baro_Init	16	static
+../src/main/sensors/barometer.c:100:6:baroIsCalibrationComplete	4	static
+../src/main/sensors/barometer.c:105:13:baroSetCalibrationCycles	16	static
+../src/main/sensors/barometer.c:110:6:baroStartCalibration	8	static
+../src/main/sensors/barometer.c:115:6:baroSetGroundLevel	8	static
+../src/main/sensors/barometer.c:122:16:applyBarometerMedianFilter	24	static
+../src/main/sensors/barometer.c:144:17:recalculateBarometerTotal	32	static
+../src/main/sensors/barometer.c:179:6:isBaroReady	4	static
+../src/main/sensors/barometer.c:183:10:baroUpdate	32	static
+../src/main/sensors/barometer.c:281:14:pressureToAltitude	16	static
+../src/main/sensors/barometer.c:286:9:baroCalculateAltitude	16	static
+../src/main/sensors/barometer.c:302:6:performBaroCalibrationCycle	8	static
+../src/main/sensors/barometer.c:319:6:cliDps310	32	static

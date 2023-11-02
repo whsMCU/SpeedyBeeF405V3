@@ -1,0 +1,9 @@
+rc_controls.c:59:6:rcControlsConfig_Init	1
+rc_controls.c:69:6:armingConfig_Init	1
+rc_controls.c:76:6:flight3DConfig_Init	1
+rc_controls.c:88:6:isUsingSticksForArming	1
+rc_controls.c:93:6:areSticksInApModePosition	3
+rc_controls.c:98:18:calculateThrottleStatus	8
+rc_controls.c:124:6:processRcStickPositions	51
+rc_controls.c:398:9:getRcStickDeflection	3
+rc_controls.c:402:6:rcControlsInit	3

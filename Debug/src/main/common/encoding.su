@@ -1,0 +1,2 @@
+../src/main/common/encoding.c:31:10:castFloatBytesToInt	24	static
+../src/main/common/encoding.c:50:10:zigzagEncode	16	static

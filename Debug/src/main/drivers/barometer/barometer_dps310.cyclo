@@ -1,0 +1,14 @@
+barometer_dps310.c:99:16:registerRead	1
+barometer_dps310.c:106:13:registerWrite	1
+barometer_dps310.c:111:13:registerSetBits	2
+barometer_dps310.c:121:16:getTwosComplement	2
+barometer_dps310.c:131:13:deviceConfigure	5
+barometer_dps310.c:212:13:dps310ReadUP	1
+barometer_dps310.c:227:13:dps310GetUP	1
+barometer_dps310.c:266:13:deviceCalculate	3
+barometer_dps310.c:280:13:deviceDetect	4
+barometer_dps310.c:297:13:dps310StartUT	1
+barometer_dps310.c:302:13:dps310ReadUT	1
+barometer_dps310.c:309:13:dps310GetUT	1
+barometer_dps310.c:316:13:dps310StartUP	1
+barometer_dps310.c:321:6:dps310Detect	3

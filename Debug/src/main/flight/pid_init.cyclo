@@ -1,0 +1,7 @@
+pid_init.c:55:13:pidSetTargetLooptime	1
+pid_init.c:65:7:pidInitFilters	35
+pid_init.c:240:6:pidInit	1
+pid_init.c:251:6:pidInitFeedforwardLpf	3
+pid_init.c:262:6:pidUpdateFeedforwardLpf	3
+pid_init.c:272:6:pidInitConfig	17
+pid_init.c:433:7:pidCopyProfile	4

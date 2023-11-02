@@ -1,0 +1,4 @@
+strtol.c:32:15:_strto_l	29
+stdlib.h:171:6:strtol	1
+stdlib.h:173:15:strtoul	1
+stdlib.h:81:5:atoi	1

@@ -1,0 +1,14 @@
+barometer.c:50:6:barometerConfig_Init	1
+barometer.c:85:6:Baro_Init	1
+barometer.c:100:6:baroIsCalibrationComplete	1
+barometer.c:105:13:baroSetCalibrationCycles	1
+barometer.c:110:6:baroStartCalibration	1
+barometer.c:115:6:baroSetGroundLevel	1
+barometer.c:122:16:applyBarometerMedianFilter	3
+barometer.c:144:17:recalculateBarometerTotal	2
+barometer.c:179:6:isBaroReady	1
+barometer.c:183:10:baroUpdate	18
+barometer.c:281:14:pressureToAltitude	1
+barometer.c:286:9:baroCalculateAltitude	2
+barometer.c:302:6:performBaroCalibrationCycle	4
+barometer.c:319:6:cliDps310	10

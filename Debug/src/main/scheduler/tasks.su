@@ -1,0 +1,14 @@
+../src/main/scheduler/tasks.c:79:13:taskMain	16	static
+../src/main/scheduler/tasks.c:88:13:ledUpdate	16	static
+../src/main/scheduler/tasks.c:100:13:debugPrint	16	static
+../src/main/scheduler/tasks.c:185:13:taskHandleSerial	16	static
+../src/main/scheduler/tasks.c:207:13:taskBatteryAlerts	16	static
+../src/main/scheduler/tasks.c:218:13:taskUpdateAccelerometer	16	static
+../src/main/scheduler/tasks.c:232:6:taskUpdateRxMainInProgress	4	static
+../src/main/scheduler/tasks.c:237:13:taskUpdateRxMain	32	static
+../src/main/scheduler/tasks.c:303:13:taskUpdateBaro	24	static
+../src/main/scheduler/tasks.c:317:13:taskUpdateMag	24	static
+../src/main/scheduler/tasks.c:346:13:taskCalculateAltitude	16	static
+../src/main/scheduler/tasks.c:483:9:getTask	16	static
+../src/main/scheduler/tasks.c:489:6:tasksInitData	16	static
+../src/main/scheduler/tasks.c:496:6:tasksInit	16	static

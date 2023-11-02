@@ -1,0 +1,10 @@
+../src/main/common/typeconversion.c:32:6:uli2a	32	static
+../src/main/common/typeconversion.c:50:6:li2a	16	static
+../src/main/common/typeconversion.c:61:6:ui2a	32	static
+../src/main/common/typeconversion.c:79:6:i2a	16	static
+../src/main/common/typeconversion.c:88:5:a2d	16	static
+../src/main/common/typeconversion.c:100:6:a2i	40	static
+../src/main/common/typeconversion.c:132:14:_i2a	24	static
+../src/main/common/typeconversion.c:140:7:itoa	24	static
+../src/main/common/typeconversion.c:154:7:ftoa	56	static
+../src/main/common/typeconversion.c:213:7:fastA2F	40	static

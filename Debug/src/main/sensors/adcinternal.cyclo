@@ -1,0 +1,5 @@
+adcinternal.c:38:10:updateMovingAverageUint16	1
+adcinternal.c:59:10:getVrefMv	1
+adcinternal.c:68:9:getCoreTemperatureCelsius	1
+adcinternal.c:73:6:adcInternalProcess	5
+adcinternal.c:98:6:adcInternalInit	2

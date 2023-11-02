@@ -1,0 +1,6 @@
+../src/main/sensors/boardalignment.c:44:6:boardAlignment_Init	24	static
+../src/main/sensors/boardalignment.c:51:13:isBoardAlignmentStandard	16	static
+../src/main/sensors/boardalignment.c:56:6:initBoardAlignment	32	static
+../src/main/sensors/boardalignment.c:72:13:alignBoard	16	static
+../src/main/sensors/boardalignment.c:77:6:alignSensorViaMatrix	16	static
+../src/main/sensors/boardalignment.c:86:6:alignSensorViaRotation	32	static

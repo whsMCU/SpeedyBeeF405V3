@@ -1,0 +1,12 @@
+../src/main/hw/files.c:19:7:ob_malloc	24	static
+../src/main/hw/files.c:36:6:ob_free	24	static
+../src/main/hw/files.c:48:7:ob_fopen	32	static
+../src/main/hw/files.c:86:5:ob_fclose	24	static
+../src/main/hw/files.c:97:8:ob_fread	40	static
+../src/main/hw/files.c:108:8:ob_fwrite	40	static
+../src/main/hw/files.c:119:5:ob_fflush	24	static
+../src/main/hw/files.c:133:5:ob_feof	24	static
+../src/main/hw/files.c:138:5:ob_fseek	40	static
+../src/main/hw/files.c:165:6:ob_ftell	24	static
+../src/main/hw/files.c:171:5:ob_fgetc	32	static
+../src/main/hw/files.c:185:7:ob_fgets	32	static

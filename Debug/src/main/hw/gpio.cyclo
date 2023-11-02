@@ -1,0 +1,6 @@
+gpio.c:38:6:gpioInit	2
+gpio.c:74:6:gpioPinMode	10
+gpio.c:140:6:gpioPinWrite	3
+gpio.c:157:6:gpioPinRead	3
+gpio.c:174:6:gpioPinToggle	2
+gpio.c:189:6:cliGpio	11

@@ -1,0 +1,13 @@
+../src/main/hw/i2c.c:16:6:i2cInit	16	static
+../src/main/hw/i2c.c:38:6:I2C_ByteWrite	48	static
+../src/main/hw/i2c.c:59:6:I2C_BitWrite	48	static
+../src/main/hw/i2c.c:82:6:I2C_ByteRead	40	static
+../src/main/hw/i2c.c:88:6:I2C_ByteWrite_HAL	40	static
+../src/main/hw/i2c.c:94:6:I2C_BitRead	40	static
+../src/main/hw/i2c.c:101:6:I2C_Write	24	static
+../src/main/hw/i2c.c:108:6:I2C_Read	24	static
+../src/main/hw/i2c.c:115:6:i2cIsDeviceReady	16	static,ignoring_inline_asm
+../src/main/hw/i2c.c:128:6:busBusy	16	static
+../src/main/hw/i2c.c:140:6:HAL_I2C_MspInit	48	static
+../src/main/hw/i2c.c:176:6:HAL_I2C_MspDeInit	16	static
+../src/main/hw/i2c.c:204:6:cliI2C	184	static

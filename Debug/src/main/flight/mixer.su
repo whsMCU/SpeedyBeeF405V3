@@ -1,0 +1,17 @@
+C:/Users/jjins/Documents/Project/SpeedyBeeF405V3/src/main/common/time.h:43:27:cmpTimeUs	16	static
+C:/Users/jjins/Documents/Project/SpeedyBeeF405V3/src/main/common/maths.h:166:21:constrainf	24	static
+../src/main/flight/mixer.c:71:7:getMotorMixRange	4	static
+../src/main/flight/mixer.c:76:6:writeMotors	8	static
+../src/main/flight/mixer.c:81:13:writeAllMotors	24	static
+../src/main/flight/mixer.c:90:6:stopMotors	8	static
+../src/main/flight/mixer.c:104:13:calculateThrottleAndCurrentMotorEndpoints	40	static
+../src/main/flight/mixer.c:267:13:applyFlipOverAfterCrashModeToMotors	120	static
+../src/main/flight/mixer.c:343:13:applyMixToMotors	32	static
+../src/main/flight/mixer.c:380:14:applyThrottleLimit	32	static
+../src/main/flight/mixer.c:395:13:applyMotorStop	16	static
+../src/main/flight/mixer.c:403:13:updateDynLpfCutoffs	24	static
+../src/main/flight/mixer.c:422:13:applyMixerAdjustmentLinear	48	static
+../src/main/flight/mixer.c:438:13:applyMixerAdjustment	40	static
+../src/main/flight/mixer.c:467:6:mixTable	112	static
+../src/main/flight/mixer.c:615:6:mixerSetThrottleAngleCorrection	16	static
+../src/main/flight/mixer.c:620:7:mixerGetThrottle	4	static

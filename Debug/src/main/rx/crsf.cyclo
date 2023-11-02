@@ -1,0 +1,14 @@
+maths.h:156:19:constrain	3
+time.h:43:27:cmpTimeUs	1
+crsf.c:215:13:handleCrsfLinkStatisticsFrame	14
+crsf.c:297:13:crsfCheckRssi	3
+crsf.c:319:16:crsfFrameCRC	2
+crsf.c:329:16:crsfFrameCmdCRC	2
+crsf.c:341:6:crsfDataReceive	14
+crsf.c:474:16:crsfFrameStatus	9
+crsf.c:571:14:crsfReadRawRC	2
+crsf.c:593:6:crsfRxWriteTelemetryData	1
+crsf.c:600:6:crsfRxSendTelemetryData	2
+crsf.c:609:6:crsfRxIsTelemetryBufEmpty	1
+crsf.c:614:6:crsfRxInit	3
+crsf.c:675:6:crsfRxIsActive	1

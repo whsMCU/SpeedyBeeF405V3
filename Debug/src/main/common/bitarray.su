@@ -1,0 +1,5 @@
+../src/main/common/bitarray.c:29:6:bitArrayGet	16	static
+../src/main/common/bitarray.c:34:6:bitArraySet	16	static
+../src/main/common/bitarray.c:39:6:bitArrayClr	16	static
+../src/main/common/bitarray.c:44:6:bitArrayXor	32	static
+../src/main/common/bitarray.c:51:6:bitArrayCopy	24	static

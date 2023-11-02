@@ -1,0 +1,8 @@
+../src/main/sensors/current.c:71:6:currentMeterReset	16	static
+../src/main/sensors/current.c:95:6:currentSensorADCConfig_Init	4	static
+../src/main/sensors/current.c:101:16:currentMeterADCToCentiamps	40	static
+../src/main/sensors/current.c:117:13:updateCurrentmAhDrawnState	24	static
+../src/main/sensors/current.c:130:6:currentMeterADCInit	8	static
+../src/main/sensors/current.c:136:6:currentMeterADCRefresh	24	static
+../src/main/sensors/current.c:153:6:currentMeterADCRead	16	static
+../src/main/sensors/current.c:289:6:currentMeterRead	16	static

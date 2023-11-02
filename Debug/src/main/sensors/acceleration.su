@@ -1,0 +1,3 @@
+../src/main/sensors/acceleration.c:43:13:applyAccelerationTrims	16	static
+../src/main/sensors/acceleration.c:52:6:accUpdate	32	static
+../src/main/sensors/acceleration.c:95:6:accGetAccumulationAverage	24	static

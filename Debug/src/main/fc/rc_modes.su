@@ -1,0 +1,14 @@
+C:/Users/jjins/Documents/Project/SpeedyBeeF405V3/src/main/common/maths.h:156:19:constrain	24	static
+../src/main/fc/rc_modes.c:65:6:IS_RC_MODE_ACTIVE	16	static
+../src/main/fc/rc_modes.c:70:6:rcModeUpdate	16	static
+../src/main/fc/rc_modes.c:75:6:airmodeIsEnabled	4	static
+../src/main/fc/rc_modes.c:79:6:isRangeActive	24	static
+../src/main/fc/rc_modes.c:100:6:updateMasksForMac	32	static
+../src/main/fc/rc_modes.c:119:6:updateMasksForStickyModes	32	static
+../src/main/fc/rc_modes.c:137:6:updateActivatedModes	64	static
+../src/main/fc/rc_modes.c:172:6:isModeActivationConditionPresent	24	static
+../src/main/fc/rc_modes.c:185:6:isModeActivationConditionLinked	24	static
+../src/main/fc/rc_modes.c:198:6:removeModeActivationCondition	32	static
+../src/main/fc/rc_modes.c:222:6:isModeActivationConditionConfigured	16	static
+../src/main/fc/rc_modes.c:233:6:analyzeModeActivationConditions	24	static
+../src/main/fc/rc_modes.c:254:6:MSP_SET_MODE_RANGE	40	static

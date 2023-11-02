@@ -1,0 +1,7 @@
+../src/main/hw/flash.c:52:6:flashInit	8	static
+../src/main/hw/flash.c:62:19:flashErase	48	static
+../src/main/hw/flash.c:91:6:flashWrite	48	static
+../src/main/hw/flash.c:118:19:FLASH_ProgramWord	24	static
+../src/main/hw/flash.c:127:6:flashRead	40	static
+../src/main/hw/flash.c:141:6:flashInSector	48	static
+../src/main/hw/flash.c:181:6:cliFlash	56	static

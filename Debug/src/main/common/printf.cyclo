@@ -1,0 +1,5 @@
+printf.c:53:12:putchw	6
+printf.c:71:5:tfp_format	20
+printf.c:154:6:init_printf	1
+printf.c:160:13:putcp	1
+printf.c:165:5:tfp_sprintf	1

@@ -1,0 +1,6 @@
+sd_diskio.c:79:16:SD_CheckStatus	3
+sd_diskio.c:99:9:SD_initialize	2
+sd_diskio.c:119:9:SD_status	1
+sd_diskio.c:137:9:SD_read	2
+sd_diskio.c:165:9:SD_write	2
+sd_diskio.c:194:9:SD_ioctl	6

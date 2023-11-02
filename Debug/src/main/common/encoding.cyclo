@@ -1,0 +1,2 @@
+encoding.c:31:10:castFloatBytesToInt	1
+encoding.c:50:10:zigzagEncode	1
