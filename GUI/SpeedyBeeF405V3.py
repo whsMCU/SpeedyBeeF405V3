@@ -1,103 +1,51 @@
-# -*- coding: utf-8 -*-
-import sys
-from PyQt6 import QtWidgets, QtCore, QtGui
-from PyQt6.QtSerialPort import QSerialPort, QSerialPortInfo
+VERSION = "v0.09"
+import sys, time, serial
+from PyQt5.QtWidgets import *
+from PyQt5 import uic, QtCore
 
-class SerialMonitor(QtWidgets.QMainWindow):
-    def __init__(self):
-        super(SerialMonitor, self).__init__()
-        self.serialDataView = SerialDataView(self)
-        self.serialSendView = SerialSendView(self)
 
-        self.setCentralWidget( QtWidgets.QWidget(self) )
-        layout = QtWidgets.QVBoxLayout( self.centralWidget() )
-        layout.addWidget(self.serialDataView)
-        layout.addWidget(self.serialSendView)
-        layout.setContentsMargins(3, 3, 3, 3)
+WIN_WIDTH, WIN_HEIGHT = 684, 400    # Window size
+SER_TIMEOUT = 0.1                   # Timeout for serial Rx
+RETURN_CHAR = "\n"                  # Char to be sent when Enter key pressed
+PASTE_CHAR  = "\x16"                # Ctrl code for clipboard paste
+baudrate    = 115200                # Default baud rate
+portname    = "COM1"                # Default port name
+hexmode     = False                 # Flag to enable hex display
 
-        self.toolBar = ToolBar(self)
-        self.addToolBar(self.toolBar)
+#UI파일 연결
+#단, UI파일은 Python 코드 파일과 같은 디렉토리에 위치해야한다.
+form_class = uic.loadUiType("ui/SpeedyBeeF405V3.ui")[0]
 
-        self.setStatusBar( QtWidgets.QStatusBar(self) )
-        self.statusText = QtWidgets.QLabel(self)
-        self.statusBar().addWidget( self.statusText )
-        
-class SerialDataView(QtWidgets.QWidget):
-    def __init__(self, parent):
-        super(SerialDataView, self).__init__(parent)
-        self.serialData = QtWidgets.QTextEdit(self)
-        self.serialData.setReadOnly(True)
-        self.serialData.setFontFamily('Courier New')
+#화면을 띄우는데 사용되는 Class 선언
+class WindowClass(QMainWindow, form_class) :
 
-        self.serialDataHex = QtWidgets.QTextEdit(self)
-        self.serialDataHex.setReadOnly(True)
-        self.serialDataHex.setFontFamily('Courier New')
+    def __init__(self) :
+        super().__init__()
+        # 연결한 Ui를 준비한다.
+        self.setupUi(self)
+        # 화면을 보여준다.
+        self.show()
 
-        self.label = QtWidgets.QLabel('00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F')
-        self.label.setFont( QtGui.QFont('Courier New') )
-        self.label.setIndent(5)
+        self.pushButton.clicked.connect(self.btnClick_Connect)
+        self.pushButton_2.clicked.connect(self.btnClick_Disconnect)
 
-        self.setLayout( QtWidgets.QGridLayout(self) )
-        self.layout().addWidget(self.serialData,    0, 0, 2, 1)
-        self.layout().addWidget(self.label,         0, 1, 1, 1)
-        self.layout().addWidget(self.serialDataHex, 1, 1, 1, 1)
-        self.layout().setContentsMargins(2, 2, 2, 2)
-        
-class SerialSendView(QtWidgets.QWidget):
+    def btnClick_Connect(self) :
+        print("버튼이 클릭되었습니다.")
+        self.textBrowser.append("Append Text")
 
-    serialSendSignal = QtCore.pyqtSignal(str)
+    def btnClick_Disconnect(self) :
+        print("버튼이 클릭되었습니다.")
+        self.textBrowser.clear()
 
-    def __init__(self, parent):
-        super(SerialSendView, self).__init__(parent)
+if __name__ == "__main__" :
+    #QApplication : 프로그램을 실행시켜주는 클래스
+    app = QApplication(sys.argv)
 
-        self.sendData = QtWidgets.QTextEdit(self)
-        self.sendData.setAcceptRichText(False)
+    #WindowClass의 인스턴스 생성
+    myWindow = WindowClass()
+    myWindow.setWindowTitle('PyQT Serial Terminal ' + VERSION)
+    #프로그램 화면을 보여주는 코드
+    myWindow.show()
 
-        self.sendButton = QtWidgets.QPushButton('Send')
-        
-        self.setLayout( QtWidgets.QHBoxLayout(self) )
-        self.layout().addWidget(self.sendData)
-        self.layout().addWidget(self.sendButton)
-        self.layout().setContentsMargins(3, 3, 3, 3)
-        
-class ToolBar(QtWidgets.QToolBar):
-    def __init__(self, parent):
-        super(ToolBar, self).__init__(parent)
-        
-        self.portOpenButton = QtWidgets.QPushButton('Open')
-        self.portOpenButton.setCheckable(True)
-
-        self.portNames = QtWidgets.QComboBox(self)
-        self.portNames.addItems([ port.portName() for port in QSerialPortInfo().availablePorts() ])
-
-        self.baudRates = QtWidgets.QComboBox(self)
-        self.baudRates.addItems([
-            '110', '300', '600', '1200', '2400', '4800', '9600', '14400', '19200', '28800', 
-            '31250', '38400', '51200', '56000', '57600', '76800', '115200', '128000', '230400', '256000', '921600'
-        ])
-
-        self.dataBits = QtWidgets.QComboBox(self)
-        self.dataBits.addItems(['5 bit', '6 bit', '7 bit', '8 bit'])
-
-        self._parity = QtWidgets.QComboBox(self)
-        self._parity.addItems(['No Parity', 'Even Parity', 'Odd Parity', 'Space Parity', 'Mark Parity'])
-
-        self.stopBits = QtWidgets.QComboBox(self)
-        self.stopBits.addItems(['One Stop', 'One And Half Stop', 'Two Stop'])
-
-        self._flowControl = QtWidgets.QComboBox(self)
-        self._flowControl.addItems(['No Flow Control', 'Hardware Control', 'Software Control'])
-
-        self.addWidget( self.portOpenButton )
-        self.addWidget( self.portNames)
-        self.addWidget( self.baudRates)
-        self.addWidget( self.dataBits)
-        self.addWidget( self._parity)
-        self.addWidget( self.stopBits)
-        self.addWidget( self._flowControl)
-        
-if __name__ == '__main__':
-    app = QtWidgets.QApplication(sys.argv)
-    window = SerialMonitor()
-    window.show()
-    app.exec()
+    #프로그램을 이벤트루프로 진입시키는(프로그램을 작동시키는) 코드
+    sys.exit(app.exec_())
