@@ -91,6 +91,12 @@ bool I2C_ByteWrite_HAL(uint16_t DevAddress, uint16_t MemAddress, uint16_t MemAdd
   return true;
 }
 
+bool I2C_ByteWrite_IT(uint16_t DevAddress, uint16_t MemAddress, uint16_t MemAddSize, uint8_t *pData, uint16_t Size)
+{
+  HAL_I2C_Mem_Write_IT(&hi2c2, DevAddress<<1, MemAddress, MemAddSize, pData, Size);
+  return true;
+}
+
 void I2C_BitRead(uint8_t DevAddress, uint8_t MemAddress, uint8_t bitNum, uint8_t *data)
 {
 	uint8_t tmp;

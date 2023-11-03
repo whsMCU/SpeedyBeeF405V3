@@ -20,14 +20,14 @@
       <x>420</x>
       <y>250</y>
       <width>361</width>
-      <height>291</height>
+      <height>261</height>
      </rect>
     </property>
    </widget>
    <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
-      <x>660</x>
+      <x>607</x>
       <y>10</y>
       <width>91</width>
       <height>20</height>
@@ -63,12 +63,12 @@
      <string>TextLabel</string>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>623</x>
+      <x>570</x>
       <y>30</y>
-      <width>159</width>
+      <width>214</width>
       <height>194</height>
      </rect>
     </property>
@@ -92,6 +92,21 @@
      </item>
      <item row="1" column="1">
       <widget class="QComboBox" name="comboBox_Baud">
+       <item>
+        <property name="text">
+         <string>1200</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>2400</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>4800</string>
+        </property>
+       </item>
        <item>
         <property name="text">
          <string>9600</string>
@@ -122,7 +137,7 @@
      <item row="2" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>Data :</string>
+        <string>Data Bit :</string>
        </property>
       </widget>
      </item>
@@ -130,22 +145,22 @@
       <widget class="QComboBox" name="comboBox_Data">
        <item>
         <property name="text">
-         <string>EIGHTBITS</string>
+         <string>5</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>FIVEBITS</string>
+         <string>6</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>SIXBITS</string>
+         <string>7</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>SEVENBITS</string>
+         <string>8</string>
         </property>
        </item>
       </widget>
@@ -189,7 +204,7 @@
      <item row="4" column="0">
       <widget class="QLabel" name="label_5">
        <property name="text">
-        <string>Stop :</string>
+        <string>Stop Bit :</string>
        </property>
       </widget>
      </item>
@@ -197,17 +212,17 @@
       <widget class="QComboBox" name="comboBox_Stop">
        <item>
         <property name="text">
-         <string>ONE</string>
+         <string>1</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>ONE_POINT_FIVE</string>
+         <string>1.5</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>TWO</string>
+         <string>2</string>
         </property>
        </item>
       </widget>
@@ -244,9 +259,9 @@
       </widget>
      </item>
      <item row="6" column="0">
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="pushButton_Connect">
        <property name="text">
-        <string>연결</string>
+        <string>Connect</string>
        </property>
       </widget>
      </item>
@@ -259,6 +274,19 @@
      </item>
     </layout>
    </widget>
+   <widget class="QPushButton" name="pushButton_Send">
+    <property name="geometry">
+     <rect>
+      <x>420</x>
+      <y>530</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Send</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -266,7 +294,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

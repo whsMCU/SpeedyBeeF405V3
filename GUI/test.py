@@ -1,11 +1,31 @@
-VERSION = "v0.09"
-import sys, time, serial
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtSerialPort import QSerialPort, QSerialPortInfo
-from PyQt5 import uic, QtCore
+#!/usr/bin/env python
+# coding: utf-8
 
+# Serial 설정과 동작을 관리하는 모듈
+
+import sys
+
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QBoxLayout
+from PyQt5.QtWidgets import QGridLayout
+from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QComboBox
+from PyQt5.QtWidgets import QGroupBox
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QThread
+from PyQt5.QtSerialPort import QSerialPort
+from PyQt5.QtSerialPort import QSerialPortInfo
+from PyQt5.QtCore import QIODevice
+from PyQt5.QtCore import QWaitCondition
+from PyQt5.QtCore import QMutex
+from PyQt5.QtCore import QByteArray
+from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import pyqtSignal
+
+__author__ = "Deokyu Lim <hong18s@gmail.com>"
 __platform__ = sys.platform
+
 
 class SerialReadThread(QThread):
     """
@@ -54,7 +74,47 @@ class SerialReadThread(QThread):
         if self._status:
             self.cond.wakeAll()
 
+
 class SerialController(QWidget):
+    # 시리얼포트 상수 값
+    BAUDRATES = (
+        QSerialPort.Baud1200,
+        QSerialPort.Baud2400,
+        QSerialPort.Baud4800,
+        QSerialPort.Baud9600,
+        QSerialPort.Baud19200,
+        QSerialPort.Baud38400,
+        QSerialPort.Baud57600,
+        QSerialPort.Baud115200,
+    )
+
+    DATABITS = (
+        QSerialPort.Data5,
+        QSerialPort.Data6,
+        QSerialPort.Data7,
+        QSerialPort.Data8,
+    )
+
+    FLOWCONTROL = (
+        QSerialPort.NoFlowControl,
+        QSerialPort.HardwareControl,
+        QSerialPort.SoftwareControl,
+    )
+
+    PARITY = (
+        QSerialPort.NoParity,
+        QSerialPort.EvenParity,
+        QSerialPort.OddParity,
+        QSerialPort.SpaceParity,
+        QSerialPort.MarkParity,
+    )
+
+    STOPBITS = (
+        QSerialPort.OneStop,
+        QSerialPort.OneAndHalfStop,
+        QSerialPort.TwoStop,
+
+    )
 
     received_data = pyqtSignal(QByteArray, name="receivedData")
     sent_data = pyqtSignal(str, name="sentData")
@@ -78,12 +138,47 @@ class SerialController(QWidget):
         self.serial_read_thread.received_data.connect(lambda v: self.received_data.emit(v))
         self.serial_read_thread.start()
 
+        self.init_widget()
+
+    def init_widget(self):
         self.setWindowTitle("Serial Controller")
+        layout = QBoxLayout(QBoxLayout.TopToBottom, parent=self)
+        grid_box = QGridLayout()
+
+        grid_box.addWidget(QLabel(self.tr("Port")), 0, 0)
+        grid_box.addWidget(self.cb_port, 0, 1)
+
+        grid_box.addWidget(QLabel(self.tr("Baud Rate")), 1, 0)
+        grid_box.addWidget(self.cb_baud_rate, 1, 1)
+
+        grid_box.addWidget(QLabel(self.tr("Data Bits")), 2, 0)
+        grid_box.addWidget(self.cb_data_bits, 2, 1)
+
+        grid_box.addWidget(QLabel(self.tr("Flow Control")), 3, 0)
+        grid_box.addWidget(self.cb_flow_control, 3, 1)
+
+        grid_box.addWidget(QLabel(self.tr("Parity")), 4, 0)
+        grid_box.addWidget(self.cb_parity, 4, 1)
+
+        grid_box.addWidget(QLabel(self.tr("Stop Bits")), 5, 0)
+        grid_box.addWidget(self.cb_stop_bits, 5, 1)
+
         self._fill_serial_info()
+        self.gb.setLayout(grid_box)
+        layout.addWidget(self.gb)
+        self.setLayout(layout)
 
     def _fill_serial_info(self):
         # 시리얼 상수 값들을 위젯에 채운다
-        self.comboBox_Port.insertItems(0, self._get_available_port())
+        self.cb_port.insertItems(0, self._get_available_port())
+        self.cb_baud_rate.insertItems(0, [str(x) for x in self.BAUDRATES])
+        self.cb_data_bits.insertItems(0, [str(x) for x in self.DATABITS])
+        flow_name = {0: "None", 1: "Hardware", 2: "Software"}
+        self.cb_flow_control.insertItems(0, [flow_name[x] for x in self.FLOWCONTROL])
+        parity_name = {0: "None", 2: "Even", 3: "Odd", 4: "Space", 5: "Mark"}
+        self.cb_parity.insertItems(0, [parity_name[x] for x in self.PARITY])
+        stop_bits_name = {1: "1", 3: "1.5", 2: "2"}
+        self.cb_stop_bits.insertItems(0, [stop_bits_name[x] for x in self.STOPBITS])
 
     @staticmethod
     def get_port_path():
@@ -109,7 +204,7 @@ class SerialController(QWidget):
             self.serial.close()
         return available_port
 
-    def _open(self, port_name, baudrate=9600, data_bits=QSerialPort.Data8,
+    def _open(self, port_name, baudrate=QSerialPort.Baud9600, data_bits=QSerialPort.Data8,
               flow_control=QSerialPort.NoFlowControl, parity=QSerialPort.NoParity, stop_bits=QSerialPort.OneStop):
         """
         인자값으로 받은 시리얼 접속 정보를 이용하여 해당 포트를 연결한다.
@@ -123,6 +218,7 @@ class SerialController(QWidget):
         """
         info = QSerialPortInfo(port_name)
         self.serial.setPort(info)
+        print("baudrate : " + str(parity))
         self.serial.setBaudRate(baudrate)
         self.serial.setDataBits(data_bits)
         self.serial.setFlowControl(flow_control)
@@ -132,7 +228,7 @@ class SerialController(QWidget):
 
     def connect_serial(self):
         serial_info = {
-            "port_name": self.comboBox_Port.currentText(),
+            "port_name": self.cb_port.currentText(),
             "baudrate": self.BAUDRATES[self.cb_baud_rate.currentIndex()],
             "data_bits": self.DATABITS[self.cb_data_bits.currentIndex()],
             "flow_control": self.FLOWCONTROL[self.cb_flow_control.currentIndex()],
@@ -150,57 +246,59 @@ class SerialController(QWidget):
     def write_data(self, data):
         self.serial.writeData(data)
 
-#UI파일 연결
-#단, UI파일은 Python 코드 파일과 같은 디렉토리에 위치해야한다.
-form_class = uic.loadUiType("ui/SpeedyBeeF405V3.ui")[0]
 
-#화면을 띄우는데 사용되는 Class 선언
-class WindowClass(QMainWindow, form_class) :
-
-    def __init__(self) :
-        super().__init__()
-        # 연결한 Ui를 준비한다.
-        self.setupUi(self)
-        # 화면을 보여준다.
-        self.show()
-
+class Form(QWidget):
+    """
+    테스트용도의 단독 실행때만 사용하는 폼
+    """
+    def __init__(self):
+        QWidget.__init__(self, flags=Qt.Widget)
+        self.te = QTextEdit()
+        self.pb = QPushButton("Connect")
+        self.pb_send = QPushButton("Send")
         self.serial = SerialController()
+        self.init_widget()
 
-        self.pushButton_Connect.clicked.connect(self.btnClick_Connect)
-        self.pushButton_2.clicked.connect(self.btnClick_Disconnect)
+    def init_widget(self):
+        """
+        현재 위젯의 모양등을 초기화
+        """
+        self.setWindowTitle("Hello World")
+        form_lbx = QBoxLayout(QBoxLayout.TopToBottom, parent=self)
+        self.setLayout(form_lbx)
+
+        self.pb.clicked.connect(self.slot_clicked_connect_button)
         self.serial.received_data.connect(self.read_data)
         test_data = bytes([0x02]) + bytes("TEST DATA", "utf-8") + bytes([0x03])
-        self.pushButton_Send.clicked.connect(lambda: self.serial.writeData(test_data))
+        self.pb_send.clicked.connect(lambda: self.serial.writeData(test_data))
+        form_lbx.addWidget(self.serial)
+        form_lbx.addWidget(self.te)
+        form_lbx.addWidget(self.pb_send)
+        form_lbx.addWidget(self.pb)
 
         # 많이 사용하는 옵션을 미리 지정해 둔다.
         # 9600 8N1
-        self.comboBox_Baud.setCurrentIndex(3)
-        self.comboBox_Data.setCurrentIndex(3)
+        self.serial.cb_baud_rate.setCurrentIndex(3)
+        self.serial.cb_data_bits.setCurrentIndex(3)
 
-    def read_data(self, rd) :
-        self.textBrowser.insertPlainText(str(rd, 'ascii', 'replace'))
+    @pyqtSlot(QByteArray, name="readData")
+    def read_data(self, rd):
+        self.te.insertPlainText(str(rd, 'ascii', 'replace'))
 
-    def btnClick_Connect(self) :
-        print("버튼이 클릭되었습니다.")
+    @pyqtSlot(name="clickedConnectButton")
+    def slot_clicked_connect_button(self):
         if self.serial.serial.isOpen():
             self.serial.disconnect_serial()
         else:
             self.serial.connect_serial()
-        self.pushButton_Connect.setText({False: 'Connect', True: 'Disconnect'}[self.serial.serial.isOpen()])
+        self.pb.setText({False: 'Connect', True: 'Disconnect'}[self.serial.serial.isOpen()])
 
-    def btnClick_Disconnect(self) :
-        print("버튼이 클릭되었습니다.")
-        self.textBrowser.clear()
-
-if __name__ == "__main__" :
-    #QApplication : 프로그램을 실행시켜주는 클래스
+if __name__ == "__main__":
+    from PyQt5.QtWidgets import QPushButton
+    from PyQt5.QtWidgets import QTextEdit
     app = QApplication(sys.argv)
-
-    #WindowClass의 인스턴스 생성
-    myWindow = WindowClass()
-    myWindow.setWindowTitle('PyQT Serial Terminal ' + VERSION)
-    #프로그램 화면을 보여주는 코드
-    myWindow.show()
-
-    #프로그램을 이벤트루프로 진입시키는(프로그램을 작동시키는) 코드
-    sys.exit(app.exec_())
+    excepthook = sys.excepthook
+    sys.excepthook = lambda t, val, tb: excepthook(t, val, tb)
+    form = Form()
+    form.show()
+    exit(app.exec_())

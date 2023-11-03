@@ -219,7 +219,7 @@ static bool dps310ReadUP(baroDev_t *baro)
     // No need to poll for data ready as the conversion rate is 32Hz and this is sampling at 20Hz
     // Read PSR_B2, PSR_B1, PSR_B0, TMP_B2, TMP_B1, TMP_B0
      //busReadRegisterBufferStart(&baro->dev, DPS310_REG_PSR_B2, buf, 6);
-     I2C_ByteRead(baro->address, DPS310_REG_PSR_B2, 1, buf, 6);
+	I2C_ByteWrite_IT(baro->address, DPS310_REG_PSR_B2, 1, buf, 6);
 
     return true;
 }
