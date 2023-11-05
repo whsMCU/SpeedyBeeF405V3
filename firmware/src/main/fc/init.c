@@ -184,7 +184,7 @@ void init(void)
 	mixerInitProfile();
 
 	/////////////// LED //////////////////
-	LED1_ON;
+	LED0_ON;
 	for (int i = 0; i < 10; i++)
 	{
 		LED0_TOGGLE;
