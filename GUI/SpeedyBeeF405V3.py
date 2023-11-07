@@ -171,6 +171,7 @@ class SerialController(QWidget):
         """
         info = QSerialPortInfo(port_name)
         self.serial.setPort(info)
+        print(port_name)
         #print("baudrate : " + str(parity))
         self.serial.setBaudRate(baudrate)
         self.serial.setDataBits(data_bits)
