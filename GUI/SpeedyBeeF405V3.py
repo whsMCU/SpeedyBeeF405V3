@@ -56,19 +56,59 @@ class SerialReadThread(QThread):
 
 class SerialController(QWidget):
 
+        # 시리얼포트 상수 값
+    BAUDRATES = (
+        QSerialPort.Baud1200,
+        QSerialPort.Baud2400,
+        QSerialPort.Baud4800,
+        QSerialPort.Baud9600,
+        QSerialPort.Baud19200,
+        QSerialPort.Baud38400,
+        QSerialPort.Baud57600,
+        QSerialPort.Baud115200,
+    )
+
+    DATABITS = (
+        QSerialPort.Data5,
+        QSerialPort.Data6,
+        QSerialPort.Data7,
+        QSerialPort.Data8,
+    )
+
+    FLOWCONTROL = (
+        QSerialPort.NoFlowControl,
+        QSerialPort.HardwareControl,
+        QSerialPort.SoftwareControl,
+    )
+
+    PARITY = (
+        QSerialPort.NoParity,
+        QSerialPort.EvenParity,
+        QSerialPort.OddParity,
+        QSerialPort.SpaceParity,
+        QSerialPort.MarkParity,
+    )
+
+    STOPBITS = (
+        QSerialPort.OneStop,
+        QSerialPort.OneAndHalfStop,
+        QSerialPort.TwoStop,
+
+    )
+
     received_data = pyqtSignal(QByteArray, name="receivedData")
     sent_data = pyqtSignal(str, name="sentData")
 
-    def __init__(self):
+    def __init__(self, pb_connect, pb_disconnect, pb_send, cb_port, cb_baud, cb_data, cb_parity, cb_stop, cb_flow):
         QWidget.__init__(self, flags=Qt.Widget)
         # 위젯 선언
-        self.gb = QGroupBox(self.tr("Serial"))
-        self.cb_port = QComboBox()
-        self.cb_baud_rate = QComboBox()
-        self.cb_data_bits = QComboBox()
-        self.cb_flow_control = QComboBox()
-        self.cb_parity = QComboBox()
-        self.cb_stop_bits = QComboBox()
+        #self.gb = QGroupBox(self.tr("Serial"))
+        self.cb_port = cb_port
+        self.cb_baud_rate = cb_baud
+        self.cb_data_bits = cb_data
+        self.cb_flow_control = cb_flow
+        self.cb_parity = cb_parity
+        self.cb_stop_bits = cb_stop
 
         # 시리얼 인스턴스 생성
         # 시리얼 스레드 설정 및 시작
@@ -83,7 +123,15 @@ class SerialController(QWidget):
 
     def _fill_serial_info(self):
         # 시리얼 상수 값들을 위젯에 채운다
-        self.comboBox_Port.insertItems(0, self._get_available_port())
+        self.cb_port.insertItems(0, self._get_available_port())
+        #self.cb_baud_rate.insertItems(0, [str(x) for x in self.BAUDRATES])
+        #self.cb_data_bits.insertItems(0, [str(x) for x in self.DATABITS])
+        #flow_name = {0: "None", 1: "Hardware", 2: "Software"}
+        #self.cb_flow_control.insertItems(0, [flow_name[x] for x in self.FLOWCONTROL])
+        #parity_name = {0: "None", 2: "Even", 3: "Odd", 4: "Space", 5: "Mark"}
+        #self.cb_parity.insertItems(0, [parity_name[x] for x in self.PARITY])
+        #stop_bits_name = {1: "1", 3: "1.5", 2: "2"}
+        #self.cb_stop_bits.insertItems(0, [stop_bits_name[x] for x in self.STOPBITS])
 
     @staticmethod
     def get_port_path():
@@ -123,6 +171,7 @@ class SerialController(QWidget):
         """
         info = QSerialPortInfo(port_name)
         self.serial.setPort(info)
+        #print("baudrate : " + str(parity))
         self.serial.setBaudRate(baudrate)
         self.serial.setDataBits(data_bits)
         self.serial.setFlowControl(flow_control)
@@ -132,7 +181,7 @@ class SerialController(QWidget):
 
     def connect_serial(self):
         serial_info = {
-            "port_name": self.comboBox_Port.currentText(),
+            "port_name": self.cb_port.currentText(),
             "baudrate": self.BAUDRATES[self.cb_baud_rate.currentIndex()],
             "data_bits": self.DATABITS[self.cb_data_bits.currentIndex()],
             "flow_control": self.FLOWCONTROL[self.cb_flow_control.currentIndex()],
@@ -164,22 +213,36 @@ class WindowClass(QMainWindow, form_class) :
         # 화면을 보여준다.
         self.show()
 
-        self.serial = SerialController()
+        self.pb_connect = self.pushButton_Connect
+        self.pb_disconnect = self.pushButton_2
+        self.pb_send = self.pushButton_Send
+        self.cb_port = self.comboBox_Port
+        self.cb_baud = self.comboBox_Baud
+        self.cb_data = self.comboBox_Data
+        self.cb_parity = self.comboBox_Parity
+        self.cb_stop = self.comboBox_Stop
+        self.cb_flow = self.comboBox_Flow
 
-        self.pushButton_Connect.clicked.connect(self.btnClick_Connect)
-        self.pushButton_2.clicked.connect(self.btnClick_Disconnect)
+        #self.win = [self.pb_connect, self.pb_disconnect, self.pb_send, self.cb_port, self.cb_baud, self.cb_data, self.cb_parity, self.cb_stop, self.cb_flow]
+
+        self.serial = SerialController(self.pb_connect, self.pb_disconnect, self.pb_send, self.cb_port, self.cb_baud, self.cb_data, self.cb_parity, self.cb_stop, self.cb_flow)
+
+        self.pb_connect.clicked.connect(self.btnClick_Connect)
+        self.pb_disconnect.clicked.connect(self.btnClick_Disconnect)
         self.serial.received_data.connect(self.read_data)
         test_data = bytes([0x02]) + bytes("TEST DATA", "utf-8") + bytes([0x03])
-        self.pushButton_Send.clicked.connect(lambda: self.serial.writeData(test_data))
+        self.pb_send.clicked.connect(lambda: self.serial.writeData(test_data))
 
         # 많이 사용하는 옵션을 미리 지정해 둔다.
         # 9600 8N1
-        self.comboBox_Baud.setCurrentIndex(3)
-        self.comboBox_Data.setCurrentIndex(3)
+        self.cb_baud.setCurrentIndex(3)
+        self.cb_data.setCurrentIndex(3)
 
+    @pyqtSlot(QByteArray, name="readData")
     def read_data(self, rd) :
         self.textBrowser.insertPlainText(str(rd, 'ascii', 'replace'))
 
+    @pyqtSlot(name="clickedConnectButton")
     def btnClick_Connect(self) :
         print("버튼이 클릭되었습니다.")
         if self.serial.serial.isOpen():
