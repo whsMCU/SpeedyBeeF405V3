@@ -55,7 +55,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QComboBox" name="comboBox_1">
+      <widget class="QComboBox" name="comboBox_Baud">
        <item>
         <property name="text">
          <string>9600</string>
@@ -106,7 +106,7 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QComboBox" name="comboBox_2">
+      <widget class="QComboBox" name="comboBox_Bit">
        <item>
         <property name="text">
          <string>5</string>
@@ -130,7 +130,7 @@
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QComboBox" name="comboBox">
+      <widget class="QComboBox" name="comboBox_TimeOut">
        <item>
         <property name="text">
          <string>2</string>
@@ -181,7 +181,7 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QComboBox" name="comboBox_3"/>
+      <widget class="QComboBox" name="comboBox_Port"/>
      </item>
      <item row="4" column="0">
       <widget class="QLabel" name="label_13">
@@ -191,7 +191,7 @@
       </widget>
      </item>
      <item row="4" column="1">
-      <widget class="QComboBox" name="comboBox_4">
+      <widget class="QComboBox" name="comboBox_Parity">
        <item>
         <property name="text">
          <string>None</string>
@@ -234,7 +234,7 @@
       </widget>
      </item>
      <item row="5" column="1">
-      <widget class="QComboBox" name="comboBox_5">
+      <widget class="QComboBox" name="comboBox_StopBit">
        <item>
         <property name="text">
          <string>1</string>
@@ -272,7 +272,7 @@
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="QTextEdit" name="textEdit_3">
+      <widget class="QTextEdit" name="textEdit_BOX">
        <property name="autoFillBackground">
         <bool>false</bool>
        </property>
@@ -305,7 +305,7 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLabel" name="label_5">
+      <widget class="QLabel" name="label_PortStatus">
        <property name="font">
         <font>
          <family>Arial</family>
@@ -395,7 +395,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>400</y>
+      <y>405</y>
       <width>451</width>
       <height>31</height>
      </rect>
@@ -404,7 +404,7 @@
      <string>Send DATA:</string>
     </property>
    </widget>
-   <widget class="QTextEdit" name="textEdit_2">
+   <widget class="QTextEdit" name="textEdit_Send">
     <property name="geometry">
      <rect>
       <x>0</x>
