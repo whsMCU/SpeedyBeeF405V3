@@ -272,11 +272,7 @@
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="QTextEdit" name="textEdit_BOX">
-       <property name="autoFillBackground">
-        <bool>false</bool>
-       </property>
-      </widget>
+      <widget class="QTextEdit" name="textEdit_BOX"/>
      </item>
     </layout>
    </widget>
@@ -296,6 +292,7 @@
         <font>
          <family>Arial</family>
          <pointsize>9</pointsize>
+         <weight>50</weight>
          <bold>false</bold>
         </font>
        </property>
@@ -310,6 +307,7 @@
         <font>
          <family>Arial</family>
          <pointsize>9</pointsize>
+         <weight>50</weight>
          <bold>false</bold>
         </font>
        </property>
@@ -347,6 +345,7 @@
          <property name="font">
           <font>
            <pointsize>9</pointsize>
+           <weight>75</weight>
            <bold>true</bold>
           </font>
          </property>
@@ -363,6 +362,7 @@
          <property name="font">
           <font>
            <pointsize>9</pointsize>
+           <weight>75</weight>
            <bold>true</bold>
           </font>
          </property>
@@ -425,6 +425,7 @@
     </property>
     <property name="font">
      <font>
+      <weight>75</weight>
       <bold>true</bold>
      </font>
     </property>

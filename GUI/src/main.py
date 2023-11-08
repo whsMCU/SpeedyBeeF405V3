@@ -16,8 +16,6 @@ import sys
 import glob
 import os
 
-
-
 try:
     import serial
     import serial.tools.list_ports
@@ -78,7 +76,8 @@ class Worker(QObject):
         while self.working:
             try:
                 char = self.ser.read()
-                h = char.hex()
+                #h = char.hex()
+                h = str(char, 'ascii', 'replace')
                 self.serial_data.emit(h)
             except SerialException:
                 # Emit last error message before die!
@@ -199,6 +198,9 @@ class MainWindow(QMainWindow, form_class):
             self.label_PortStatus.setText("CONNECTED!")
             self.label_PortStatus.setStyleSheet('color: green')
             self.textEdit_BOX.insertPlainText("{}".format(serial_data))
+            #textCursor = self.textEdit_BOX.textCursor()
+            #textCursor.movePosition(textCursor.End)
+            #self.textEdit_BOX.setTextCursor(textCursor)
 
     # Save the settings
     def on_save_button_clicked(self):
@@ -231,7 +233,7 @@ class MainWindow(QMainWindow, form_class):
         """ Send data to serial port """
         mytext = self.textEdit_Send.toPlainText()
         print(mytext.encode())
-        ser.write(mytext.encode())
+        self.ser.write(mytext.encode())
 
 if __name__ == "__main__":
     """ Start the UI Design """
