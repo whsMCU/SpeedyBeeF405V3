@@ -23,6 +23,7 @@ try:
     from PyQt6 import uic
     from PyQt6.QtCore import QObject, QThread, pyqtSignal, pyqtSlot
     from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
+    from msp_protocol import MultiWii
 
 except ImportError as e:
     print("Import Error! Please install the required libraries: " + str(e))
@@ -75,6 +76,7 @@ class Worker(QObject):
         """ Read data from serial port """
         while self.working:
             try:
+                print(self.working)
                 char = self.ser.read()
                 #h = char.hex()
                 h = str(char, 'ascii', 'replace')
@@ -105,6 +107,7 @@ class MainWindow(QMainWindow, form_class):
         self.thread = None
         self.worker = None
         self.ser = None
+        self.msp = None
 
         self.start_button.clicked.connect(self.start_loop)
         self.comboBox_Port.addItems(PORTS)
@@ -133,6 +136,7 @@ class MainWindow(QMainWindow, form_class):
                                     parity = parity[0], #get first character
                                     stopbits = float(stopbits)
                                     )
+        self.msp = MultiWii(self.ser)
         print("start ser : ", self.ser)
         print("port : " + str(port))
         print("baudrate : ", int(baudrate, base=10))
