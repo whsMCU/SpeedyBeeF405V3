@@ -99,40 +99,40 @@ uint8_t telemetry_tx_buf[20];
 int filter_load, pid_load;
 static void debugPrint(uint32_t currentTimeUs)
 {
-	  telemetry_tx_buf[0] = 0x46;
-	  telemetry_tx_buf[1] = 0x43;
-
-	  telemetry_tx_buf[2] = 0x10;
-
-	  telemetry_tx_buf[3] = (short)(attitude.values.roll*10);
-	  telemetry_tx_buf[4] = ((short)(attitude.values.roll*10))>>8;
-
-	  telemetry_tx_buf[5] = (short)(attitude.values.pitch*10);
-	  telemetry_tx_buf[6] = ((short)(attitude.values.pitch*10))>>8;
-
-	  telemetry_tx_buf[7] = (unsigned short)(attitude.values.yaw*10);
-	  telemetry_tx_buf[8] = ((unsigned short)(attitude.values.yaw*10))>>8;
-
-	  telemetry_tx_buf[9] = (short)(baro.BaroAlt*10);
-	  telemetry_tx_buf[10] = ((short)(baro.BaroAlt*10))>>8;
-
-	  telemetry_tx_buf[11] = 0x00;
-	  telemetry_tx_buf[12] = 0x00;
-
-	  telemetry_tx_buf[13] = 0x00;
-	  telemetry_tx_buf[14] = 0x00;
-
-	  telemetry_tx_buf[15] = 0x00;
-	  telemetry_tx_buf[16] = 0x00;
-
-	  telemetry_tx_buf[17] = 0x00;
-	  telemetry_tx_buf[18] = 0x00;
-
-	  telemetry_tx_buf[19] = 0xff;
-
-	  for(int i=0;i<19;i++) telemetry_tx_buf[19] = telemetry_tx_buf[19] - telemetry_tx_buf[i];
-
-	  uartWrite(0, &telemetry_tx_buf[0], 20);
+//	  telemetry_tx_buf[0] = 0x46;
+//	  telemetry_tx_buf[1] = 0x43;
+//
+//	  telemetry_tx_buf[2] = 0x10;
+//
+//	  telemetry_tx_buf[3] = (short)(attitude.values.roll*10);
+//	  telemetry_tx_buf[4] = ((short)(attitude.values.roll*10))>>8;
+//
+//	  telemetry_tx_buf[5] = (short)(attitude.values.pitch*10);
+//	  telemetry_tx_buf[6] = ((short)(attitude.values.pitch*10))>>8;
+//
+//	  telemetry_tx_buf[7] = (unsigned short)(attitude.values.yaw*10);
+//	  telemetry_tx_buf[8] = ((unsigned short)(attitude.values.yaw*10))>>8;
+//
+//	  telemetry_tx_buf[9] = (short)(baro.BaroAlt*10);
+//	  telemetry_tx_buf[10] = ((short)(baro.BaroAlt*10))>>8;
+//
+//	  telemetry_tx_buf[11] = 0x00;
+//	  telemetry_tx_buf[12] = 0x00;
+//
+//	  telemetry_tx_buf[13] = 0x00;
+//	  telemetry_tx_buf[14] = 0x00;
+//
+//	  telemetry_tx_buf[15] = 0x00;
+//	  telemetry_tx_buf[16] = 0x00;
+//
+//	  telemetry_tx_buf[17] = 0x00;
+//	  telemetry_tx_buf[18] = 0x00;
+//
+//	  telemetry_tx_buf[19] = 0xff;
+//
+//	  for(int i=0;i<19;i++) telemetry_tx_buf[19] = telemetry_tx_buf[19] - telemetry_tx_buf[i];
+//
+//	  uartWrite(0, &telemetry_tx_buf[0], 20);
 
 //    cliPrintf("BARO : %d cm, Load : %d, count : %d \n\r", baro.BaroAlt, getAverageSystemLoadPercent(), getCycleCounter());
 	  //cliPrintf("excute_time : %4.d us, max : %4.d us, callback : %4.d us, uartAvalavle : %4.d \n\r", excute_time, excute_max, rxRuntimeState.callbackTime, rxRuntimeState.uartAvalable);
