@@ -6,7 +6,7 @@
     <booleanAttribute key="com.st.stm32cube.ide.mcu.debug.launch.debug_auth_check_enable" value="false"/>
     <stringAttribute key="com.st.stm32cube.ide.mcu.debug.launch.debug_auth_key_path" value=""/>
     <stringAttribute key="com.st.stm32cube.ide.mcu.debug.launch.debug_auth_permission" value="debug_non_secure_L3"/>
-    <booleanAttribute key="com.st.stm32cube.ide.mcu.debug.launch.enable_live_expr" value="true"/>
+    <booleanAttribute key="com.st.stm32cube.ide.mcu.debug.launch.enable_live_expr" value="false"/>
     <booleanAttribute key="com.st.stm32cube.ide.mcu.debug.launch.enable_swv" value="false"/>
     <intAttribute key="com.st.stm32cube.ide.mcu.debug.launch.formatVersion" value="2"/>
     <stringAttribute key="com.st.stm32cube.ide.mcu.debug.launch.ip_address_local" value="localhost"/>
@@ -34,7 +34,8 @@
     <booleanAttribute key="com.st.stm32cube.ide.mcu.debug.openocd.DBG_STOP_WATCHDOG_THEN_HALTED_ALLOWED" value="true"/>
     <booleanAttribute key="com.st.stm32cube.ide.mcu.debug.openocd.OPENOCD_GENERATOR_OPTION" value="false"/>
     <stringAttribute key="com.st.stm32cube.ide.mcu.debug.openocd.OPENOCD_NAME" value="&quot;${stm32cubeide_openocd_path}\openocd.exe&quot;"/>
-    <stringAttribute key="com.st.stm32cube.ide.mcu.debug.openocd.OPENOCD_OTHER_OPTIONS" value="-f target/stm32f4x.cfg"/>
+    <stringAttribute key="com.st.stm32cube.ide.mcu.debug.openocd.OPENOCD_OTHER_OPTIONS" value="-f target\stm32f4x.cfg"/>
+    <stringAttribute key="com.st.stm32cube.ide.mcu.debug.openocd.OPENOCD_RESTART_CONFIGURATIONS" value="{&quot;fVersion&quot;:1,&quot;fItems&quot;:[{&quot;fDisplayName&quot;:&quot;Reset halt&quot;,&quot;fIsSuppressible&quot;:false,&quot;fResetAttribute&quot;:&quot;Reset halt&quot;,&quot;fResetStrategies&quot;:[{&quot;fDisplayName&quot;:&quot;Reset halt&quot;,&quot;fLaunchAttribute&quot;:&quot;monitor reset halt&quot;,&quot;fGdbCommands&quot;:[&quot;monitor reset halt&quot;],&quot;fCmdOptions&quot;:[]},{&quot;fDisplayName&quot;:&quot;Reset init&quot;,&quot;fLaunchAttribute&quot;:&quot;monitor reset init&quot;,&quot;fGdbCommands&quot;:[&quot;monitor reset init&quot;],&quot;fCmdOptions&quot;:[]},{&quot;fDisplayName&quot;:&quot;None&quot;,&quot;fLaunchAttribute&quot;:&quot;&quot;,&quot;fGdbCommands&quot;:[],&quot;fCmdOptions&quot;:[]}],&quot;fGdbCommandGroup&quot;:{&quot;name&quot;:&quot;Additional commands&quot;,&quot;commands&quot;:[]},&quot;fStartApplication&quot;:true},{&quot;fDisplayName&quot;:&quot;Reset init&quot;,&quot;fIsSuppressible&quot;:false,&quot;fResetAttribute&quot;:&quot;Reset init&quot;,&quot;fResetStrategies&quot;:[{&quot;fDisplayName&quot;:&quot;Reset halt&quot;,&quot;fLaunchAttribute&quot;:&quot;monitor reset halt&quot;,&quot;fGdbCommands&quot;:[&quot;monitor reset halt&quot;],&quot;fCmdOptions&quot;:[]},{&quot;fDisplayName&quot;:&quot;Reset init&quot;,&quot;fLaunchAttribute&quot;:&quot;monitor reset init&quot;,&quot;fGdbCommands&quot;:[&quot;monitor reset init&quot;],&quot;fCmdOptions&quot;:[]},{&quot;fDisplayName&quot;:&quot;None&quot;,&quot;fLaunchAttribute&quot;:&quot;&quot;,&quot;fGdbCommands&quot;:[],&quot;fCmdOptions&quot;:[]}],&quot;fGdbCommandGroup&quot;:{&quot;name&quot;:&quot;Additional commands&quot;,&quot;commands&quot;:[]},&quot;fStartApplication&quot;:true}]}"/>
     <stringAttribute key="com.st.stm32cube.ide.mcu.debug.openocd.OPENOCD_SCRIPT" value="${ProjDirPath}\tools\cmsis-dap.cfg"/>
     <stringAttribute key="com.st.stm32cube.ide.mcu.debug.openocd.OPENOCD_SCRIPT_CHOICE" value="provided"/>
     <booleanAttribute key="com.st.stm32cube.ide.mcu.debug.openocdenable_rtos" value="false"/>
@@ -45,7 +46,7 @@
     <booleanAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.enable_shared_stlink" value="false"/>
     <stringAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.frequency" value="0"/>
     <booleanAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.halt_all_on_reset" value="false"/>
-    <stringAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.log_file" value="D:\STM32CubeIDE\SpeedyBeeF405V3\firmware\Debug\st-link_gdbserver_log.txt"/>
+    <stringAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.log_file" value="C:\Users\jjins\Documents\Project\SpeedyBeeF405V3\firmware\Debug\st-link_gdbserver_log.txt"/>
     <stringAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.low_power_debug" value="enable"/>
     <stringAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.max_halt_delay" value="2"/>
     <stringAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.reset_strategy" value="connect_under_reset"/>
@@ -90,5 +91,6 @@
     <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
         <listEntry value="4"/>
     </listAttribute>
+    <stringAttribute key="org.eclipse.dsf.launch.MEMORY_BLOCKS" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&lt;memoryBlockExpressionList context=&quot;reserved-for-future-use&quot;/&gt;"/>
     <stringAttribute key="process_factory_id" value="com.st.stm32cube.ide.mcu.debug.launch.HardwareDebugProcessFactory"/>
 </launchConfiguration>
