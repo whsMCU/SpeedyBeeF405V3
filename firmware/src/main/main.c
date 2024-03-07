@@ -173,7 +173,7 @@ void RC_Parse(void)
   {
 	excute_temp = micros();
 	crsfDataReceive(uartRead(_DEF_UART2), (void*) &rxRuntimeState);
-	{excute_time = (micros()-excute_temp);
+	excute_time = (micros()-excute_temp);
 	if(excute_time >= excute_max)
 	{
 	 excute_max = excute_time;
@@ -183,7 +183,7 @@ void RC_Parse(void)
 	 excute_count = 0;
 	 excute_max = 0;
 	}
-	excute_count++;}
+	excute_count++;
   }
 }
 
