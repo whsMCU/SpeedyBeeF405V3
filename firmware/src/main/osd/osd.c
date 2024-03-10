@@ -406,6 +406,8 @@ void osdElementConfig_Init(void)
     osdElementConfig.item_pos[OSD_HORIZON_SIDEBARS]   = OSD_POS(14, 6);
     osdElementConfig.item_pos[OSD_CAMERA_FRAME]       = OSD_POS(3, 1);
     osdElementConfig.item_pos[OSD_UP_DOWN_REFERENCE]  = OSD_POS(13, 6);
+    osdElementConfig.item_pos[OSD_PITCH_ANGLE]  = OSD_POS(3, 3)| profileFlags;
+    osdElementConfig.item_pos[OSD_ROLL_ANGLE]  = OSD_POS(3, 6)| profileFlags;
 }
 
 static void osdDrawLogo(int x, int y)
