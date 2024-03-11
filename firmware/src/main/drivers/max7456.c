@@ -200,7 +200,6 @@ typedef struct max7456Layer_s {
 static max7456Layer_t displayLayers[MAX7456_SUPPORTED_LAYER_COUNT];
 static displayPortLayer_e activeLayer = DISPLAYPORT_LAYER_FOREGROUND;
 
-static uint8_t dev = MAX7456;
 //extDevice_t max7456Device;
 //extDevice_t *dev = &max7456Device;
 
@@ -376,6 +375,7 @@ max7456InitStatus_e max7456Init(const max7456Config_t *max7456Config, const vcdP
     //IOInit(dev->busType_u.spi.csnPin, OWNER_OSD_CS, 0);
     //IOConfigGPIO(dev->busType_u.spi.csnPin, SPI_IO_CS_CFG);
     //IOHi(dev->busType_u.spi.csnPin);
+    gpioPinWrite(4, _DEF_HIGH);
 
     // Detect MAX7456 existence and device type. Do this at half the speed for safety.
 
@@ -383,7 +383,8 @@ max7456InitStatus_e max7456Init(const max7456Config_t *max7456Config, const vcdP
     // This register is not modified in this driver, therefore ensured to remain at its default value (0x1B).
 
     //spiSetClkDivisor(dev, spiCalculateDivider(MAX7456_INIT_MAX_SPI_CLK_HZ));
-    SPI_Set_Speed(MAX7456, SPI_BAUDRATEPRESCALER_16);
+    SPI_Set_Speed_hz(MAX7456, MAX7456_INIT_MAX_SPI_CLK_HZ);
+    //SPI_Set_Speed(MAX7456, SPI_BAUDRATEPRESCALER_16);
 
     // Write 0xff to conclude any current SPI transaction the MAX7456 is expecting
     spiWrite(MAX7456, END_STRING);
@@ -435,10 +436,11 @@ max7456InitStatus_e max7456Init(const max7456Config_t *max7456Config, const vcdP
 #else
     UNUSED(max7456Config);
     UNUSED(cpuOverclock);
-    max7456SpiClockDiv = spiCalculateDivider(MAX7456_MAX_SPI_CLK_HZ);
+    SPI_Set_Speed_hz(MAX7456, MAX7456_MAX_SPI_CLK_HZ);
+    //max7456SpiClockDiv = spiCalculateDivider(MAX7456_MAX_SPI_CLK_HZ);
 #endif
 
-    SPI_Set_Speed(MAX7456, SPI_BAUDRATEPRESCALER_8);
+    //SPI_Set_Speed(MAX7456, SPI_BAUDRATEPRESCALER_8);
     //spiSetClkDivisor(MAX7456, max7456SpiClockDiv);
 
     // force soft reset on Max7456

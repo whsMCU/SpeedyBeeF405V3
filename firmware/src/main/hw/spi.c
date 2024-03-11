@@ -117,9 +117,9 @@ bool spiBegin(uint8_t dev)
       break;
 
     case SDCARD:
-	  spi_dev_tbl[SDCARD].dev.h_spi = &hspi2;
-	  spi_dev_tbl[SDCARD].dev.h_dma_tx = &hdma_spi2_tx;
-	  spi_dev_tbl[SDCARD].dev.h_dma_rx = &hdma_spi2_rx;
+    	spi_dev_tbl[SDCARD].dev.h_spi = &hspi2;
+    	spi_dev_tbl[SDCARD].dev.h_dma_tx = &hdma_spi2_tx;
+    	spi_dev_tbl[SDCARD].dev.h_dma_rx = &hdma_spi2_rx;
       hspi2.Instance = SPI2;
       hspi2.Init.Mode = SPI_MODE_MASTER;
       hspi2.Init.Direction = SPI_DIRECTION_2LINES;
@@ -212,6 +212,38 @@ void spiSetDataMode(uint8_t dev, uint8_t dataMode)
       HAL_SPI_Init(p_spi->h_spi);
       break;
   }
+}
+
+bool SPI_Set_Speed_hz(uint8_t dev, uint32_t speed)
+{
+	spi_t *p_spi = &spi_dev_tbl[dev].dev;
+  uint32_t spi_freq = 0;
+
+  spi_freq = HAL_RCC_GetPCLK2Freq();
+  /* For SUBGHZSPI,  'SPI_BAUDRATEPRESCALER_*' == 'SUBGHZSPI_BAUDRATEPRESCALER_*' */
+  if (speed >= (spi_freq / SPI_SPEED_CLOCK_DIV2_MHZ)) {
+	  p_spi->h_spi->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+  } else if (speed >= (spi_freq / SPI_SPEED_CLOCK_DIV4_MHZ)) {
+	  p_spi->h_spi->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
+  } else if (speed >= (spi_freq / SPI_SPEED_CLOCK_DIV8_MHZ)) {
+	  p_spi->h_spi->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
+  } else if (speed >= (spi_freq / SPI_SPEED_CLOCK_DIV16_MHZ)) {
+	  p_spi->h_spi->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
+  } else if (speed >= (spi_freq / SPI_SPEED_CLOCK_DIV32_MHZ)) {
+	  p_spi->h_spi->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
+  } else if (speed >= (spi_freq / SPI_SPEED_CLOCK_DIV64_MHZ)) {
+	  p_spi->h_spi->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
+  } else if (speed >= (spi_freq / SPI_SPEED_CLOCK_DIV128_MHZ)) {
+	  p_spi->h_spi->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_128;
+  } else {
+    /*
+     * As it is not possible to go below (spi_freq / SPI_SPEED_CLOCK_DIV256_MHZ).
+     * Set prescaler at max value so get the lowest frequency possible.
+     */
+	  p_spi->h_spi->Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
+  }
+  HAL_SPI_Init(p_spi->h_spi);
+  return true;
 }
 
 uint32_t SPI_Get_Speed(uint8_t dev)

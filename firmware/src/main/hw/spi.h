@@ -21,12 +21,20 @@
 #define SPI_MODE2           2
 #define SPI_MODE3           3
 
+#define SPI_SPEED_CLOCK_DIV2_MHZ    ((uint32_t)2)
+#define SPI_SPEED_CLOCK_DIV4_MHZ    ((uint32_t)4)
+#define SPI_SPEED_CLOCK_DIV8_MHZ    ((uint32_t)8)
+#define SPI_SPEED_CLOCK_DIV16_MHZ   ((uint32_t)16)
+#define SPI_SPEED_CLOCK_DIV32_MHZ   ((uint32_t)32)
+#define SPI_SPEED_CLOCK_DIV64_MHZ   ((uint32_t)64)
+#define SPI_SPEED_CLOCK_DIV128_MHZ  ((uint32_t)128)
+#define SPI_SPEED_CLOCK_DIV256_MHZ  ((uint32_t)256)
+
 typedef enum {
     BUS_READY,
     BUS_BUSY,
     BUS_ABORT
 } busStatus_e;
-
 
 bool spiInit(void);
 bool spiDev_Init(void);
@@ -34,6 +42,9 @@ bool spiBegin(uint8_t dev);
 bool spiIsBegin(uint8_t dev);
 void spiSetDataMode(uint8_t dev, uint8_t dataMode);
 void spiSetBitWidth(uint8_t dev, uint8_t bit_width);
+
+bool SPI_Set_Speed_hz(uint8_t dev, uint32_t speed);
+
 uint32_t SPI_Get_Speed(uint8_t dev);
 bool SPI_Set_Speed(uint8_t dev, uint32_t prescaler);
 void spiSetClkDivisor(uint8_t dev, uint32_t prescaler);
