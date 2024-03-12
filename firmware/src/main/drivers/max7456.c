@@ -389,6 +389,22 @@ max7456InitStatus_e max7456Init(const max7456Config_t *max7456Config, const vcdP
     // Write 0xff to conclude any current SPI transaction the MAX7456 is expecting
     spiWrite(MAX7456, END_STRING);
 
+    uint8_t vm0 = spiReadRegMsk(MAX7456, 0x00);
+    uint8_t vm1 = spiReadRegMsk(MAX7456, 0x01);
+    uint8_t hos = spiReadRegMsk(MAX7456, 0x02);
+    uint8_t vos = spiReadRegMsk(MAX7456, 0x03);
+    uint8_t dmm = spiReadRegMsk(MAX7456, 0x04);
+    uint8_t dmah = spiReadRegMsk(MAX7456, 0x05);
+    uint8_t dmal = spiReadRegMsk(MAX7456, 0x06);
+    uint8_t dmdi = spiReadRegMsk(MAX7456, 0x07);
+    uint8_t cmm = spiReadRegMsk(MAX7456, 0x08);
+    uint8_t cmah = spiReadRegMsk(MAX7456, 0x09);
+    uint8_t cmal = spiReadRegMsk(MAX7456, 0x0a);
+    uint8_t cmdi = spiReadRegMsk(MAX7456, 0x0b);
+    uint8_t osdm1 = spiReadRegMsk(MAX7456, 0x0c);
+    uint8_t osdbl = spiReadRegMsk(MAX7456, 0x6c);
+    uint8_t stat = spiReadRegMsk(MAX7456, 0x20);
+
     uint8_t osdm = spiReadRegMsk(MAX7456, MAX7456ADD_OSDM);
 
     if (osdm != 0x1B) {
