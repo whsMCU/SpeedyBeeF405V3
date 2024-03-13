@@ -295,7 +295,6 @@ void init(void)
 
         // osdInit will register with CMS by itself.
         osdInit(osdDisplayPort, osdDisplayPortDevice);
-
         if (osdDisplayPortDevice == OSD_DISPLAYPORT_DEVICE_NONE) {
             featureDisableImmediate(FEATURE_OSD);
         }
