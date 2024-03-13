@@ -1164,7 +1164,7 @@ bool osdUpdateCheck(timeUs_t currentTimeUs, timeDelta_t currentDeltaTimeUs)
 
             // Determine time of next update
             if (osdUpdateDueUs) {
-                osdUpdateDueUs += OSD_UPDATE_INTERVAL_US;
+                osdUpdateDueUs += OSD_UPDATE_INTERVAL_US; //+83ms
             } else {
                 osdUpdateDueUs = currentTimeUs + OSD_UPDATE_INTERVAL_US;
             }
